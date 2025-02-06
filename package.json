@@ -1,9 +1,17 @@
 {
+  "name": "harmonic-link",
   "private": true,
+  "packageManager": "pnpm@10.2.0",
+  "description": "",
+  "contributors": [
+    "adibarra <github@adibarra.com> (https://adibarra.com)"
+  ],
   "scripts": {
-    "dev": "next dev --port 3333",
     "build": "next build",
-    "start": "next start"
+    "clean": "rm -rf .next/ .pnpm-store/ node_modules/",
+    "dev": "next dev --port 3333",
+    "start": "next start",
+    "taze": "taze -I"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.1",
@@ -30,6 +38,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss": "3.4.17",
     "tailwindcss-animate": "^1.0.7",
+    "taze": "^18.3.1",
     "typescript": "5.7.2"
   }
 }
