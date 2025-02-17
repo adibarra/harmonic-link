@@ -1,32 +1,31 @@
-Harmonic Links
-Date: 2/14 
+Harmonic Links - General Meeting
+Date: 2025/14/02
 Time: 11:00 AM - 12:00PM
 
 Attendees: Sunaina Ayyagari, Srujana Ayyagari, Alec Ibarra, Nate Christie
 Absentees: Ben Wowo, Kevin Dang
-Note Taker: Sunaina Ayyagari 
+Note Taker: Sunaina Ayyagari
 
 Meeting Agenda:
 - Finish Project Proposal
 - Assign Team Leaders
-- Assign tasks for next week 
+- Assign tasks for next week
 
 Activities Undertaken:
 - Finished proposal
-- Assigned Team leaders 
+- Assigned Team leaders
 - Assigned Tasks
-- Established Project Objectives 
+- Established Project Objectives
 
-Next Steps: 
+Next Steps:
 - Start wireframes
 - Setup Supabase
 - Establish Database
 - Set up NextJS
 - Determine User flows
 
-Next Meeting: 
-Notetaker: Alec Ibarra
-
-Upcoming Deadlines: 
+Upcoming Deadlines:
 - Project Proposal Due: 3/7/2025
--
+
+Next Meeting: Monday 2025/17/02, 2:00PM - 3:00PM
+Next Note Taker: Alec Ibarra
