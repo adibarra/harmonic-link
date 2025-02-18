@@ -1,10 +1,10 @@
 # Harmonic Links - General Meeting
 
-**Date:** YYYY/MM/DD
+**Date:** YYYY/MM/DD \
 **Time:** HH:MM AM/PM - HH:MM AM/PM
 
-**Attendees:** Name 1, Name 2, Name 3, Name 4
-**Absentees:** Name 1, Name 2
+**Attendees:** Name 1, Name 2, Name 3, Name 4 \
+**Absentees:** Name 1, Name 2 \
 **Note Taker:** Name
 
 ## Meeting Agenda
@@ -29,6 +29,6 @@
 - [Task] - **Due:** YYYY/MM/DD
 
 ## Next General Meeting
-**Date:** YYYY/MM/DD
-**Time:** HH:MM AM/PM - HH:MM AM/PM
+**Date:** YYYY/MM/DD \
+**Time:** HH:MM AM/PM - HH:MM AM/PM \
 **Next Note Taker:** Name

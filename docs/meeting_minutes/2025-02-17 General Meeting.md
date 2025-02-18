@@ -1,10 +1,10 @@
 # Harmonic Links - General Meeting
 
-**Date:** 2025/02/17
+**Date:** 2025/02/17 \
 **Time:** 2:00 PM - 3:00 PM
 
-**Attendees:** Sunaina Ayyagari, Srujana Ayyagari, Alec Ibarra, Kevin Dang
-**Absentees:** Ben Wowo, Nate Christie
+**Attendees:** Sunaina Ayyagari, Srujana Ayyagari, Alec Ibarra, Kevin Dang \
+**Absentees:** Ben Wowo, Nate Christie \
 **Note Taker:** Alec Ibarra
 
 ## Meeting Agenda
@@ -38,7 +38,7 @@
 - Project Proposal - **Due:** 3/7/2025
 
 ## Next General Meeting
-**Date:** Friday 2025/02/21
-**Time:** 11:00 AM - 12:00 PM
+**Date:** Friday 2025/02/21 \
+**Time:** 11:00 AM - 12:00 PM \
 **Next Note Taker:** Alec Ibarra
 
