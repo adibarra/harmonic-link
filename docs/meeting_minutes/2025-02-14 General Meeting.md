@@ -1,5 +1,5 @@
 Harmonic Links - General Meeting
-Date: 2025/14/02
+Date: 2025/02/14
 Time: 11:00 AM - 12:00PM
 
 Attendees: Sunaina Ayyagari, Srujana Ayyagari, Alec Ibarra, Nate Christie
@@ -27,5 +27,5 @@ Next Steps:
 Upcoming Deadlines:
 - Project Proposal Due: 3/7/2025
 
-Next Meeting: Monday 2025/17/02, 2:00PM - 3:00PM
+Next Meeting: Monday 2025/02/17, 2:00PM - 3:00PM
 Next Note Taker: Alec Ibarra
