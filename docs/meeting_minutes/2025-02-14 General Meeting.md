@@ -1,31 +1,34 @@
-Harmonic Links - General Meeting
-Date: 2025/02/14
-Time: 11:00 AM - 12:00PM
+# Harmonic Links - General Meeting
 
-Attendees: Sunaina Ayyagari, Srujana Ayyagari, Alec Ibarra, Nate Christie
-Absentees: Ben Wowo, Kevin Dang
-Note Taker: Sunaina Ayyagari
+**Date:** 2025/02/14 \
+**Time:** 11:00 AM - 12:00 PM
 
-Meeting Agenda:
+**Attendees:** Sunaina Ayyagari, Srujana Ayyagari, Alec Ibarra, Nate Christie \
+**Absentees:** Ben Wowo, Kevin Dang \
+**Note Taker:** Sunaina Ayyagari
+
+## Meeting Agenda
 - Finish Project Proposal
 - Assign Team Leaders
 - Assign tasks for next week
 
-Activities Undertaken:
-- Finished proposal
-- Assigned Team leaders
-- Assigned Tasks
-- Established Project Objectives
+## Activities Undertaken
+- Finished proposal.
+- Assigned team leaders.
+- Assigned tasks for the next week.
+- Established project objectives.
 
-Next Steps:
-- Start wireframes
-- Setup Supabase
-- Establish Database
-- Set up NextJS
-- Determine User flows
+## Next Steps
+- Start wireframes.
+- Set up Supabase.
+- Establish database.
+- Set up NextJS.
+- Determine user flows.
 
-Upcoming Deadlines:
-- Project Proposal Due: 3/7/2025
+## Upcoming Deadlines
+- Project Proposal - **Due:** 2025/03/07
 
-Next Meeting: Monday 2025/02/17, 2:00PM - 3:00PM
-Next Note Taker: Alec Ibarra
+## Next General Meeting
+**Date:** 2025/02/17 \
+**Time:** 2:00 PM - 3:00 PM \
+**Next Note Taker:** Alec Ibarra

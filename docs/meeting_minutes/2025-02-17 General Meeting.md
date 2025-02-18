@@ -35,7 +35,7 @@
 - Finalize Supabase table structure
 
 ## Upcoming Deadlines
-- Project Proposal - **Due:** 3/7/2025
+- Project Proposal - **Due:** 2025/03/07
 
 ## Next General Meeting
 **Date:** Friday 2025/02/21 \
