@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { motion } from "motion/react"
+import { motion } from "motion/react";
 import Image from "next/image";
 import { Search } from "lucide-react";
 
@@ -18,10 +18,10 @@ export default function HarmonicLinks() {
   const handleSearch = () => {
     // Mock search results
     const mockResults = [
-      { id: '', name: 'LOOM (Imagine Dragons)', image: '' },
-      { id: '', name: 'Loosing (Groove Chorus)', image: '' },
-      { id: '', name: 'Am I Still Dreaming? (Loose Room)', image: '' },
-      { id: '', name: 'Totally Accountable (LOOM BAND$)', image: '' },
+      { id: '', name: 'LOOM (Imagine Dragons)', image: 'https://placehold.co/150/png' },
+      { id: '', name: 'Loosing (Groove Chorus)', image: 'https://placehold.co/150/png' },
+      { id: '', name: 'Am I Still Dreaming? (Loose Room)', image: 'https://placehold.co/150/png' },
+      { id: '', name: 'Totally Accountable (LOOM BAND$)', image: 'https://placehold.co/150/png' },
     ];
     setAlbums(mockResults);
   };
@@ -40,6 +40,33 @@ export default function HarmonicLinks() {
           </CardContent>
         </Card>
         <span className="text-xl">➡</span>
+        {linkChain.length > 0 ? (
+          <motion.div className="flex items-center space-x-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {linkChain.map((album, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <Card>
+                  <CardContent className="p-2 text-sm text-center">
+                    <Image src={album.image} alt={album.name} width="64" height="64" />
+                    {album.name}
+                  </CardContent>
+                </Card>
+                {index < linkChain.length - 1 && <span className="text-xl">➡</span>}
+              </div>
+            ))}
+          </motion.div>
+        ) : (
+          <span className="text-gray-500">Search for an album to begin the chain</span>
+        )}
+        <span className="text-xl">➡</span>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Image src={endArtist.image} alt={endArtist.name} width="256" height="256" />
+            {endArtist.name}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="flex items-center space-x-6">
         <Input
           className="w-64"
           placeholder="Enter an album's name"
@@ -49,13 +76,6 @@ export default function HarmonicLinks() {
         <Button onClick={handleSearch}>
           <Search className="w-5 h-5 mr-2" /> Search
         </Button>
-        <span className="text-xl">➡</span>
-        <Card>
-        <CardContent className="p-4 text-center">
-            <Image src={endArtist.image} alt={endArtist.name} width="256" height="256" />
-            {endArtist.name}
-          </CardContent>
-        </Card>
       </div>
 
       {albums.length > 0 && (
@@ -66,16 +86,6 @@ export default function HarmonicLinks() {
             </Button>
           ))}
         </div>
-      )}
-
-      {linkChain.length > 0 && (
-        <motion.div className="flex items-center space-x-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          {linkChain.map((album, index) => (
-            <Card key={index}>
-              <CardContent className="p-2 text-sm">{album.name}</CardContent>
-            </Card>
-          ))}
-        </motion.div>
       )}
     </div>
   );
