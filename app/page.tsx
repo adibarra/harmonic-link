@@ -16,7 +16,6 @@ export default function HarmonicLinks() {
   const [linkChain, setLinkChain] = useState<Album[]>([]);
 
   const handleSearch = () => {
-    // Mock search results
     const mockResults = [
       { id: '', name: 'LOOM (Imagine Dragons)', image: 'https://placehold.co/150/png' },
       { id: '', name: 'Loosing (Groove Chorus)', image: 'https://placehold.co/150/png' },
@@ -34,8 +33,9 @@ export default function HarmonicLinks() {
     <div className="p-6 flex flex-col items-center space-y-6">
       <div className="flex items-center space-x-6">
         <Card>
-          <CardContent className="p-4 text-center">
+          <CardContent className="p-4 pb-2 text-center flex-col">
             <Image src={startArtist.image} alt={startArtist.name} width="256" height="256" />
+            <div className="grow h-2" />
             {startArtist.name}
           </CardContent>
         </Card>
@@ -59,34 +59,34 @@ export default function HarmonicLinks() {
         )}
         <span className="text-xl">➡</span>
         <Card>
-          <CardContent className="p-4 text-center">
+          <CardContent className="p-4 pb-2 text-center flex-col">
             <Image src={endArtist.image} alt={endArtist.name} width="256" height="256" />
+            <div className="grow h-2" />
             {endArtist.name}
           </CardContent>
         </Card>
       </div>
 
-      <div className="flex items-center space-x-6">
+      <div className="relative">
         <Input
-          className="w-64"
+          className="w-full"
           placeholder="Enter an album's name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Button onClick={handleSearch}>
+        <Button className="absolute right-0 top-0 h-full" onClick={handleSearch}>
           <Search className="w-5 h-5 mr-2" /> Search
         </Button>
+        {albums.length > 0 && (
+          <div className="absolute w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10">
+            {albums.map((album, index) => (
+              <Button key={index} variant="outline" className="w-full text-left" onClick={() => addToChain(album)}>
+                {album.name}
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
-
-      {albums.length > 0 && (
-        <div className="space-y-2 w-64">
-          {albums.map((album, index) => (
-            <Button key={index} variant="outline" onClick={() => addToChain(album)}>
-              {album.name}
-            </Button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
