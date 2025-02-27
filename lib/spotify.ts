@@ -29,7 +29,47 @@ export const topArtists = async () => {
   const access_token = await getAccessToken();
 
   const response = await fetch(
-    "https://api.spotify.com/v1/search?q=genre:pop&type=artist&limit=5",
+    "https://api.spotify.com/v1/search?q=genre:pop&type=artist&limit=50",
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Spotify API error: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data;
+};
+
+export const getArtist = async (id: string) => {
+  const access_token = await getAccessToken();
+
+  const response = await fetch(
+    "https://api.spotify.com/v1/artists/" + id,
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Spotify API error: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data;
+};
+
+export const getAlbum = async (id: string) => {
+  const access_token = await getAccessToken();
+
+  const response = await fetch(
+    "https://api.spotify.com/v1/albums/" + id,
     {
       headers: {
         Authorization: `Bearer ${access_token}`,
