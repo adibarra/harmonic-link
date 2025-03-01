@@ -1,141 +1,24 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { motion } from "motion/react";
-import Image from "next/image";
-import debounce from "lodash/debounce";
 import { MoonLoader } from "react-spinners";
+import SearchDropdown from "@/components/search-dropdown";
+import ArtistCard from "@/components/artist-card";
+import ChainDisplay from "@/components/chain-display";
+import useDebounce from "../hooks/useDebounce";
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = debounce(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    handler();
-    return () => {
-      handler.cancel();
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
+interface Artist {
+  id: string;
+  name: string;
+  image: string;
 }
 
-interface ArtistCardProps {
-  artist: Artist;
-}
-
-function ArtistCard({ artist }: ArtistCardProps) {
-  return (
-    <Card className="p-4">
-      <CardContent className="text-center flex-col">
-        <Image src={artist.image} alt={artist.name} width="256" height="256" />
-        <div className="grow h-2" />
-        {artist.name}
-      </CardContent>
-    </Card>
-  );
-}
-
-interface AlbumCardProps {
-  album: Album;
-  size?: number;
-}
-
-function AlbumCard({ album, size = 64 }: AlbumCardProps) {
-  return (
-    <Card className="p-2">
-      <CardContent className="text-sm text-center">
-        <Image src={album.image} alt={album.name} width={size} height={size} />
-        <div className="font-bold">{album.name}</div>
-        <div className="text-xs opacity-80">{album.artist}</div>
-      </CardContent>
-    </Card>
-  );
-}
-
-interface ChainDisplayProps {
-  chain: Album[];
-}
-
-function ChainDisplay({ chain }: ChainDisplayProps) {
-  const chainDisplay = useMemo(() => {
-    if (chain.length === 0) {
-      return <span className="text-gray-500">Search for an album to begin the chain</span>;
-    }
-
-    if (chain.length >= 3) {
-      const secondToLast = chain[chain.length - 2];
-      const lastAlbum = chain[chain.length - 1];
-      return (
-        <div className="flex items-center space-x-2">
-          <span className="text-xl">...</span>
-          <span className="text-xl">➡</span>
-          <AlbumCard album={secondToLast} />
-          <span className="text-xl">➡</span>
-          <AlbumCard album={lastAlbum} />
-        </div>
-      );
-    }
-
-    return (
-      <motion.div className="flex items-center space-x-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        {chain.map((album, index) => (
-          <div key={album.id || index} className="flex items-center space-x-2">
-            <AlbumCard album={album} />
-            {index < chain.length - 1 && <span className="text-xl">➡</span>}
-          </div>
-        ))}
-      </motion.div>
-    );
-  }, [chain]);
-
-  return (
-    <div className="flex items-center space-x-2">
-      {chainDisplay}
-      {chain.length > 0 && (
-        <>
-          <span className="text-xl">➡</span>
-          <Button variant="ghost" className="text-xl" aria-label="More options">
-            ?
-          </Button>
-        </>
-      )}
-    </div>
-  );
-}
-
-interface SearchDropdownProps {
-  albums: Album[];
-  onSelect: (album: Album) => void;
-}
-
-function SearchDropdown({ albums, onSelect }: SearchDropdownProps) {
-  return (
-    <div className="absolute w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10">
-      {albums.map((album, index) => (
-        <Button
-          key={album.id || index}
-          variant="outline"
-          className="w-full flex p-2"
-          onClick={() => onSelect(album)}
-        >
-          <div className="flex grow">
-            <Image src={album.image} alt={album.name} width="40" height="40" className="mr-2 p-1" />
-            <div className="flex flex-col">
-              <div className="font-bold text-left">{album.name}</div>
-              <div className="text-xs opacity-80 text-left">{album.artist}</div>
-            </div>
-          </div>
-        </Button>
-      ))}
-    </div>
-  );
+interface Album {
+  id: string;
+  name: string;
+  artist: string;
+  image: string;
 }
 
 export default function HarmonicLinks() {
@@ -240,7 +123,7 @@ export default function HarmonicLinks() {
         />
         {loading && (
           <div className="absolute top-0 right-0 p-2">
-            <MoonLoader size={18} color="#fff" /> {/* Spinner component */}
+            <MoonLoader size={18} color="#fff" />
           </div>
         )}
         {albums.length > 0 && <SearchDropdown albums={albums} onSelect={addToChain} />}
