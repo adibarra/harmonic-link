@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { MoonLoader } from "react-spinners";
 import SearchDropdown from "@/components/search-dropdown";
-import ArtistCard from "@/components/artist-card";
-import ChainDisplay from "@/components/chain-display";
+import ArtistCard from "@/components/game/artist-card";
+import ChainDisplay from "@/components/game/chain-display";
 import useDebounce from "../hooks/useDebounce";
 
 interface Artist {

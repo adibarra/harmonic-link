@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import ArtistCard from "@/components/artist-card";
-import ChainDisplay from "@/components/chain-display";
-import { Card } from "./ui/card";
+import ArtistCard from "@/components/game/artist-card";
+import ChainDisplay from "@/components/game/chain-display";
+import { Card } from "../ui/card";
 
 interface GameOverScreenProps {
   startArtist: Artist;

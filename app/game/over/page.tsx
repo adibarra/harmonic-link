@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import GameOverScreen from "@/components/game-over";
+import GameOverScreen from "@/components/game/game-over";
 
 interface Artist {
   id: string;
