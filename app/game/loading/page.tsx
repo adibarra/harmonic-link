@@ -10,21 +10,17 @@ export default function LoadingPage() {
   const router = useRouter();
 
   const messages = [
-    "Tuning instruments...",
-    "Searching for harmonic pathways...",
-    "Spinning vinyls...",
-    "Building melodic bridges...",
-    "Tracing hidden collaborations...",
-    "Syncing BPMs...",
-    "Diving into sample archives...",
-    "Following producer fingerprints...",
-    "Unraveling tour bus stories...",
-    "Mapping out discography detours...",
-    "Letting the algorithm jam...",
-    "Cross-referencing liner notes...",
-    "Rewinding cassette tapes...",
-    "Reconstructing remixes...",
-  ];
+  "Tuning instruments...",
+  "Syncing BPMs...",
+  "Spinning vinyls...",
+  "Reconstructing remixes...",
+  "Diving into sample archives...",
+  "Cross-referencing liner notes...",
+  "Tracing hidden collaborations...",
+  "Following producer fingerprints...",
+  "Letting the algorithm jam...",
+  "Rewinding cassette tapes...",
+];
 
   const [currentMessage, setCurrentMessage] = useState<string>(messages[0]);
   const [loading, setLoading] = useState(true);
