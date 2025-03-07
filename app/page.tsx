@@ -9,6 +9,8 @@ export default async function Home() {
         <h2 className="font-medium text-xl mb-4">Temporary links</h2>
         <Link className="underline" href="/game">Game</Link>
         <Link className="underline" href="/game/over">Game Over</Link>
+        <Link className="underline" href="/game/loading">Game Loading</Link>
+        <Link className="underline" href="/start">Start</Link>
       </main>
     </>
   );
