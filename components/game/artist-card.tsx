@@ -9,9 +9,9 @@ interface ArtistCardProps {
 
 export default function ArtistCard({ artist }: ArtistCardProps) {
   return (
-    <Card className="p-4">
+    <Card className="p-4 pb-0">
       <CardContent className="text-center flex-col">
-        <Image src={artist.image} alt={artist.name} width={256} height={256} />
+        <Image priority src={artist.image} alt={artist.name} width={256} height={256} />
         <div className="grow h-2" />
         {artist.name}
       </CardContent>
