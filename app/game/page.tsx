@@ -23,12 +23,12 @@ interface Album {
 
 export default function HarmonicLinks() {
   const [startArtist] = useState<Artist>({
-    id: "",
+    id: "000",
     name: "Imagine Dragons",
     image: "https://i.scdn.co/image/ab67616100005174ab47d8dae2b24f5afe7f9d38",
   });
   const [endArtist] = useState<Artist>({
-    id: "",
+    id: "001",
     name: "Taylor Swift",
     image: "https://i.scdn.co/image/ab67616100005174e672b5f553298dcdccb0e676",
   });
