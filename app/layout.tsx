@@ -51,14 +51,6 @@ export default function RootLayout({
                 {children}
               </div>
 
-              <footer className="w-full flex-none flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-                <p>
-                  <Link href="https://github.com/adibarra/harmonic-link" className="hover:underline">
-                    GitHub Repository
-                  </Link>
-                </p>
-                <ThemeSwitcher />
-              </footer>
             </div>
           </main>
         </ThemeProvider>
