@@ -11,3 +11,5 @@ interface Album {
   image: string
 }
 
+type ChainItem = Artist | Album
+
