@@ -22,45 +22,37 @@ export default function ChainDisplay({
   };
 
   const chainDisplay = useMemo(() => {
-    if (chain.length === 0) {
-      return <span className="text-gray-500">Search for an album or artist to begin the chain</span>;
+    if (chain.length === 1) {
+      return (
+        <>
+          {renderCard(chain[0])}
+          <span className="text-xl">➡</span>
+          <span className="text-gray-500">Search for an album or artist to begin the chain</span>
+        </>
+      );
     }
 
     if (fullChain) {
-      if (chain.length === 1) {
-        return (
-          <motion.div className="flex items-center space-x-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            {renderCard(chain[0])}
-          </motion.div>
-        );
-      }
-
-      const firstItem = chain[0];
-      const lastItem = chain[chain.length - 1];
-      const middleItems = chain.slice(1, chain.length - 1);
-
       return (
         <div className="flex items-center space-x-2">
-          {renderCard(firstItem)}
-          <span className="text-xl">➡</span>
-          {middleItems.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2">
-              {middleItems.map((item, index) => (
-                <div key={item.id || index}>{renderCard(item)}</div>
-              ))}
+          {chain.map((item, index) => (
+            <div key={item.id || index} className="flex items-center space-x-2">
+              {renderCard(item)}
+              {index < chain.length - 1 && <span className="text-xl">➡</span>}
             </div>
-          )}
-          <span className="text-xl">➡</span>
-          {renderCard(lastItem)}
+          ))}
         </div>
       );
     }
 
     if (chain.length >= 3) {
+      const firstItem = chain[0];
       const secondToLast = chain[chain.length - 2];
       const lastItem = chain[chain.length - 1];
       return (
         <div className="flex items-center space-x-2">
+          {renderCard(firstItem)}
+          <span className="text-xl">➡</span>
           <span className="text-xl">...</span>
           <span className="text-xl">➡</span>
           {renderCard(secondToLast)}
@@ -85,7 +77,7 @@ export default function ChainDisplay({
   return (
     <div className="flex items-center space-x-2">
       {chainDisplay}
-      {chain.length > 0 && !hideQuestionMark && (
+      {chain.length > 0 && !hideQuestionMark && chain.length > 1 && (
         <>
           <span className="text-xl">➡</span>
           <Button variant="ghost" className="text-xl" aria-label="More options">

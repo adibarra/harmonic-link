@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export default function HarmonicLinks() {
   const router = useRouter();
@@ -28,12 +29,12 @@ export default function HarmonicLinks() {
 
       if (startArtistId && endArtistId) {
         try {
-          const fetchedStartArtist = await fetchArtistData(startArtistId);
-          const fetchedEndArtist = await fetchArtistData(endArtistId);
+          const fetchedStartArtist = (await fetchArtistData(startArtistId))!;
+          const fetchedEndArtist = (await fetchArtistData(endArtistId))!;
 
           setStartArtist(fetchedStartArtist);
           setEndArtist(fetchedEndArtist);
-          setItems((await fetchAlbums(startArtistId)) || []);
+          addToChain(fetchedStartArtist);
         } catch (error) {
           console.error("Error fetching artist data:", error);
         }
@@ -68,16 +69,20 @@ export default function HarmonicLinks() {
     getItems();
   }, [linkChain]);
 
-  const addToChain = async (item: Album | Artist) => {
+  const addToChain = (item: Album | Artist) => {
     setLinkChain((prev) => [...prev, item]);
+  };
+
+  const removeLastFromChain = () => {
+    if (linkChain.length > 0) {
+      setLinkChain((prev) => prev.slice(0, -1));
+    }
   };
 
   return (
     <div className="p-6 flex flex-col items-center space-y-6 h-[90vh]">
       <h1 className="text-3xl font-bold mb-6">Harmonic Links</h1>
       <div className="flex items-center space-x-6">
-        {startArtist && <ArtistCard artist={startArtist} />}
-        <span className="text-xl">➡</span>
         <ChainDisplay chain={linkChain} />
         <span className="text-xl">➡</span>
         {endArtist && <ArtistCard artist={endArtist} />}
@@ -111,6 +116,12 @@ export default function HarmonicLinks() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {linkChain.length > 1 && (
+        <Button variant="outline" onClick={removeLastFromChain} className="mt-4">
+          Undo
+        </Button>
       )}
     </div>
   );
