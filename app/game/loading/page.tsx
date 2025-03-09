@@ -41,7 +41,7 @@ export default function LoadingPage() {
     const fetchArtists = async () => {
       try {
         // simulate API loading time
-        await new Promise((resolve) => setTimeout(resolve, 14000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
         // mock successful response
         const data = {
