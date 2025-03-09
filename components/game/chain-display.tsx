@@ -4,9 +4,10 @@ import { useMemo } from "react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import AlbumCard from "./album-card";
+import ArtistCard from "./artist-card";
 
 interface ChainDisplayProps {
-  chain: Album[];
+  chain: ChainItem[];
   hideQuestionMark?: boolean;
   fullChain?: boolean;
 }
@@ -16,62 +17,64 @@ export default function ChainDisplay({
   hideQuestionMark = false,
   fullChain = false,
 }: ChainDisplayProps) {
+  const renderCard = (item: ChainItem) => {
+    return "artist" in item ? <AlbumCard album={item} /> : <ArtistCard artist={item} />;
+  };
+
   const chainDisplay = useMemo(() => {
     if (chain.length === 0) {
-      return <span className="text-gray-500">Search for an album to begin the chain</span>;
+      return <span className="text-gray-500">Search for an album or artist to begin the chain</span>;
     }
 
-    // Render full chain: first and last albums remain outside, and any intermediate albums are wrapped.
     if (fullChain) {
       if (chain.length === 1) {
         return (
           <motion.div className="flex items-center space-x-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <AlbumCard album={chain[0]} />
+            {renderCard(chain[0])}
           </motion.div>
         );
       }
 
-      const firstAlbum = chain[0];
-      const lastAlbum = chain[chain.length - 1];
-      const middleAlbums = chain.slice(1, chain.length - 1);
+      const firstItem = chain[0];
+      const lastItem = chain[chain.length - 1];
+      const middleItems = chain.slice(1, chain.length - 1);
 
       return (
         <div className="flex items-center space-x-2">
-          <AlbumCard album={firstAlbum} />
+          {renderCard(firstItem)}
           <span className="text-xl">➡</span>
-          {middleAlbums.length > 0 && (
+          {middleItems.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
-              {middleAlbums.map((album, index) => (
-                <AlbumCard key={album.id || index} album={album} />
+              {middleItems.map((item, index) => (
+                <div key={item.id || index}>{renderCard(item)}</div>
               ))}
             </div>
           )}
           <span className="text-xl">➡</span>
-          <AlbumCard album={lastAlbum} />
+          {renderCard(lastItem)}
         </div>
       );
     }
 
-    // Existing behavior when fullChain is false:
     if (chain.length >= 3) {
       const secondToLast = chain[chain.length - 2];
-      const lastAlbum = chain[chain.length - 1];
+      const lastItem = chain[chain.length - 1];
       return (
         <div className="flex items-center space-x-2">
           <span className="text-xl">...</span>
           <span className="text-xl">➡</span>
-          <AlbumCard album={secondToLast} />
+          {renderCard(secondToLast)}
           <span className="text-xl">➡</span>
-          <AlbumCard album={lastAlbum} />
+          {renderCard(lastItem)}
         </div>
       );
     }
 
     return (
       <motion.div className="flex items-center space-x-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        {chain.map((album, index) => (
-          <div key={album.id || index} className="flex items-center space-x-2">
-            <AlbumCard album={album} />
+        {chain.map((item, index) => (
+          <div key={item.id || index} className="flex items-center space-x-2">
+            {renderCard(item)}
             {index < chain.length - 1 && <span className="text-xl">➡</span>}
           </div>
         ))}
