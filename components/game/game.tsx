@@ -69,6 +69,16 @@ export default function Game() {
     getItems();
   }, [linkChain]);
 
+  useEffect(() => {
+    if (linkChain.length > 0) {
+      const lastItem = linkChain[linkChain.length - 1];
+
+      if (lastItem.id === endArtist?.id) {
+        router.push("/game/over");
+      }
+    }
+  }, [linkChain, endArtist, router]);
+
   const addToChain = (item: Album | Artist) => {
     setLinkChain((prev) => [...prev, item]);
   };
