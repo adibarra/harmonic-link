@@ -1,39 +1,30 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import GameOverScreen from "@/components/game/game-over";
-
-interface Artist {
-	id: string;
-	name: string;
-	image: string;
-}
-
-interface Album {
-	id: string;
-	name: string;
-	artist: string;
-	image: string;
-}
+import { useLocalStorage } from "react-use";
+import { GAME_STATE_LOCAL_STROAGE_KEY } from "@/lib/localStorage";
+import { GameState } from "@/lib/utils";
 
 export default function GameOverPage() {
-	const [gameOver, setGameOver] = useState(true);
+	const [gameState, setGameState] = useLocalStorage<GameState>(
+		GAME_STATE_LOCAL_STROAGE_KEY,
+	);
 	const router = useRouter();
 
-	const startArtist: Artist = {
+	const startArtist = gameState?.chainItems[0] || {
 		id: "1",
 		name: "Imagine Dragons",
 		image: "https://i.scdn.co/image/ab67616100005174ab47d8dae2b24f5afe7f9d38",
 	};
 
-	const endArtist: Artist = {
+	const endArtist = gameState?.chainItems[-1] || {
 		id: "2",
 		name: "Taylor Swift",
 		image: "https://i.scdn.co/image/ab67616100005174e672b5f553298dcdccb0e676",
 	};
 
-	const linkChain: Album[] = [
+	const linkChain = gameState?.chainItems || [
 		{
 			id: "a1",
 			name: "LOOM",
@@ -58,7 +49,7 @@ export default function GameOverPage() {
 
 	const handleRestart = () => {
 		console.log("Restarting game...");
-		setGameOver(false);
+		setGameState(new GameState());
 		router.back();
 	};
 

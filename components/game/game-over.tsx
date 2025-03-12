@@ -6,8 +6,8 @@ import ChainDisplay from "@/components/game/chain-display";
 import { Card } from "../ui/card";
 
 interface GameOverScreenProps {
-	startArtist: Artist;
-	endArtist: Artist;
+	startArtist: ChainItem;
+	endArtist: ChainItem;
 	linkChain: ChainItem[];
 	score: number;
 	onRestart: () => void;
@@ -28,29 +28,6 @@ export default function GameOverScreen({
 	score,
 	onRestart,
 }: GameOverScreenProps) {
-	useEffect(() => {
-		/*
-		const getItems = async () => {
-			if (linkChain.length === 0) return;
-			setLoading(true);
-			try {
-				const lastItem = linkChain[linkChain.length - 1];
-				if ("artist" in lastItem) {
-					const fetchedArtists = await fetchAlbumArtists(lastItem.id);
-					setItems(fetchedArtists || []);
-				} else {
-					const fetchedAlbums = await fetchAlbums(lastItem.id);
-					setItems(fetchedAlbums || []);
-				}
-				setLoading(false);
-			} catch (error) {
-				setError("Error fetching data");
-				setLoading(false);
-			}
-		};
-        */
-	}, [linkChain]);
-
 	return (
 		<div className="flex flex-col items-center p-6 space-y-6 h-[90vh] text-white">
 			<h1 className="text-4xl font-bold">Game Over</h1>

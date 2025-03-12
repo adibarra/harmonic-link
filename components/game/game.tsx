@@ -13,6 +13,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "react-use";
 import { GAME_STATE_LOCAL_STROAGE_KEY } from "@/lib/localStorage";
+import { GameState } from "@/lib/utils";
 
 export default function Game() {
 	const router = useRouter();
@@ -24,7 +25,7 @@ export default function Game() {
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [gameState, setGameState, clearLocalStorage] =
-		useLocalStorage<GameState>(GAME_STATE_LOCAL_STROAGE_KEY);
+		useLocalStorage<GameState>(GAME_STATE_LOCAL_STROAGE_KEY, new GameState());
 
 	useEffect(() => {
 		const fetchArtists = async () => {
@@ -85,11 +86,9 @@ export default function Game() {
 
 	const addToChain = (item: Album | Artist) => {
 		setGameState((prev) => {
-			if (!prev) {
-				return new GameState();
-			} else {
-				return { ...prev, chainItems: prev.chainItems, item };
-			}
+			return prev
+				? { status: prev.status, chainItems: [...prev.chainItems, item] }
+				: new GameState();
 		});
 		setLinkChain((prev) => [...prev, item]);
 	};
@@ -97,11 +96,9 @@ export default function Game() {
 	const removeLastFromChain = () => {
 		if (linkChain.length > 0) {
 			setGameState((prev) => {
-				if (!prev) {
-					return new GameState();
-				} else {
-					return { ...prev, chainItems: prev.chainItems.slice(0, -1) };
-				}
+				return prev
+					? { status: prev.status, chainItems: prev.chainItems.slice(0, -1) }
+					: new GameState();
 			});
 			setLinkChain((prev) => prev.slice(0, -1));
 		}

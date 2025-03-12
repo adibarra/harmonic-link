@@ -18,12 +18,7 @@ enum GameStatus {
 	Over,
 }
 
-class GameState {
-	status: GameStatus = GameStatus.Playing;
-	chainItems: ChainItem[] = [];
-
-	constructor(status?: GameStatus, chainItems?: ChainItem[]) {
-		if (status) this.status = status;
-		if (chainItems) this.chainItems = chainItems;
-	}
+interface GameState {
+	stats: GameStatus;
+	chainItems: ChainItem[];
 }
