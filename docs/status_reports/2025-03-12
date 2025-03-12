@@ -1,0 +1,88 @@
+## **Weekly Report**
+
+### **Reporting Period:** 2025/03/05 - 2025/03/12
+### **Team Leader:** Nate
+
+
+### **Alec:**
+Total Number Hours Worked: 8hrs
+- Tasks Completed:
+  - Built new game loading page (3 hrs):
+    - Found out about backend loading times and built a new loading page with associated logic to display during loading
+  - Added functionality to the game page (3 hrs):
+    - Implemented and used client side api calls
+    - Overhauled and refactored game page logic
+    - Added undo button component and logic
+    - Reworked album/artist selection display
+    - Added win condition detection and transition to game over page
+  - Miscellaneous work (2 hrs):
+    - Reorganized components, Identifying and fixing build errors with CI/CD pipeline, Quick fixes to other components
+- Tasks for Next Week:
+  - Work on integrating frontend with the backend APIs
+
+
+### **Ben:**
+Total Number Hours Worked: 8hrs
+- Tasks Completed:
+  - Research possible solutions to transfer game state between pages (3 hrs):
+    - Weighed pros and cons of using context, query params, and local storage
+    - Implemented local storage approach using local storage hook react library
+  - Worked on improving the display of the game over chain display(3 hrs):
+    - Began work on a custom component with scrollable display of selected artists
+    - Refactored large portion of gameplay logic to use local storage hook to manage state
+  - Miscellaneous work (2 hrs):
+    - Refactors types.ts file and added helper functions to manage local storage within components
+
+- Tasks for Next Week:
+  - 
+
+
+### **Srujana:**
+Total Number Hours Worked: 11hrs
+- Tasks Completed:
+  - Worked on building the Chain-Display Component Screen (8 hours) 
+    - When a user selects an item from the display table it is added to the chain display
+  - Worked on building the Album-Card component (1 hour)
+  - Worked on building the Artist-Card component (1 hour)
+  - Created a dummy Table component ( 1 hour)
+    - A dummy display table that the user can select from for testing purposes
+- Tasks for Next Week:
+  - Working on page routes
+
+
+### **Sunaina:**
+Total Number Hours Worked: 12hrs
+- Tasks Completed:
+  - Finished creating user playlist through API calls (7 hours)
+  - Finalized user authentication endpoints and ensured all required data is being returned (1 hour)
+  - Tested adding users to the supabase database based on data returned from API (2 hours)
+  - Made the Flowchart to depict the progression of the game(2 hours)
+- Tasks for Next Week:
+  - Working on page routes
+
+
+### **Kevin:**
+Total Number Hours Worked: 7hrs
+- Tasks Completed:
+  - Assisted with creating user playlist through API calls (1 hour)
+  - Looked into OAuth for Spotify through Supabase (1 hour)
+  - Created seed files to insert data into Supabase (5 hours)
+- Tasks for Next Week:
+  - Working on page routes
+
+
+### **Nate:**
+Total Number Hours Worked: 8hrs
+- Tasks Completed:
+  - Implemented random DFS for game logic (3.5 hrs)
+    - Gets two artists with guaranteed path and returns the min path length
+  - Made BFS return length for checking (0.5 hrs)
+  - Bug fixes with API calls (4 hrs)
+    - Filters json input from spotify (sometimes returns html, throws that away)
+
+- Tasks for Next Week:
+  - Game logic integration with front end
+
+
+### **Issues:**
+- None
