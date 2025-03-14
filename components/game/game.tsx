@@ -39,7 +39,7 @@ export default function Game() {
           console.error("Error fetching artist data:", error);
         }
       } else {
-        router.push("/loading");
+        router.replace("/game/loading");
       }
     };
 
