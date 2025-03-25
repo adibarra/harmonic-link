@@ -54,8 +54,9 @@ export default function Game() {
 
         const lastItem = linkChain[linkChain.length - 1];
         console.log(lastItem);
+        console.log("RAAAAGH");
         if ("artist" in lastItem) {
-          const fetchedArtists = await fetchAlbums(lastItem.id)
+          const fetchedArtists = await fetchAlbumArtists(lastItem.id)
           setItems(fetchedArtists || []);
         } else {
           const fetchedAlbums = await fetchAlbums(lastItem.id)

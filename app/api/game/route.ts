@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       return NextResponse.json(artistData);
     }
     else if (type === 'albumArtists') {
-      const albumData = await spot.getAlbumArtists(id);
+      const albumData = await spot.getAlbumArtistsImage(id);
       return NextResponse.json(albumData);
     }
     else if (type === 'artistAlbums') {

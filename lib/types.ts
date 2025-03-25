@@ -8,6 +8,7 @@ interface Artist {
 interface Album {
   id: string
   name: string
+  artist: string
   image: string
 
 }

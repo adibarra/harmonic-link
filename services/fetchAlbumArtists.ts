@@ -27,8 +27,7 @@ export async function fetchAlbumArtists(albumId: string): Promise<Artist[] | nul
           const albumArtists: Artist[] = data.map((item: Artist) => ({
            id: String(item.id),
            name: String(item.name),
-           image: String(item.image),
-           type: "artist"
+           image: String(item.image)
 
          })) || [];
 

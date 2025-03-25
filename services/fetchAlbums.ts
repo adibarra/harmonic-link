@@ -14,6 +14,9 @@ export async function fetchAlbums(artistId: string): Promise<Album[] | null> {
 
  try {
 
+    const responseArtist =  await fetch(`/api/game?type=artist&ID=${artistId}`);
+    const nameData = await responseArtist.json();
+    const artistName = nameData.name;
 
     const response = await fetch(`/api/game?type=artistAlbums&ID=${artistId}`);
 
@@ -27,8 +30,8 @@ export async function fetchAlbums(artistId: string): Promise<Album[] | null> {
      const artistAlbums: Album[] = data.map((item: Album) => ({
       id: String(item.id),
       name: String(item.name),
-      image: String(item.image),
-      type: "album"
+      artist: String(artistName),
+      image: String(item.image)
 
     })) || [];
 
