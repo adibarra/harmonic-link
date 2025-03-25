@@ -33,9 +33,12 @@ export default function GameOverScreen({
 			<h1 className="text-4xl font-bold">Game Over</h1>
 			<p className="text-xl">Your final score: {score}</p>
 			<div className="flex items-center space-x-6">
-				<ArtistCard artist={startArtist} />
+				{/* 
+                <ArtistCard artist={startArtist} /> 
 				<span className="text-2xl">➡</span>
-				{/* this needs work */}
+                */}
+
+				{/* This part works now */}
 				<ChainDisplay
 					chain={linkChain}
 					hideQuestionMark={true}
