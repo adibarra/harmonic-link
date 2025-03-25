@@ -51,12 +51,14 @@ export default function Game() {
       if (linkChain.length === 0) return;
       setLoading(true);
       try {
+
         const lastItem = linkChain[linkChain.length - 1];
+        console.log(lastItem);
         if ("artist" in lastItem) {
-          const fetchedArtists = await fetchAlbumArtists(lastItem.id);
+          const fetchedArtists = await fetchAlbums(lastItem.id)
           setItems(fetchedArtists || []);
         } else {
-          const fetchedAlbums = await fetchAlbums(lastItem.id);
+          const fetchedAlbums = await fetchAlbums(lastItem.id)
           setItems(fetchedAlbums || []);
         }
         setLoading(false);

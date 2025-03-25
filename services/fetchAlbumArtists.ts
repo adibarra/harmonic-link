@@ -22,17 +22,25 @@ export async function fetchAlbumArtists(albumId: string): Promise<Artist[] | nul
         throw new Error (`API request failed with status ${response.status}`);
       }
 
-      const albumArtists = await response.json();
-      if (albumArtists) {
-        cacheAlbumArtists(albumId, albumArtists);
-        console.log("Fetching from API");
-        return albumArtists;
-      } else {
-        throw new Error("Artist not found");
-      }
-    } catch (error) {
-      console.error("Error fetching artist data:", error);
-      return null;
-    }
-  }
+     const data = await response.json();
 
+          const albumArtists: Artist[] = data.map((item: Artist) => ({
+           id: String(item.id),
+           name: String(item.name),
+           image: String(item.image),
+           type: "artist"
+
+         })) || [];
+
+
+         if (albumArtists.length) {
+           cacheAlbumArtists(albumId, albumArtists);
+           return albumArtists;
+         }
+
+         throw new Error("No valid albums found");
+       } catch (error) {
+         console.error("Error fetching artist albums:", error);
+         return null;
+       }
+     }
