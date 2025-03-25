@@ -2,7 +2,7 @@
   "name": "harmonic-link",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@10.2.0",
+  "packageManager": "pnpm@10.6.5",
   "description": "",
   "contributors": [
     "adibarra <github@adibarra.com> (https://adibarra.com)"
@@ -24,8 +24,8 @@
     "autoprefixer": "10.4.20",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "lodash": "^4.17.21",
     "dotenv": "^16.4.7",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.468.0",
     "motion": "^12.4.7",
     "next": "latest",

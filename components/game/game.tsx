@@ -29,8 +29,8 @@ export default function Game() {
 
       if (startArtistId && endArtistId) {
         try {
-          const fetchedStartArtist = (await fetchArtistData(startArtistId))!;
-          const fetchedEndArtist = (await fetchArtistData(endArtistId))!;
+          const fetchedStartArtist = (await fetchArtistData("4ZAk3yVJdtf1CFnTiG08U3"))!;
+          const fetchedEndArtist = (await fetchArtistData("2kQnsbKnIiMahOetwlfcaS"))!;
 
           setStartArtist(fetchedStartArtist);
           setEndArtist(fetchedEndArtist);

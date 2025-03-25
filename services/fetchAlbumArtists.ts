@@ -10,104 +10,29 @@ export async function fetchAlbumArtists(albumId: string): Promise<Artist[] | nul
     return albumArtistsCache[albumId];
   }
 
-  try {
-    const mockedAlbumArtists: { [key: string]: Artist[] } = {
-      "1": [
-        {
-          id: "000",
-          name: "Imagine Dragons",
-          image: "https://i.scdn.co/image/ab67616100005174ab47d8dae2b24f5afe7f9d38",
-        },
-        {
-          id: "003",
-          name: "Kendrick Lamar",
-          image: "https://placehold.co/150/png",
-        },
-      ],
-      "2": [
-        {
-          id: "001",
-          name: "Taylor Swift",
-          image: "https://i.scdn.co/image/ab67616100005174e672b5f553298dcdccb0e676",
-        },
-        {
-          id: "003",
-          name: "Kendrick Lamar",
-          image: "https://placehold.co/150/png",
-        },
-      ],
-      "3": [
-        {
-          id: "001",
-          name: "Taylor Swift",
-          image: "https://i.scdn.co/image/ab67616100005174e672b5f553298dcdccb0e676",
-        },
-        {
-          id: "002",
-          name: "Ed Sheeran",
-          image: "https://placehold.co/150/png",
-        },
-      ],
-      "4": [
-        {
-          id: "000",
-          name: "Imagine Dragons",
-          image: "https://i.scdn.co/image/ab67616100005174ab47d8dae2b24f5afe7f9d38",
-        },
-        {
-          id: "002",
-          name: "Ed Sheeran",
-          image: "https://placehold.co/150/png",
-        },
-      ],
-      "5": [
-        {
-          id: "002",
-          name: "Ed Sheeran",
-          image: "https://placehold.co/150/png",
-        },
-        {
-          id: "003",
-          name: "Kendrick Lamar",
-          image: "https://placehold.co/150/png",
-        },
-      ],
-      "6": [
-        {
-          id: "002",
-          name: "Ed Sheeran",
-          image: "https://placehold.co/150/png",
-        },
-        {
-          id: "003",
-          name: "Kendrick Lamar",
-          image: "https://placehold.co/150/png",
-        },
-      ],
-      "7": [
-        {
-          id: "003",
-          name: "Kendrick Lamar",
-          image: "https://placehold.co/150/png",
-        },
-        {
-          id: "000",
-          name: "Imagine Dragons",
-          image: "https://i.scdn.co/image/ab67616100005174ab47d8dae2b24f5afe7f9d38",
-        },
-      ],
-    };
+   try {
 
-    const albumArtists = mockedAlbumArtists[albumId];
-    if (albumArtists) {
-      cacheAlbumArtists(albumId, albumArtists);
-      console.log("Fetching album artists from mock API");
-      return albumArtists;
-    } else {
-      throw new Error("No artists found for the album");
+
+
+
+      // simulate api call
+      const response = await fetch(`/api/game?type=albumArtists&ID=${albumId}`);
+
+      if(!response.ok) {
+        throw new Error (`API request failed with status ${response.status}`);
+      }
+
+      const albumArtists = await response.json();
+      if (albumArtists) {
+        cacheAlbumArtists(albumId, albumArtists);
+        console.log("Fetching from API");
+        return albumArtists;
+      } else {
+        throw new Error("Artist not found");
+      }
+    } catch (error) {
+      console.error("Error fetching artist data:", error);
+      return null;
     }
-  } catch (error) {
-    console.error("Error fetching album artists:", error);
-    return null;
   }
-}
+
