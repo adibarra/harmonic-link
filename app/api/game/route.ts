@@ -9,18 +9,30 @@ export async function GET(request: Request) {
     const id = searchParams.get('ID');
     const type = searchParams.get('type');
 
-    if (type === 'artist') {
-      const artistData = await spot.getArtist(id);
-      return NextResponse.json(artistData);
+    switch(type) {
+
+      case 'artist':
+        const artistData = await spot.getArtist(id);
+        return NextResponse.json(artistData, {status: 200});
+
+      case 'albumArtists':
+        const albumArtists = await spot.getAlbumArtistsImage(id);
+        return NextResponse.json(albumArtists, {status: 200});
+
+      case 'artistAlbums':
+        const albumData = await spot.getArtistAlbums(id)
+        return NextResponse.json(albumData, {status: 200});
+
+      default:
+        return NextResponse.json(
+          { error: 'Invalid type parameter' },
+          { status: 400 }
+        );
+
     }
-    else if (type === 'albumArtists') {
-      const albumData = await spot.getAlbumArtistsImage(id);
-      return NextResponse.json(albumData);
-    }
-    else if (type === 'artistAlbums') {
-      const albumData = await spot.getArtistAlbums(id);
-      return NextResponse.json(albumData);
-    }
+
+
+
   } catch (error) {
     console.error('Error in get request:' , error);
     return NextResponse.json(
