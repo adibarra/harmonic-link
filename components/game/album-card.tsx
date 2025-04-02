@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { MusicIcon } from "lucide-react";
+import { DiscIcon } from "lucide-react";
 import Image from "next/image";
 
 interface AlbumCardProps {
@@ -26,8 +26,8 @@ export default function AlbumCard({ album }: AlbumCardProps) {
         <div className="text-xs text-gray-500 truncate w-full">{album.artist}</div>
       </CardContent>
       <div className="absolute flex flex-row gap-2 left-2 bottom-2 text-gray-500">
-        <MusicIcon className="w-4 h-4" />
-        <span className="text-xs">Artist</span>
+        <DiscIcon className="w-4 h-4" />
+        <span className="text-xs">Album</span>
       </div>
     </Card>
   );
