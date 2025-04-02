@@ -10,6 +10,7 @@ import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { DiscIcon, MusicIcon } from "lucide-react";
 
 export default function Game() {
   const router = useRouter();
@@ -116,7 +117,7 @@ export default function Game() {
                   className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-gray-300"
                   onClick={() => addToChain(item)}
                 >
-                  <td className="py-2 px-4 flex items-center">
+                  <td className="relative py-2 px-4 flex items-center">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -124,7 +125,11 @@ export default function Game() {
                       height={48}
                       className="rounded-lg mr-8"
                     />
-                    {"artist" in item ? item.name : item.name.toUpperCase()}
+                    <span className="truncate">{item.name}</span>
+                    <div className="absolute right-6 flex items-center gap-1 text-gray-500 text-xs">
+                      {"artist" in item ? <MusicIcon className="w-4 h-4" /> : <DiscIcon className="w-4 h-4" />}
+                      <span>{ "artist" in item ? "Artist" : "Album" }</span>
+                    </div>
                   </td>
                 </tr>
               ))}
