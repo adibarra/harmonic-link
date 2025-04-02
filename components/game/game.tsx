@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { MoonLoader } from "react-spinners";
-import ArtistCard from "@/components/game/artist-card";
 import ChainDisplay from "@/components/game/chain-display";
 import { fetchArtistData } from "@/services/fetchArtistData";
 import { useSearchParams } from "next/navigation";
@@ -15,8 +14,6 @@ import { Button } from "@/components/ui/button";
 export default function Game() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [startArtist, setStartArtist] = useState<Artist | null>(null);
-  const [endArtist, setEndArtist] = useState<Artist | null>(null);
   const [items, setItems] = useState<ChainItem[]>([]);
   const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -29,14 +26,19 @@ export default function Game() {
 
       if (startArtistId && endArtistId) {
         try {
-          const fetchedStartArtist = (await fetchArtistData("4ZAk3yVJdtf1CFnTiG08U3"))!;
-          const fetchedEndArtist = (await fetchArtistData("2kQnsbKnIiMahOetwlfcaS"))!;
+          const [fetchedStartArtist, fetchedEndArtist] = await Promise.all([
+            fetchArtistData(startArtistId),
+            fetchArtistData(endArtistId),
+          ]);
 
-          setStartArtist(fetchedStartArtist);
-          setEndArtist(fetchedEndArtist);
-          addToChain(fetchedStartArtist);
+          if (!fetchedStartArtist || !fetchedEndArtist) {
+            router.replace("/game/loading");
+            return;
+          }
+
+          setLinkChain([fetchedStartArtist, fetchedEndArtist]);
         } catch (error) {
-          console.error("Error fetching artist data:", error);
+          setError("Error fetching artist data");
         }
       } else {
         router.replace("/game/loading");
@@ -48,19 +50,16 @@ export default function Game() {
 
   useEffect(() => {
     const getItems = async () => {
-      if (linkChain.length === 0) return;
+      if (linkChain.length < 2) return;
       setLoading(true);
       try {
-
-        const lastItem = linkChain[linkChain.length - 1];
-        console.log(lastItem);
-        console.log("RAAAAGH");
+        const lastItem = linkChain[linkChain.length - 2];
         if ("artist" in lastItem) {
           const fetchedArtists = await fetchAlbumArtists(lastItem.id)
-          setItems(fetchedArtists || []);
+          setItems(fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         } else {
           const fetchedAlbums = await fetchAlbums(lastItem.id)
-          setItems(fetchedAlbums || []);
+          setItems(fetchedAlbums?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         }
         setLoading(false);
       } catch (error) {
@@ -73,23 +72,28 @@ export default function Game() {
   }, [linkChain]);
 
   useEffect(() => {
-    if (linkChain.length > 0) {
+    if (linkChain.length > 1) {
       const lastItem = linkChain[linkChain.length - 1];
+      const secondLastItem = linkChain[linkChain.length - 2];
 
-      if (lastItem.id === endArtist?.id) {
+      if (lastItem.id === secondLastItem.id) {
         router.push("/game/over");
       }
     }
-  }, [linkChain, endArtist, router]);
+  }, [linkChain, router]);
 
-  const addToChain = (item: Album | Artist) => {
-    setLinkChain((prev) => [...prev, item]);
+  const addToChain = (newItem: ChainItem) => {
+    setLinkChain((prev) => {
+      if (prev.length < 2) return prev;
+      return [prev[0], ...prev.slice(1, -1), newItem, prev[prev.length - 1]];
+    });
   };
 
   const removeLastFromChain = () => {
-    if (linkChain.length > 0) {
-      setLinkChain((prev) => prev.slice(0, -1));
-    }
+    setLinkChain((prev) => {
+      if (prev.length <= 2) return prev;
+      return [prev[0], ...prev.slice(1, -2), prev[prev.length - 1]];
+    });
   };
 
   return (
@@ -97,20 +101,18 @@ export default function Game() {
       <h1 className="text-3xl font-bold mb-6">Harmonic Links</h1>
       <div className="flex items-center space-x-6">
         <ChainDisplay chain={linkChain} />
-        <span className="text-xl">➡</span>
-        {endArtist && <ArtistCard artist={endArtist} />}
       </div>
 
       {loading && <MoonLoader size={18} color="#fff" />}
       {error && <p className="text-red-500 mt-2">{error}</p>}
 
       {!loading && !error && (
-        <div className="w-full max-w-md overflow-x-auto border border-white rounded-lg">
+        <div className="max-h-96 w-full max-w-md overflow-x-auto border border-white rounded-lg">
           <table className="min-w-full border border-gray-300 rounded-lg">
             <tbody>
-              {items.map((item) => (
+              {items.map((item, index) => (
                 <tr
-                  key={item.id}
+                  key={index}
                   className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-gray-300"
                   onClick={() => addToChain(item)}
                 >

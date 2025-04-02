@@ -47,14 +47,14 @@ export default function LoadingPage() {
         const data = {
           success: true,
           startArtist: {
-            id: "000",
-            name: "Imagine Dragons",
-            image: "https://i.scdn.co/image/ab67616100005174ab47d8dae2b24f5afe7f9d38",
+            id: "4ZAk3yVJdtf1CFnTiG08U3",
+            name: "Luna Li",
+            image: "https://i.scdn.co/image/ab6761610000e5ebdaeee87c9a49ac7d03d3d883",
           },
           endArtist: {
-            id: "001",
-            name: "Taylor Swift",
-            image: "https://i.scdn.co/image/ab67616100005174e672b5f553298dcdccb0e676",
+            id: "2kQnsbKnIiMahOetwlfcaS",
+            name: "Raveena",
+            image: "https://i.scdn.co/image/ab6761610000e5eb5942a3bbc3b764b2a2934776",
           },
         };
 
