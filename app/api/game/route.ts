@@ -28,7 +28,6 @@ export async function GET(request: Request) {
     switch (type) {
 
       case 'artist':
-
         const artistData = await spot.getArtist(id);
         return NextResponse.json(artistData, { status: 200 });
 
@@ -39,6 +38,14 @@ export async function GET(request: Request) {
       case 'artistAlbums':
         const albumData = await spot.getArtistAlbums(id)
         return NextResponse.json(albumData, { status: 200 });
+
+      case 'artist-artist':
+        const artistEndless = await logic.getValidArtistStartEnd(id);
+        return NextResponse.json(artistEndless, { status: 200 });
+
+      case 'album-album':
+        const albumEndless = await logic.getValidAlbumStartEnd(id);
+        return NextResponse.json(albumEndless, { status: 200 });
 
       case 'daily':
         console.log("hello")
@@ -124,3 +131,4 @@ export async function ENDLESS_INIT(request: Request) {
   }
 }
  */
+

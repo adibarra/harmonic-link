@@ -13,5 +13,11 @@ interface Album {
 
 }
 
+interface StartEnd {
+  id1: string
+  id2: string
+  par: number
+}
+
 type ChainItem = Artist | Album
 
