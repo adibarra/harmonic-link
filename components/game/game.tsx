@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { MoonLoader } from "react-spinners";
 import ChainDisplay from "@/components/game/chain-display";
-import { fetchArtistData } from "@/services/fetchArtistData";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
@@ -12,46 +10,20 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { DiscIcon, MusicIcon } from "lucide-react";
 
-export default function Game() {
+interface GameProps {
+  start: ChainItem;
+  end: ChainItem;
+}
+
+export default function Game({ start, end }: GameProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [items, setItems] = useState<ChainItem[]>([]);
-  const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
+  const [linkChain, setLinkChain] = useState<ChainItem[]>([start,end]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchArtists = async () => {
-      const startArtistId = searchParams.get("start");
-      const endArtistId = searchParams.get("end");
-
-      if (startArtistId && endArtistId) {
-        try {
-          const [fetchedStartArtist, fetchedEndArtist] = await Promise.all([
-            fetchArtistData(startArtistId),
-            fetchArtistData(endArtistId),
-          ]);
-
-          if (!fetchedStartArtist || !fetchedEndArtist) {
-            router.replace("/game/loading");
-            return;
-          }
-
-          setLinkChain([fetchedStartArtist, fetchedEndArtist]);
-        } catch (error) {
-          setError("Error fetching artist data");
-        }
-      } else {
-        router.replace("/game/loading");
-      }
-    };
-
-    fetchArtists();
-  }, [searchParams]);
-
-  useEffect(() => {
     const getItems = async () => {
-      if (linkChain.length < 2) return;
       setLoading(true);
       try {
         const lastItem = linkChain[linkChain.length - 2];
@@ -62,9 +34,9 @@ export default function Game() {
           const fetchedAlbums = await fetchAlbums(lastItem.id)
           setItems(fetchedAlbums?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         }
-        setLoading(false);
       } catch (error) {
         setError("Error fetching data");
+      } finally {
         setLoading(false);
       }
     };
@@ -73,7 +45,7 @@ export default function Game() {
   }, [linkChain]);
 
   useEffect(() => {
-    if (linkChain.length > 1) {
+    if (linkChain.length > 2) {
       const lastItem = linkChain[linkChain.length - 1];
       const secondLastItem = linkChain[linkChain.length - 2];
 
@@ -82,20 +54,6 @@ export default function Game() {
       }
     }
   }, [linkChain, router]);
-
-  const addToChain = (newItem: ChainItem) => {
-    setLinkChain((prev) => {
-      if (prev.length < 2) return prev;
-      return [prev[0], ...prev.slice(1, -1), newItem, prev[prev.length - 1]];
-    });
-  };
-
-  const removeLastFromChain = () => {
-    setLinkChain((prev) => {
-      if (prev.length <= 2) return prev;
-      return [prev[0], ...prev.slice(1, -2), prev[prev.length - 1]];
-    });
-  };
 
   return (
     <div className="p-6 flex flex-col items-center space-y-6 h-[90vh]">
@@ -115,7 +73,11 @@ export default function Game() {
                 <tr
                   key={index}
                   className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-gray-300"
-                  onClick={() => addToChain(item)}
+                  onClick={() => {
+                    setLinkChain((prev) => {
+                      return [...prev.slice(0, -1), item, prev[prev.length - 1]];
+                    });
+                  }}
                 >
                   <td className="relative py-2 px-4 flex items-center">
                     <Image
@@ -127,8 +89,8 @@ export default function Game() {
                     />
                     <span className="truncate">{item.name}</span>
                     <div className="absolute right-6 flex items-center gap-1 text-gray-500 text-xs">
-                      {"artist" in item ? <MusicIcon className="w-4 h-4" /> : <DiscIcon className="w-4 h-4" />}
-                      <span>{ "artist" in item ? "Artist" : "Album" }</span>
+                      {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MusicIcon className="w-4 h-4" />}
+                      <span>{ "artist" in item ? "Album" : "Artist" }</span>
                     </div>
                   </td>
                 </tr>
@@ -139,7 +101,14 @@ export default function Game() {
       )}
 
       {linkChain.length > 1 && (
-        <Button variant="outline" onClick={removeLastFromChain} className="mt-4">
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => {
+            setLinkChain((prev) => {
+              return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
+            })}}
+          >
           Undo
         </Button>
       )}

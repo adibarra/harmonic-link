@@ -31,7 +31,7 @@ export default function ChainDisplay({
         <>
           {renderChainItem(chain[0])}
           <span className="text-xl">➡</span>
-          <span className="text-gray-500">Select an album or artist to begin the chain.</span>
+          <span className="text-gray-500 w-56 pl-2 pr-4">Select an album or artist to begin the chain.</span>
           <span className="text-xl">➡</span>
           {renderChainItem(chain[1])}
         </>

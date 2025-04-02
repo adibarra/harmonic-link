@@ -3,26 +3,28 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { MoonLoader } from "react-spinners";
-import { useRouter } from "next/navigation";
 import ArtistCard from "@/components/game/artist-card";
+import { fetchDaily } from "@/services/fetchDaily";
 
-export default function LoadingPage() {
-  const router = useRouter();
+interface LoadingGameProps {
+  onSuccess: (start: ChainItem, end: ChainItem) => void;
+}
 
+export default function LoadingGame({ onSuccess }: LoadingGameProps) {
   const messages = [
-  "Tuning instruments...",
-  "Syncing BPMs...",
-  "Spinning vinyls...",
-  "Reconstructing remixes...",
-  "Diving into sample archives...",
-  "Cross-referencing liner notes...",
-  "Tracing hidden collaborations...",
-  "Following producer fingerprints...",
-  "Letting the algorithm jam...",
-  "Rewinding cassette tapes...",
-];
+    "Tuning instruments...",
+    "Syncing BPMs...",
+    "Spinning vinyls...",
+    "Reconstructing remixes...",
+    "Diving into sample archives...",
+    "Cross-referencing liner notes...",
+    "Tracing hidden collaborations...",
+    "Following producer fingerprints...",
+    "Letting the algorithm jam...",
+    "Rewinding cassette tapes...",
+  ];
 
-  const [currentMessage, setCurrentMessage] = useState<string>(messages[0]);
+  const [currentMessage, setCurrentMessage] = useState(messages[0]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -38,34 +40,41 @@ export default function LoadingPage() {
       });
     }, 3000);
 
-    const fetchArtists = async () => {
+    const fetchChallenge = async () => {
       try {
-        // simulate API loading time
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // const [artists] = await Promise.all([
+        //   await fetchDaily(),
+        //   new Promise((resolve) => setTimeout(resolve, 2000)),
+        // ]);
 
-        // mock successful response
-        const data = {
-          success: true,
-          startArtist: {
+        // Simulating a fetch with a delay
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const artists = [
+          {
             id: "4ZAk3yVJdtf1CFnTiG08U3",
             name: "Luna Li",
             image: "https://i.scdn.co/image/ab6761610000e5ebdaeee87c9a49ac7d03d3d883",
           },
-          endArtist: {
+          {
             id: "2kQnsbKnIiMahOetwlfcaS",
             name: "Raveena",
             image: "https://i.scdn.co/image/ab6761610000e5eb5942a3bbc3b764b2a2934776",
           },
-        };
+        ];
+        // end of simulated fetch
 
-        if (data.success) {
+        if (artists && artists.length > 0) {
+          const startArtist = artists[0];
+          const endArtist = artists[1];
+
           clearInterval(messageInterval);
-          setStartArtist(data.startArtist);
-          setEndArtist(data.endArtist);
+          setStartArtist(startArtist);
+          setEndArtist(endArtist);
           setSuccess(true);
           setCurrentMessage("Found a path. Get ready!");
+
           setTimeout(() => {
-            router.push(`/game?start=${data.startArtist.id}&end=${data.endArtist.id}`);
+            onSuccess(startArtist, endArtist);
           }, 5000);
         } else {
           throw new Error("Failed to find a path. Try refreshing.");
@@ -75,13 +84,14 @@ export default function LoadingPage() {
         console.error(err);
       } finally {
         setLoading(false);
+        clearInterval(messageInterval);
       }
     };
 
-    fetchArtists();
+    fetchChallenge();
 
     return () => clearInterval(messageInterval);
-  }, [router]);
+  }, [onSuccess]);
 
   return (
     <div className="p-6 flex flex-col items-center w-full">
@@ -128,3 +138,4 @@ export default function LoadingPage() {
     </div>
   );
 }
+
