@@ -8,17 +8,17 @@ import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { DiscIcon, MusicIcon } from "lucide-react";
+import { DiscIcon, MicIcon } from "lucide-react";
 
 interface GameProps {
-  start: ChainItem;
-  end: ChainItem;
+  linkChain: ChainItem[];
+  setLinkChain: (chain: any) => any;
+  onGameOver: () => void;
 }
 
-export default function Game({ start, end }: GameProps) {
+export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps) {
   const router = useRouter();
   const [items, setItems] = useState<ChainItem[]>([]);
-  const [linkChain, setLinkChain] = useState<ChainItem[]>([start,end]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -50,24 +50,21 @@ export default function Game({ start, end }: GameProps) {
       const secondLastItem = linkChain[linkChain.length - 2];
 
       if (lastItem.id === secondLastItem.id) {
-        router.push("/game/over");
+        onGameOver();
       }
     }
   }, [linkChain, router]);
 
   return (
-    <div className="p-6 flex flex-col items-center space-y-6 h-[80vh]">
-      <h1 className="text-3xl font-bold mb-6">Harmonic Links</h1>
-      <div className="flex items-center space-x-6">
-        <ChainDisplay chain={linkChain} />
-      </div>
+    <div className="flex flex-col items-center space-y-6">
+      <ChainDisplay chain={linkChain} />
 
       {linkChain.length > 1 && (
         <div className="flex items-center space-x-4">
           <Button
             variant="destructive"
             onClick={() => {
-              setLinkChain((prev) => {
+              setLinkChain((prev: any) => {
                 return [prev[0], prev[prev.length - 1]];
               })}}
             >
@@ -76,7 +73,7 @@ export default function Game({ start, end }: GameProps) {
           <Button
             variant="secondary"
             onClick={() => {
-              setLinkChain((prev) => {
+              setLinkChain((prev: any) => {
                 return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
               })}}
             >
@@ -97,7 +94,7 @@ export default function Game({ start, end }: GameProps) {
                   key={index}
                   className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-gray-300"
                   onClick={() => {
-                    setLinkChain((prev) => {
+                    setLinkChain((prev: any) => {
                       return [...prev.slice(0, -1), item, prev[prev.length - 1]];
                     });
                   }}
@@ -112,7 +109,7 @@ export default function Game({ start, end }: GameProps) {
                     />
                     <span className="truncate">{item.name}</span>
                     <div className="absolute right-6 flex items-center gap-1 text-gray-500 text-xs">
-                      {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MusicIcon className="w-4 h-4" />}
+                      {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
                       <span>{ "artist" in item ? "Album" : "Artist" }</span>
                     </div>
                   </td>

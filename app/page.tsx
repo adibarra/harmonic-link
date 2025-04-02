@@ -13,7 +13,7 @@ export default async function Home() {
         </div>
 
         <div className="mx-auto mb-12">
-          <Link href="/game">
+          <Link href="/play">
             <Button variant="secondary" className="py-2 text-lg transition duration-300">
               Play Daily Challenge
             </Button>

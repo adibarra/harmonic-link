@@ -70,7 +70,7 @@ export default function StartScreen() {
     </div>
           </div>
           {/* Play Now Button */}
-          <Link href={`/game/${mode}`}>
+          <Link href={`/play/${mode}`}>
           <button className="mt-6 px-6 py-2 bg-purple-500 rounded-lg text-white text-lg hover:bg-purple-600">
             Play now!
 

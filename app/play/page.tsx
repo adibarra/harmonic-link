@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import LoadingGame from "@/components/game/loading-game";
+import GameOver from "@/components/game/game-over";
 import Game from "@/components/game/game";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function HarmonicLinks() {
   const [gameReady, setGameReady] = useState(false);
-  const [startChainItem, setStartChainItem] = useState<ChainItem>();
-  const [endChainItem, setEndChainItem] = useState<ChainItem>();
+  const [gameOver, setGameOver] = useState(false);
+  const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
 
   const fadeInOut = {
     initial: { opacity: 0 },
@@ -22,9 +23,22 @@ export default function HarmonicLinks() {
       <motion.div {...fadeInOut}>
         <LoadingGame
           onSuccess={(start, end) => {
-            setStartChainItem(start);
-            setEndChainItem(end);
+            setLinkChain([start, end]);
             setGameReady(true);
+          }}
+        />
+      </motion.div>
+    );
+  }
+
+  if (gameOver) {
+    return (
+      <motion.div {...fadeInOut}>
+        <GameOver
+          linkChain={linkChain}
+          onRestart={() => {
+            setGameOver(false);
+            setGameReady(false);
           }}
         />
       </motion.div>
@@ -34,7 +48,13 @@ export default function HarmonicLinks() {
   return (
     <AnimatePresence>
       <motion.div key="game" {...fadeInOut}>
-        <Game start={startChainItem!} end={endChainItem!} />
+        <Game
+          linkChain={linkChain}
+          setLinkChain={setLinkChain}
+          onGameOver={() => {
+            setGameOver(true);
+          }}
+        />
       </motion.div>
     </AnimatePresence>
   );
