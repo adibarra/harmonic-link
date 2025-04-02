@@ -68,9 +68,10 @@ export async function GET(request: Request) {
       { status: 500 }
     );
   }
-
-
 }
+
+/*
+// this breaks the build, uncomment when ready to use
 export async function ENDLESS_INIT(request: Request) {
 
   try {
@@ -107,6 +108,5 @@ export async function ENDLESS_INIT(request: Request) {
       { status: 500 }
     );
   }
-
-
 }
+ */
