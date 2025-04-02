@@ -47,7 +47,7 @@ export default function ChainDisplay({
           className="flex overflow-x-auto space-x-2 flex-nowrap max-w-[55vw] scroll-right"
         >
           {chain.slice(1, -1).map((item, index) => (
-            <div className="flex items-center space-x-2">
+            <div key={index} className="flex items-center space-x-2">
               {renderChainItem(item)}
               {index < chain.length - 3 && <span className="text-xl">➡</span>}
             </div>
