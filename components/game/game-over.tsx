@@ -36,7 +36,7 @@ export default function GameOverScreen({
         <ArtistCard artist={startArtist} />
         <span className="text-2xl">➡</span>
         {/* this needs work */}
-        <ChainDisplay chain={linkChain} hideQuestionMark={true} fullChain={false} />
+        <ChainDisplay chain={linkChain} fullChain={false} />
         <span className="text-2xl">➡</span>
         <ArtistCard artist={endArtist} />
       </div>

@@ -11,36 +11,21 @@ export async function fetchArtistData(artistId: string): Promise<Artist | null> 
   }
 
   try {
-    // mock api
-    const mockedArtists: { [key: string]: Artist } = {
-      "000": {
-        id: "000",
-        name: "Imagine Dragons",
-        image: "https://i.scdn.co/image/ab67616100005174ab47d8dae2b24f5afe7f9d38",
-      },
-      "001": {
-        id: "001",
-        name: "Taylor Swift",
-        image: "https://i.scdn.co/image/ab67616100005174e672b5f553298dcdccb0e676",
-      },
-      "002": {
-        id: "002",
-        name: "Kendrick Lamar",
-        image: "https://placehold.co/150/png",
-      },
-      "003": {
-        id: "003",
-        name: "Ed Sheeran",
-        image: "https://placehold.co/150/png",
-      },
-    };
+
+
 
 
     // simulate api call
-    const artistData = mockedArtists[artistId];
+    const response = await fetch(`/api/game?type=artist&ID=${artistId}`);
+
+    if(!response.ok) {
+      throw new Error (`API request failed with status ${response.status}`);
+    }
+
+    const artistData = await response.json();
     if (artistData) {
       cacheArtist(artistData);
-      console.log("Fetching from mock API");
+      console.log("Fetching from API");
       return artistData;
     } else {
       throw new Error("Artist not found");
