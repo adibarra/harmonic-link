@@ -44,7 +44,7 @@ export default function ChainDisplay({
         <span className="text-xl">➡</span>
         <div
           ref={scrollContainerRef}
-          className="flex overflow-x-auto space-x-2 flex-nowrap max-w-[60vw] scroll-right"
+          className="flex overflow-x-auto space-x-2 flex-nowrap max-w-[55vw] scroll-right"
         >
           {chain.slice(1, -1).map((item, index) => (
             <div className="flex items-center space-x-2">
