@@ -56,11 +56,34 @@ export default function Game({ start, end }: GameProps) {
   }, [linkChain, router]);
 
   return (
-    <div className="p-6 flex flex-col items-center space-y-6 h-[90vh]">
+    <div className="p-6 flex flex-col items-center space-y-6 h-[80vh]">
       <h1 className="text-3xl font-bold mb-6">Harmonic Links</h1>
       <div className="flex items-center space-x-6">
         <ChainDisplay chain={linkChain} />
       </div>
+
+      {linkChain.length > 1 && (
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="destructive"
+            onClick={() => {
+              setLinkChain((prev) => {
+                return [prev[0], prev[prev.length - 1]];
+              })}}
+            >
+            Clear Chain
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setLinkChain((prev) => {
+                return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
+              })}}
+            >
+            Undo
+          </Button>
+        </div>
+      )}
 
       {loading && <MoonLoader size={18} color="#fff" />}
       {error && <p className="text-red-500 mt-2">{error}</p>}
@@ -98,19 +121,6 @@ export default function Game({ start, end }: GameProps) {
             </tbody>
           </table>
         </div>
-      )}
-
-      {linkChain.length > 1 && (
-        <Button
-          variant="outline"
-          className="mt-4"
-          onClick={() => {
-            setLinkChain((prev) => {
-              return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
-            })}}
-          >
-          Undo
-        </Button>
       )}
     </div>
   );

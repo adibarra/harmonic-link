@@ -30,9 +30,9 @@ export default function ChainDisplay({
       return (
         <>
           {renderChainItem(chain[0])}
-          <span className="text-xl">➡</span>
+          <span className="text-2xl">➡</span>
           <span className="text-gray-500 w-56 pl-2 pr-4">Select an album or artist to begin the chain.</span>
-          <span className="text-xl">➡</span>
+          <span className="text-2xl">➡</span>
           {renderChainItem(chain[1])}
         </>
       );
@@ -41,7 +41,7 @@ export default function ChainDisplay({
     return (
       <div className="flex items-center space-x-2">
         {renderChainItem(chain[0])}
-        <span className="text-xl">➡</span>
+        <span className="text-2xl">➡</span>
         <div
           ref={scrollContainerRef}
           className="flex overflow-x-auto space-x-2 flex-nowrap max-w-[55vw] scroll-right"
@@ -49,17 +49,17 @@ export default function ChainDisplay({
           {chain.slice(1, -1).map((item, index) => (
             <div key={index} className="flex items-center space-x-2">
               {renderChainItem(item)}
-              {index < chain.length - 3 && <span className="text-xl">➡</span>}
+              {index < chain.length - 3 && <span className="text-2xl">➡</span>}
             </div>
           ))}
         </div>
         {!fullChain && (
           <div className="flex items-center space-x-2">
-            <span className="text-xl">➡</span>
+            <span className="text-2xl">➡</span>
             <span className="text-gray-500">?</span>
           </div>
         )}
-        <span className="text-xl">➡</span>
+        <span className="text-2xl">➡</span>
         {chain.length > 1 && renderChainItem(chain[chain.length - 1])}
       </div>
     );

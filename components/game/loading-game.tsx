@@ -118,7 +118,7 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
               transition={{ duration: 1 }}
             >
               <ArtistCard artist={startArtist} />
-              ➡
+              <span className="text-4xl">➡</span>
               <ArtistCard artist={endArtist} />
             </motion.div>
           )}
