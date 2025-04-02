@@ -1,3 +1,5 @@
+import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
+
 const date = new Date();
 const format = date.toLocaleString("en-US", {
   timeZone: 'America/Chicago',
@@ -14,8 +16,20 @@ const formattedDate = `${yy}-${mm}-${dd}`;
 export async function fetchDaily(): Promise<Artist[] | null> {
   try {
 
-    const response = await fetch(`/api/game?type=daily&ID=${formattedDate}`);
+    let token = Math.random().toString(36).substring(2, 15);
+    setCookie(token, token, {
+      maxAge: 30,
+      path: '/',
+      sameSite: 'strict'
+    });
+    const response = await fetch(`/api/game?type=daily&ID=${formattedDate}`, {
+      headers: {
+        'X-Session-Token' : token
+      },
+      credentials: 'include' //Required for cookies
+    });
 
+    deleteCookie(token)
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
     }

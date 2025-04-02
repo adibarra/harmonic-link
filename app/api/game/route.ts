@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import * as spot from "@/lib/spotify";
 import * as logic from "@/lib/logic";
 import { createClient } from '@supabase/supabase-js'
+import { getCookie } from "cookies-next/server"
+import { cookies } from "next/headers"
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL as string, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string)
 
 export async function GET(request: Request) {
@@ -12,9 +14,21 @@ export async function GET(request: Request) {
     const id = searchParams.get('ID');
     const type = searchParams.get('type');
 
+    // Get the headerToken
+    const headerToken = request.headers.get('X-Session-Token');
+    const cookieToken = await getCookie(headerToken as string, { cookies });
+    if(!cookieToken) {
+      return NextResponse.json(
+        {error: 'Unauthorized'},
+        {status: 403}
+      );
+
+    }
+
     switch (type) {
 
       case 'artist':
+
         const artistData = await spot.getArtist(id);
         return NextResponse.json(artistData, { status: 200 });
 

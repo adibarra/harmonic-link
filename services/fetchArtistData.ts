@@ -1,3 +1,5 @@
+import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
+
 const artistCache: { [key: string]: Artist } = {};
 
 export function cacheArtist(artist: Artist) {
@@ -13,10 +15,19 @@ export async function fetchArtistData(artistId: string): Promise<Artist | null> 
   try {
 
 
-
-
-    // simulate api call
-    const response = await fetch(`/api/game?type=artist&ID=${artistId}`);
+    let token = Math.random().toString(36).substring(2, 15);
+    setCookie(token, token, {
+      maxAge: 30,
+      path: '/',
+      sameSite: 'strict'
+    });
+    const response = await fetch(`/api/game?type=artist&ID=${artistId}`, {
+      headers: {
+        'X-Session-Token': token
+      },
+      credentials: 'include' // Required for cookies
+    });
+    deleteCookie(token);
 
     if(!response.ok) {
       throw new Error (`API request failed with status ${response.status}`);
