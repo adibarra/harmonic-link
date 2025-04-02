@@ -14,21 +14,20 @@ export async function fetchAlbumArtists(albumId: string): Promise<Artist[] | nul
 
    try {
 
-
-
-
     let token = Math.random().toString(36).substring(2, 15);
     setCookie(token, token, {
       maxAge: 30,
       path: '/',
       sameSite: 'strict'
     });
+
       const response = await fetch(`/api/game?type=albumArtists&ID=${albumId}`, {
         headers: {
           'X-Session-Token': token
         },
         credentials: 'include' // Required for cookies
       });
+      deleteCookie(token);
 
       if(!response.ok) {
         throw new Error (`API request failed with status ${response.status}`);
