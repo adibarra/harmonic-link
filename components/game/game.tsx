@@ -45,15 +45,16 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
   }, [linkChain]);
 
   useEffect(() => {
-    if (linkChain.length > 2) {
-      const lastItem = linkChain[linkChain.length - 1];
-      const secondLastItem = linkChain[linkChain.length - 2];
+    const lastItem = linkChain[linkChain.length - 1];
+    const secondLastItem = linkChain[linkChain.length - 2];
 
-      if (lastItem.id === secondLastItem.id) {
-        onGameOver();
-      }
+    if (lastItem.id === secondLastItem.id) {
+      setLinkChain((prev: any) => {
+        return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
+      })
+      onGameOver();
     }
-  }, [linkChain, router]);
+  }, [linkChain]);
 
   return (
     <div className="flex flex-col items-center space-y-6">
