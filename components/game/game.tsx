@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { MoonLoader } from "react-spinners";
 import ChainDisplay from "@/components/game/chain-display";
-import { useRouter } from "next/navigation";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import Image from "next/image";
@@ -17,7 +16,6 @@ interface GameProps {
 }
 
 export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps) {
-  const router = useRouter();
   const [items, setItems] = useState<ChainItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -61,9 +59,10 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
       <ChainDisplay chain={linkChain} />
 
       {linkChain.length > 1 && (
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-6">
           <Button
             variant="destructive"
+            className="py-2 transition duration-300"
             onClick={() => {
               setLinkChain((prev: any) => {
                 return [prev[0], prev[prev.length - 1]];
@@ -73,6 +72,7 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
           </Button>
           <Button
             variant="secondary"
+            className="py-2 transition duration-300"
             onClick={() => {
               setLinkChain((prev: any) => {
                 return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
