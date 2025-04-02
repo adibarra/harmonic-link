@@ -59,7 +59,7 @@ export default function GameOverPage() {
   const handleRestart = () => {
     console.log("Restarting game...");
     setGameOver(false);
-    router.back();
+    router.replace("/game/loading");
   };
 
   return (
