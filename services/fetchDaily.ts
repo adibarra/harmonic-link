@@ -1,41 +1,37 @@
-const date = new Date();
-const format = date.toLocaleString("en-US", {
-  timeZone: 'America/Chicago',
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-
-});
-
-const [mm, dd, yy] = format.split("/");
-const formattedDate = `${yy}-${mm}-${dd}`;
-
+const dailyCache: { [date: string]: Artist[] } = {};
 
 export async function fetchDaily(): Promise<Artist[] | null> {
-  try {
+  const date = new Date();
+  const format = date.toLocaleString("en-US", {
+    timeZone: 'America/Chicago',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
 
+  const [mm, dd, yy] = format.split("/");
+  const formattedDate = `${yy}-${mm}-${dd}`;
+
+  if (dailyCache[formattedDate]) {
+    console.log("Fetching daily data from cache");
+    return dailyCache[formattedDate];
+  }
+
+  try {
     const response = await fetch(`/api/game?type=daily&ID=${formattedDate}`);
 
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
     }
 
-    const data = await response.json();
+    const artists = await response.json();
+    console.log("Fetched daily artists:", artists);
+    dailyCache[formattedDate] = artists;
 
-    const Artists: Artist[] = data.map((item: Artist) => ({
-      id: String(item.id),
-      name: String(item.name),
-      image: String(item.image)
+    return artists;
 
-    })) || [];
-
-    if (Artists.length) {
-      return Artists;
-    }
-
-    throw new Error("No valid albums found");
   } catch (error) {
-    console.error("Error fetching artist albums:", error);
+    console.error("Error fetching daily artists:", error);
     return null;
   }
 }

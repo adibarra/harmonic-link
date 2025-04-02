@@ -1,47 +1,37 @@
-const albumsCache: { [artistId: string]: Album[] } = {};
+const albumsCache: { [artistId: string]: Artist[] } = {};
 
-export function cacheAlbums(artistId: string, albums: Album[]) {
-  albumsCache[artistId] = albums;
-}
-
-
-
-export async function fetchAlbums(artistId: string): Promise<Album[] | null> {
+export async function fetchAlbums(artistId: string): Promise<Artist[] | null> {
   if (albumsCache[artistId]) {
     console.log("Fetching albums from cache");
     return albumsCache[artistId];
   }
 
- try {
+  try {
+    const [artistResponse, albumResponse] = await Promise.all([
+      fetch(`/api/game?type=artist&ID=${artistId}`),
+      fetch(`/api/game?type=artistAlbums&ID=${artistId}`)
+    ]);
 
-    const responseArtist =  await fetch(`/api/game?type=artist&ID=${artistId}`);
-    const nameData = await responseArtist.json();
-    const artistName = nameData.name;
-
-    const response = await fetch(`/api/game?type=artistAlbums&ID=${artistId}`);
-
-    if(!response.ok) {
-      throw new Error (`API request failed with status ${response.status}`);
+    if (!artistResponse.ok || !albumResponse.ok) {
+      throw new Error(
+        `API request failed with status ${artistResponse.status} or ${albumResponse.status}`
+      );
     }
 
+    const artistData = await artistResponse.json();
+    const albumData = await albumResponse.json();
 
-    const data = await response.json();
-
-     const artistAlbums: Album[] = data.map((item: Album) => ({
+    const albums = albumData.map((item: Album) => ({
       id: String(item.id),
       name: String(item.name),
-      artist: String(artistName),
+      artist: String(artistData.name),
       image: String(item.image)
-
     })) || [];
 
+    albumsCache[artistId] = albums;
 
-    if (artistAlbums.length) {
-      cacheAlbums(artistId, artistAlbums);
-      return artistAlbums;
-    }
+    return albums;
 
-    throw new Error("No valid albums found");
   } catch (error) {
     console.error("Error fetching artist albums:", error);
     return null;
