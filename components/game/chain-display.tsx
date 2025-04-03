@@ -3,6 +3,7 @@
 import { useEffect, useRef, useMemo } from "react";
 import AlbumCard from "./album-card";
 import ArtistCard from "./artist-card";
+import UnknownCard from "./unknown-card";
 
 interface ChainDisplayProps {
   chain: ChainItem[];
@@ -30,26 +31,18 @@ export default function ChainDisplay({ chain, fullChain = false }: ChainDisplayP
         {renderChainItem(chain[0])}
         <span className="text-2xl">→</span>
 
-        {isChainEmpty ? (
-          <span className="text-gray-500 text-center w-56">
-            Select an album or artist to begin the chain.
-          </span>
-        ) : (
-          <div
-            ref={scrollContainerRef}
-            className="flex overflow-x-auto space-x-2 flex-nowrap max-w-[55vw] h-192px"
-          >
-            {middleChain.map((item, index) => (
-              <div key={index} className="flex items-center space-x-6">
-                {renderChainItem(item)}
-                {!fullChain && <span className="text-2xl">→</span>}
-                {!fullChain && index === middleChain.length - 1 && (
-                  <span className="text-gray-500">?</span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        <div
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto space-x-2 flex-nowrap max-w-[55vw] h-192px"
+        >
+          {middleChain.map((item, index) => (
+            <div key={index} className="flex items-center space-x-6">
+              {renderChainItem(item)}
+            </div>
+          ))}
+
+          {!fullChain && <UnknownCard />}
+        </div>
 
         <span className="text-2xl">→</span>
         {renderChainItem(chain[chain.length - 1])}
