@@ -55,6 +55,3 @@ export async function fetchAlbums(genre: string): Promise<StartEnd[] | null> {
     return null;
   }
 }
-
-var x = fetchAlbums("alternative");
-console.log(x)
