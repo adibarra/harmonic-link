@@ -35,7 +35,14 @@ export async function GET(request: Request) {
         console.log("[API] Fetching artist albums data...");
         responseData = await spot.getArtistAlbums(id);
         break;
+      case 'artistartist':
+        const artistEndless = await logic.getValidArtistStartEnd(id);
+        return NextResponse.json(artistEndless, { status: 200 });
 
+      case 'albumalbum':
+        const albumEndless = await logic.getValidAlbumStartEnd(id);
+        return NextResponse.json(albumEndless, { status: 200 });
+        
       case "daily":
         console.log("[API] Fetching daily game session...");
         const { data, error } = await supabase.from("daily_game_session").select("*").eq("date", id);
