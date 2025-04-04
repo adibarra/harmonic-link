@@ -8,7 +8,7 @@ export function cacheAlbumEndless(genre: string, albums: StartEnd[]) {
 
 
 
-export async function fetchAlbums(genre: string): Promise<StartEnd[] | null> {
+export async function fetchAlbumAlbum(genre: string): Promise<StartEnd[] | null> {
   if (albumEndlessCache[genre]) {
     console.log("Fetching albums from cache");
     return albumEndlessCache[genre];
@@ -23,7 +23,7 @@ export async function fetchAlbums(genre: string): Promise<StartEnd[] | null> {
       sameSite: 'strict'
     });
 
-    const response = await fetch(`/api/game?type=album-album&ID=${genre}`, {
+    const response = await fetch(`/api/game?type=albumalbum&ID=${genre}`, {
       headers: {
         'X-Session-Token': token
 

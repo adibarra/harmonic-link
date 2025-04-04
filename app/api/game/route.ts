@@ -39,11 +39,11 @@ export async function GET(request: Request) {
         const albumData = await spot.getArtistAlbums(id)
         return NextResponse.json(albumData, { status: 200 });
 
-      case 'artist-artist':
+      case 'artistartist':
         const artistEndless = await logic.getValidArtistStartEnd(id);
         return NextResponse.json(artistEndless, { status: 200 });
 
-      case 'album-album':
+      case 'albumalbum':
         const albumEndless = await logic.getValidAlbumStartEnd(id);
         return NextResponse.json(albumEndless, { status: 200 });
 

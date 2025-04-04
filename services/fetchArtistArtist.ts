@@ -1,4 +1,4 @@
-import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
+//import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
 
 const artistEndlessCache: { [genre: string]: StartEnd[] } = {};
 
@@ -8,7 +8,7 @@ export function cacheAlbumEndless(genre: string, albums: StartEnd[]) {
 
 
 
-export async function fetchAlbums(genre: string): Promise<StartEnd[] | null> {
+export async function fetchArtistArtist(genre: string): Promise<StartEnd[] | null> {
   if (artistEndlessCache[genre]) {
     console.log("Fetching albums from cache");
     return artistEndlessCache[genre];
@@ -17,13 +17,13 @@ export async function fetchAlbums(genre: string): Promise<StartEnd[] | null> {
   try {
     // Generate and set cookie
     let token = Math.random().toString(36).substring(2, 15);
-    setCookie(token, token, {
-      maxAge: 30,
-      path: '/',
-      sameSite: 'strict'
-    });
+    //setCookie(token, token, {
+    //  maxAge: 30,
+    //  path: '/',
+    //  sameSite: 'strict'
+    //});
 
-    const response = await fetch(`/api/game?type=artist-artist&ID=${genre}`, {
+    const response = await fetch(`/api/game?type=artistartist&ID=${genre}`, {
       headers: {
         'X-Session-Token': token
 
@@ -31,7 +31,7 @@ export async function fetchAlbums(genre: string): Promise<StartEnd[] | null> {
       credentials: 'include' // Required for cookies
     });
 
-    console.log(deleteCookie(token));;
+    //console.log(deleteCookie(token));;
 
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
@@ -55,3 +55,6 @@ export async function fetchAlbums(genre: string): Promise<StartEnd[] | null> {
     return null;
   }
 }
+
+var m = fetchArtistArtist("alternative");
+console.log(m);
