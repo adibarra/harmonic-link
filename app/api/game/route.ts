@@ -35,11 +35,14 @@ export async function GET(request: Request) {
         console.log("[API] Fetching artist albums data...");
         responseData = await spot.getArtistAlbums(id);
         break;
+
       case 'artistartist':
+        console.log("[API] Fetching artist-artist data...");
         const artistEndless = await logic.getValidArtistStartEnd(id);
         return NextResponse.json(artistEndless, { status: 200 });
 
       case 'albumalbum':
+        console.log("[API] Fetching album-album data...");
         const albumEndless = await logic.getValidAlbumStartEnd(id);
         return NextResponse.json(albumEndless, { status: 200 });
 
