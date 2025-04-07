@@ -28,7 +28,6 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
         const lastItem = linkChain[linkChain.length - 2];
         if ("artist" in lastItem) {
           const fetchedArtists = await fetchAlbumArtists(lastItem.id);
-          const test = await fetchAlbumAlbum("alternative");
           setItems(fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         } else {
           const fetchedAlbums = await fetchAlbums(lastItem.id)

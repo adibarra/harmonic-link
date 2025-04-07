@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import { MoonLoader } from "react-spinners";
 import ArtistCard from "@/components/game/artist-card";
 import { fetchDaily } from "@/services/fetchDaily";
+import { fetchAlbumAlbum } from "@/services/fetchAlbumAlbum";
+import { fetchArtistArtist } from "@/services/fetchArtistArtist";
 
 interface LoadingGameProps {
   onSuccess: (start: ChainItem, end: ChainItem) => void;
@@ -48,7 +50,12 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
         // ]);
 
         // Simulating a fetch with a delay
+        //const test = fetchAlbumAlbum("alternative");
+        //console.log(test);
+        //const test2 = fetchArtistArtist("alternative");
+        //console.log(test2);
         await new Promise((resolve) => setTimeout(resolve, 2000));
+
         const artists = [
           {
             id: "4ZAk3yVJdtf1CFnTiG08U3",
