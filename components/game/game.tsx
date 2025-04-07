@@ -2,66 +2,39 @@
 
 import { useState, useEffect } from "react";
 import { MoonLoader } from "react-spinners";
-import ArtistCard from "@/components/game/artist-card";
 import ChainDisplay from "@/components/game/chain-display";
-import { fetchArtistData } from "@/services/fetchArtistData";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { DiscIcon, MicIcon } from "lucide-react";
 
-export default function Game() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [startArtist, setStartArtist] = useState<Artist | null>(null);
-  const [endArtist, setEndArtist] = useState<Artist | null>(null);
+interface GameProps {
+  linkChain: ChainItem[];
+  setLinkChain: (chain: any) => any;
+  onGameOver: () => void;
+}
+
+export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps) {
   const [items, setItems] = useState<ChainItem[]>([]);
-  const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchArtists = async () => {
-      const startArtistId = searchParams.get("start");
-      const endArtistId = searchParams.get("end");
-
-      if (startArtistId && endArtistId) {
-        try {
-          const fetchedStartArtist = (await fetchArtistData(startArtistId))!;
-          const fetchedEndArtist = (await fetchArtistData(endArtistId))!;
-
-          setStartArtist(fetchedStartArtist);
-          setEndArtist(fetchedEndArtist);
-          addToChain(fetchedStartArtist);
-        } catch (error) {
-          console.error("Error fetching artist data:", error);
-        }
-      } else {
-        router.push("/loading");
-      }
-    };
-
-    fetchArtists();
-  }, [searchParams]);
-
-  useEffect(() => {
     const getItems = async () => {
-      if (linkChain.length === 0) return;
       setLoading(true);
       try {
-        const lastItem = linkChain[linkChain.length - 1];
+        const lastItem = linkChain[linkChain.length - 2];
         if ("artist" in lastItem) {
-          const fetchedArtists = await fetchAlbumArtists(lastItem.id);
-          setItems(fetchedArtists || []);
+          const fetchedArtists = await fetchAlbumArtists(lastItem.id)
+          setItems(fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         } else {
-          const fetchedAlbums = await fetchAlbums(lastItem.id);
-          setItems(fetchedAlbums || []);
+          const fetchedAlbums = await fetchAlbums(lastItem.id)
+          setItems(fetchedAlbums?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         }
-        setLoading(false);
       } catch (error) {
         setError("Error fetching data");
+      } finally {
         setLoading(false);
       }
     };
@@ -70,48 +43,64 @@ export default function Game() {
   }, [linkChain]);
 
   useEffect(() => {
-    if (linkChain.length > 0) {
-      const lastItem = linkChain[linkChain.length - 1];
+    const lastItem = linkChain[linkChain.length - 1];
+    const secondLastItem = linkChain[linkChain.length - 2];
 
-      if (lastItem.id === endArtist?.id) {
-        router.push("/game/over");
-      }
+    if (lastItem.id === secondLastItem.id) {
+      setLinkChain((prev: any) => {
+        return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
+      })
+      onGameOver();
     }
-  }, [linkChain, endArtist, router]);
-
-  const addToChain = (item: Album | Artist) => {
-    setLinkChain((prev) => [...prev, item]);
-  };
-
-  const removeLastFromChain = () => {
-    if (linkChain.length > 0) {
-      setLinkChain((prev) => prev.slice(0, -1));
-    }
-  };
+  }, [linkChain]);
 
   return (
-    <div className="p-6 flex flex-col items-center space-y-6 h-[90vh]">
-      <h1 className="text-3xl font-bold mb-6">Harmonic Links</h1>
-      <div className="flex items-center space-x-6">
-        <ChainDisplay chain={linkChain} />
-        <span className="text-xl">➡</span>
-        {endArtist && <ArtistCard artist={endArtist} />}
-      </div>
+    <div className="flex flex-col items-center space-y-6">
+      <ChainDisplay chain={linkChain} />
+
+      {linkChain.length > 1 && (
+        <div className="flex items-center space-x-6">
+          <Button
+            variant="destructive"
+            className="py-2 transition duration-300"
+            onClick={() => {
+              setLinkChain((prev: any) => {
+                return [prev[0], prev[prev.length - 1]];
+              })}}
+            >
+            Clear Chain
+          </Button>
+          <Button
+            variant="secondary"
+            className="py-2 transition duration-300"
+            onClick={() => {
+              setLinkChain((prev: any) => {
+                return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
+              })}}
+            >
+            Undo
+          </Button>
+        </div>
+      )}
 
       {loading && <MoonLoader size={18} color="#fff" />}
       {error && <p className="text-red-500 mt-2">{error}</p>}
 
       {!loading && !error && (
-        <div className="w-full max-w-md overflow-x-auto border border-white rounded-lg">
+        <div className="max-h-96 w-full max-w-md overflow-x-auto border border-white rounded-lg">
           <table className="min-w-full border border-gray-300 rounded-lg">
             <tbody>
-              {items.map((item) => (
+              {items.map((item, index) => (
                 <tr
-                  key={item.id}
+                  key={index}
                   className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-gray-300"
-                  onClick={() => addToChain(item)}
+                  onClick={() => {
+                    setLinkChain((prev: any) => {
+                      return [...prev.slice(0, -1), item, prev[prev.length - 1]];
+                    });
+                  }}
                 >
-                  <td className="py-2 px-4 flex items-center">
+                  <td className="relative py-2 px-4 flex items-center">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -119,19 +108,17 @@ export default function Game() {
                       height={48}
                       className="rounded-lg mr-8"
                     />
-                    {"artist" in item ? item.name : item.name.toUpperCase()}
+                    <span className="truncate">{item.name}</span>
+                    <div className="absolute right-6 flex items-center gap-1 text-gray-500 text-xs">
+                      {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
+                      <span>{ "artist" in item ? "Album" : "Artist" }</span>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      )}
-
-      {linkChain.length > 1 && (
-        <Button variant="outline" onClick={removeLastFromChain} className="mt-4">
-          Undo
-        </Button>
       )}
     </div>
   );

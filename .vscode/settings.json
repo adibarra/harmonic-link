@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
 <<<<<<< HEAD
+<<<<<<< HEAD
       "adibarra",
       "Srujana",
       "Sunaina",
@@ -8,14 +9,22 @@
       "taze"
 =======
         "adibarra",
+=======
+      "adibarra",
+      "Srujana",
+      "Sunaina",
+>>>>>>> d1dd91b389a1863d8f995c7294ef472984a70e03
         "Ayyagari",
         "Ibarra",
         "Srujana",
         "Sunaina",
-        "supabase",
-        "taze",
+      "supabase",
+      "taze",
         "wireframes",
         "Wowo"
+<<<<<<< HEAD
 >>>>>>> origin/static-pages
+=======
+>>>>>>> d1dd91b389a1863d8f995c7294ef472984a70e03
     ]
 }
