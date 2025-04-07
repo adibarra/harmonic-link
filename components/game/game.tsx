@@ -5,6 +5,7 @@ import { MoonLoader } from "react-spinners";
 import ChainDisplay from "@/components/game/chain-display";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
+import { fetchAlbumAlbum } from "@/services/fetchAlbumAlbum";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { DiscIcon, MicIcon } from "lucide-react";
@@ -26,7 +27,8 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
       try {
         const lastItem = linkChain[linkChain.length - 2];
         if ("artist" in lastItem) {
-          const fetchedArtists = await fetchAlbumArtists(lastItem.id)
+          const fetchedArtists = await fetchAlbumArtists(lastItem.id);
+          const test = await fetchAlbumAlbum("alternative");
           setItems(fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         } else {
           const fetchedAlbums = await fetchAlbums(lastItem.id)
