@@ -1,4 +1,4 @@
-//import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
+import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
 
 const artistEndlessCache: { [genre: string]: StartEnd[] } = {};
 
@@ -17,11 +17,11 @@ export async function fetchArtistArtist(genre: string): Promise<StartEnd[] | nul
   try {
     // Generate and set cookie
     let token = Math.random().toString(36).substring(2, 15);
-    //setCookie(token, token, {
-    //  maxAge: 30,
-    //  path: '/',
-    //  sameSite: 'strict'
-    //});
+    setCookie(token, token, {
+      maxAge: 30,
+      path: '/',
+      sameSite: 'strict'
+    });
 
     const response = await fetch(`/api/game?type=artistartist&ID=${genre}`, {
       headers: {
@@ -31,7 +31,7 @@ export async function fetchArtistArtist(genre: string): Promise<StartEnd[] | nul
       credentials: 'include' // Required for cookies
     });
 
-    //console.log(deleteCookie(token));;
+    console.log(deleteCookie(token));;
 
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
