@@ -1,15 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import ArtistCard from "@/components/game/artist-card";
 import ChainDisplay from "@/components/game/chain-display";
 import { Card } from "../ui/card";
 
 interface GameOverScreenProps {
-  startArtist: Artist;
-  endArtist: Artist;
-  linkChain: Album[];
-  score: number;
+  linkChain: ChainItem[];
   onRestart: () => void;
 }
 
@@ -22,23 +18,18 @@ const fakeLeaderboard = [
 ];
 
 export default function GameOverScreen({
-  startArtist,
-  endArtist,
   linkChain,
-  score,
   onRestart,
 }: GameOverScreenProps) {
+
+  const score = 42;
+
   return (
     <div className="flex flex-col items-center p-6 space-y-6 h-[90vh] text-white">
       <h1 className="text-4xl font-bold">Game Over</h1>
       <p className="text-xl">Your final score: {score}</p>
       <div className="flex items-center space-x-6">
-        <ArtistCard artist={startArtist} />
-        <span className="text-2xl">➡</span>
-        {/* this needs work */}
-        <ChainDisplay chain={linkChain} fullChain={false} />
-        <span className="text-2xl">➡</span>
-        <ArtistCard artist={endArtist} />
+        <ChainDisplay chain={linkChain} fullChain={true} />
       </div>
       <Button onClick={onRestart} className="mt-4 px-6 py-3 rounded">
         Restart Game

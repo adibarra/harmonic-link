@@ -10,7 +10,7 @@ interface ArtistCardProps {
 
 export default function ArtistCard({ artist }: ArtistCardProps) {
   return (
-    <Card className="relative w-[192px] h-full p-4 pb-6">
+    <Card className="relative w-[192px] h-[218px] p-4 pb-6">
       <CardContent className="flex flex-col items-center text-center text-sm p-0">
         <div className="w-[128px] h-[128px]">
         <Image

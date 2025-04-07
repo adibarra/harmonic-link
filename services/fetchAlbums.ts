@@ -1,76 +1,38 @@
-import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
+import { fetchArtist } from "./fetchArtist";
 
-const albumsCache: { [artistId: string]: Album[] } = {};
+const albumsCache: { [artistID: string]: Album[] } = {};
 
-export function cacheAlbums(artistId: string, albums: Album[]) {
-  albumsCache[artistId] = albums;
-}
-
-
-
-export async function fetchAlbums(artistId: string): Promise<Album[] | null> {
-  if (albumsCache[artistId]) {
+export async function fetchAlbums(artistID: string): Promise<Album[] | null> {
+  if (albumsCache[artistID]) {
     console.log("Fetching albums from cache");
-    return albumsCache[artistId];
+    return albumsCache[artistID];
   }
 
   try {
-    // Generate and set cookie
-    let token = Math.random().toString(36).substring(2, 15);
-    setCookie(token, token, {
-      maxAge: 30,
-      path: '/',
-      sameSite: 'strict'
-    });
+    const [artist, albumResponse] = await Promise.all([
+      fetchArtist(artistID),
+      fetch(`/api/game?type=artistAlbums&ID=${artistID}`)
+    ]);
 
-    const responseArtist = await fetch(`/api/game?type=artist&ID=${artistId}`, {
-      headers: {
-        'X-Session-Token': token
-
-      },
-      credentials: 'include' // Required for cookies
-    });
-
-    const nameData = await responseArtist.json();
-    const artistName = nameData.name;
-
-    console.log(deleteCookie(token));
-    // Second request with same token
-    token = Math.random().toString(36).substring(2, 15);
-    setCookie(token, token, {
-      maxAge: 30,
-      path: '/',
-      sameSite: 'strict'
-    });
-
-    const response = await fetch(`/api/game?type=artistAlbums&ID=${artistId}`, {
-      headers: {
-        'X-Session-Token': token
-
-      },
-      credentials: 'include'
-    });
-
-    console.log(deleteCookie(token));
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+    if (!artist || !albumResponse.ok) {
+      throw new Error(
+        `API request failed with status ${albumResponse.status}`
+      );
     }
 
-    const data = await response.json();
-    const artistAlbums: Album[] = data.map((item: Album) => ({
+    const albumData = await albumResponse.json();
+
+    const albums = albumData.map((item: Album) => ({
       id: String(item.id),
       name: String(item.name),
-      artist: String(artistName),
+      artist: String(artist.name),
       image: String(item.image)
     })) || [];
 
-    if (artistAlbums.length) {
-      cacheAlbums(artistId, artistAlbums);
-      return artistAlbums;
-    }
+    albumsCache[artistID] = albums;
 
-    throw new Error("No valid albums found");
+    return albums;
+
   } catch (error) {
     console.error("Error fetching artist albums:", error);
     return null;
