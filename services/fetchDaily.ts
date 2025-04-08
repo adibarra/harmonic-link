@@ -1,3 +1,5 @@
+import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
+
 const dailyCache: { [date: string]: Artist[] } = {};
 
 export async function fetchDaily(): Promise<Artist[] | null> {
@@ -20,6 +22,7 @@ export async function fetchDaily(): Promise<Artist[] | null> {
   try {
     const response = await fetch(`/api/game?type=daily&ID=${formattedDate}`);
 
+    //deleteCookie(token)
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
     }

@@ -36,6 +36,16 @@ export async function GET(request: Request) {
         responseData = await spot.getArtistAlbums(id);
         break;
 
+      case 'artistartist':
+        console.log("[API] Fetching artist-artist data...");
+        const artistEndless = await logic.getValidArtistStartEnd(id);
+        return NextResponse.json(artistEndless, { status: 200 });
+
+      case 'albumalbum':
+        console.log("[API] Fetching album-album data...");
+        const albumEndless = await logic.getValidAlbumStartEnd(id);
+        return NextResponse.json(albumEndless, { status: 200 });
+
       case "daily":
         console.log("[API] Fetching daily game session...");
         const { data, error } = await supabase.from("daily_game_session").select("*").eq("date", id);
@@ -104,3 +114,4 @@ export async function ENDLESS_INIT(request: Request) {
   }
 }
  */
+

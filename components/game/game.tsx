@@ -26,7 +26,7 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
       try {
         const lastItem = linkChain[linkChain.length - 2];
         if ("artist" in lastItem) {
-          const fetchedArtists = await fetchAlbumArtists(lastItem.id)
+          const fetchedArtists = await fetchAlbumArtists(lastItem.id);
           setItems(fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         } else {
           const fetchedAlbums = await fetchAlbums(lastItem.id)
@@ -109,10 +109,10 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
                       className="rounded-lg mr-8"
                     />
                     <span className="truncate">{item.name}</span>
-                    <div className="absolute right-6 flex items-center gap-1 text-gray-500 text-xs">
+                    <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
                       {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
-                      <span>{ "artist" in item ? "Album" : "Artist" }</span>
-                    </div>
+                      { "artist" in item ? "Album" : "Artist" }
+                    </span>
                   </td>
                 </tr>
               ))}
