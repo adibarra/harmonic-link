@@ -24,7 +24,7 @@ export default function ArtistCard({ artist }: ArtistCardProps) {
         </div>
         <div className="mt-2 font-semibold text-base truncate w-full">{artist.name}</div>
       </CardContent>
-      <div className="absolute flex flex-row gap-2 left-2 bottom-2 text-gray-500">
+      <div className="absolute flex flex-row gap-2 left-2 bottom-2 opacity-50">
         <MicIcon className="w-4 h-4" />
         <span className="text-xs">Artist</span>
       </div>
