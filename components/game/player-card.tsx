@@ -4,12 +4,12 @@ import { UserIcon } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent } from "../ui/card";
 
-interface UserCardProps {
+interface PlayerCardProps {
   user: User;
   you: boolean;
 }
 
-export default function UserCard({ user, you }: UserCardProps) {
+export default function PlayerCard({ user, you }: PlayerCardProps) {
   return (
     <Card className="relative w-[192px] h-[218px] p-4 pb-6">
       <CardContent className="flex flex-col items-center text-center text-sm p-0">
