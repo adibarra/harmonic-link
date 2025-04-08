@@ -37,7 +37,47 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Init presence + channel
+  useEffect(() => {
+    const getItems = async () => {
+      setLoading(true);
+      try {
+        const lastItem = linkChain[linkChain.length - 2];
+        if ("artist" in lastItem) {
+          const fetchedArtists = await fetchAlbumArtists(lastItem.id);
+          setItems(fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+        } else {
+          const fetchedAlbums = await fetchAlbums(lastItem.id)
+          setItems(fetchedAlbums?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+        }
+      } catch (error) {
+        setError("Error fetching data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getItems();
+  }, [linkChain]);
+
+  useEffect(() => {
+    const lastItem = linkChain[linkChain.length - 1];
+    const secondLastItem = linkChain[linkChain.length - 2];
+
+    if (lastItem.id === secondLastItem.id) {
+      if (broadcastChannel) {
+        broadcastChannel.send({
+          type: "broadcast",
+          event: "player-finished",
+          payload: { user: myUser },
+        });
+      }
+      setLinkChain((prev: any) => {
+        return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
+      })
+      onGameOver();
+    }
+  }, [linkChain]);
+
   useEffect(() => {
     if (!channel || isConnected) return;
 
@@ -76,68 +116,6 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
     };
   }, [channel]);
 
-  // Initial artists
-  useEffect(() => {
-    const setupArtists = async () => {
-      try {
-        const start = await fetchArtist("4ZAk3yVJdtf1CFnTiG08U3");
-        const end = await fetchArtist("2kQnsbKnIiMahOetwlfcaS");
-        if (!start || !end) return router.replace("/game/loading");
-
-        setLinkChain([start, end]);
-      } catch {
-        setError("Error loading artists.");
-      }
-    };
-
-    setupArtists();
-  }, [searchParams]);
-
-  // Fetch next options
-  useEffect(() => {
-    const getItems = async () => {
-      if (linkChain.length < 2) return;
-
-      setLoading(true);
-      const last = linkChain[linkChain.length - 2];
-
-      try {
-        const data = "artist" in last
-          ? await fetchAlbumArtists(last.id)
-          : await fetchAlbums(last.id);
-
-        setItems(data?.sort((a, b) => a.name.localeCompare(b.name)) || []);
-      } catch {
-        setError("Error fetching options.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getItems();
-  }, [linkChain]);
-
-  // Check for win condition
-  useEffect(() => {
-    if (linkChain.length < 2) return;
-
-    const last = linkChain[linkChain.length - 1];
-    const secondLast = linkChain[linkChain.length - 2];
-
-    if (last.id === secondLast.id && myUser) {
-      setFinishedUser((prev) => [...prev, myUser]);
-
-      if (broadcastChannel) {
-        broadcastChannel.send({
-          type: "broadcast",
-          event: "player-finished",
-          payload: { user: myUser },
-        });
-      }
-    }
-  }, [linkChain]);
-
-  // Listen for other players finishing
   useEffect(() => {
     if (!broadcastChannel) return;
 
@@ -150,12 +128,6 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
     return () => sub.unsubscribe();
   }, [broadcastChannel, finishedUser]);
 
-  // Check if all finished
-  useEffect(() => {
-    if (users.length > 0 && finishedUser.length === users.length) {
-      router.push("/game/over");
-    }
-  }, [finishedUser, users]);
 
   return (
     <div className="flex flex-col items-center space-y-6">
