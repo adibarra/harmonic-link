@@ -2,7 +2,6 @@ interface Artist {
   id: string
   name: string
   image: string
-
 }
 
 interface Album {
@@ -10,7 +9,6 @@ interface Album {
   name: string
   artist: string
   image: string
-
 }
 
 interface StartEnd {
