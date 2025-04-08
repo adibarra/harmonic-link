@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
 
-export default async function Home() {
+export default function Home() {
 
   const fadeInOut = {
     initial: { opacity: 0 },
