@@ -158,59 +158,62 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
         </div>
       )}
 
-      <div className="mt-4">
-        <ul className="space-y-1 text-sm text-muted-foreground">
-          {users.map((user) => {
-            const done = finishedUser.some((u) => u.id === user.id);
-            return (
-              <li key={user.id}>
-                <span className="font-semibold">{user.name}</span>:{" "}
-                {done ? "✅ Finished" : "⏳ Playing"}
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-
       {loading && <MoonLoader size={18} color="#fff" />}
       {error && <p className="text-red-500">{error}</p>}
 
-      {!loading && !error && (
-        <div className="max-h-96 w-full max-w-md overflow-x-auto border border-white rounded-lg">
-          <table className="min-w-full">
-            <tbody>
-              {items.map((item, i) => (
-                <tr
-                  key={i}
-                  className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-gray-300"
-                  onClick={() =>
-                    setLinkChain((prev: any) => [
-                      ...prev.slice(0, -1),
-                      item,
-                      prev[prev.length - 1],
-                    ])
-                  }
-                >
-                  <td className="py-2 px-4 flex items-center">
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      width={48}
-                      height={48}
-                      className="rounded-lg mr-4"
-                    />
-                    <span className="truncate">{item.name}</span>
-                    <span className="ml-auto flex items-center gap-1 text-xs text-gray-400">
-                      {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
-                      { "artist" in item ? "Album" : "Artist" }
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="relative w-full">
+        <div className="absolute top-0 mt-6">
+          <h2 className="text-lg font-semibold">Players:</h2>
+          <ul className="space-y-1 text-sm text-muted-foreground">
+            {users.map((user) => {
+              const done = finishedUser.some((u) => u.id === user.id);
+              return (
+                <li key={user.id}>
+                  <span className="font-semibold">{user.name}</span>:{" "}
+                  {done ? "✅" : "⏳"}
+                </li>
+              );
+            })}
+          </ul>
         </div>
-      )}
+
+        {!loading && !error && (
+          <div className="max-h-96 mx-auto w-full max-w-md overflow-x-auto border border-white rounded-lg">
+            <table className="min-w-full">
+              <tbody>
+                {items.map((item, i) => (
+                  <tr
+                    key={i}
+                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-gray-300"
+                    onClick={() =>
+                      setLinkChain((prev: any) => [
+                        ...prev.slice(0, -1),
+                        item,
+                        prev[prev.length - 1],
+                      ])
+                    }
+                  >
+                    <td className="py-2 px-4 flex items-center">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        width={48}
+                        height={48}
+                        className="rounded-lg mr-4"
+                      />
+                      <span className="truncate">{item.name}</span>
+                      <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
+                        {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
+                        { "artist" in item ? "Album" : "Artist" }
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

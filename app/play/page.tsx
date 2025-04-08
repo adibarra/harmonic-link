@@ -20,8 +20,8 @@ export default function GameModeMenu() {
       className="flex flex-col items-center min-h-screen space-y-8 p-6"
       {...fadeInOut}
     >
-      <h1 className="text-3xl font-bold text-center">🎵 Harmonic Links</h1>
-      <p className="text-gray-400 text-center max-w-sm">
+      <h1 className="text-3xl font-bold text-center">Harmonic Links</h1>
+      <p className="text-center max-w-sm">
         Connect artists and albums in as few moves as possible.
       </p>
 
