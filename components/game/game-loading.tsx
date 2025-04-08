@@ -50,10 +50,6 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
         // ]);
 
         // Simulating a fetch with a delay
-        //const test = fetchAlbumAlbum("alternative");
-        //console.log(test);
-        //const test2 = fetchArtistArtist("alternative");
-        //console.log(test2);
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         const artists = [
