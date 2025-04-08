@@ -49,6 +49,7 @@ export default function Lobby() {
         isGuest: true,
       };
       setMyUser(userDetails);
+      sessionStorage.setItem(userDetails.id, JSON.stringify(userDetails))
       setLoading(false);
       return userDetails;
     };
@@ -107,7 +108,7 @@ export default function Lobby() {
       { event: 'start' },
       ({ payload }: { payload: { participants: string[] } }) => {
         if (payload.participants.includes(myUserID)) {
-          router.push(`/game/multiplayer/game/${channel}`);
+          router.push(`/game/multiplayer/${channel}/start?userId=${myUserID}`);
         }
       }
     );
@@ -146,7 +147,7 @@ export default function Lobby() {
           channel: channel,
         },
       });
-      router.push(`/game/multiplayer/game/${channel}`);
+      router.push(`/game/multiplayer/${channel}/start?userId=${myUserID}`);
     }
   };
 
