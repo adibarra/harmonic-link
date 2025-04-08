@@ -7,24 +7,12 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useParams} from "next/navigation";
 import { useRouter } from "next/navigation";
+import UserCard from "@/components/game/user-card";
 const myUserID = uuidv4();
 
 
 
 const supabase = createClient();
-
-
-
-
-type User = {
-  id: string;
-  name: string;
-  image: string;
-  isGuest: boolean;
-};
-
-
-
 
 export default function Lobby() {
   const { channel } = useParams();
@@ -174,22 +162,7 @@ export default function Lobby() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           {users.map((user) => (
-            <div key={user.id} className="border rounded-lg p-4">
-              <ArtistCard
-                artist={{
-                  id: user.id,
-                  name: user.name,
-                  image: user.image,
-                }}
-              />
-              <div className="mt-2 text-sm">
-                {user.isGuest && (
-                  <span className="text-gray-400">
-                    {user.id === myUserID ? "You" : "Guest"}
-                  </span>
-                )}
-              </div>
-            </div>
+            <UserCard user={user} you={user.id === myUserID}/>
           ))}
         </div>
 

@@ -17,15 +17,6 @@ import { MoonLoader } from "react-spinners";
 
 const supabase = createClient();
 
-type User = {
-  id: string;
-  name: string;
-  image: string;
-  isGuest: boolean;
-};
-
-
-
 export default function GamePage() {
   const [users, setUsers] = useState<User[]>([]);
   const [myUser, setMyUser] = useState<User | null>(null);

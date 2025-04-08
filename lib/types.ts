@@ -19,5 +19,12 @@ interface StartEnd {
   par: number
 }
 
+interface User {
+  id: string
+  name: string
+  image: string
+  isGuest: boolean
+}
+
 type ChainItem = Artist | Album
 
