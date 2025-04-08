@@ -5,7 +5,6 @@ import { MoonLoader } from "react-spinners";
 import ChainDisplay from "@/components/game/chain-display";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
-import { fetchAlbumAlbum } from "@/services/fetchAlbumAlbum";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { DiscIcon, MicIcon } from "lucide-react";
