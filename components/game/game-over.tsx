@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import ChainDisplay from "@/components/game/chain-display";
 import { Card } from "../ui/card";
+import { useEffect } from "react";
+import { uploadScoreIfAuthenticated } from "@/services/uploadScoreIfAuthenticated";
 
 interface GameOverScreenProps {
   linkChain: ChainItem[];
@@ -21,8 +23,15 @@ export default function GameOverScreen({
   linkChain,
   onRestart,
 }: GameOverScreenProps) {
+  const score = linkChain.length;
 
-  const score = 42;
+  useEffect(() => {
+    const handleUploadScoreIfAuthenticated = async (score: number) => {
+      await uploadScoreIfAuthenticated(score);
+    };
+
+    handleUploadScoreIfAuthenticated(score);
+  });
 
   return (
     <div className="flex flex-col items-center p-6 space-y-6 h-[90vh] text-white">
@@ -38,7 +47,10 @@ export default function GameOverScreen({
         <h2 className="p-4 text-2xl font-bold">Leaderboard</h2>
         <ul className="rounded-lg p-4 pt-0 space-y-2">
           {fakeLeaderboard.map((entry, index) => (
-            <li key={index} className="flex border-b border-white border-opacity-10">
+            <li
+              key={index}
+              className="flex border-b border-white border-opacity-10"
+            >
               <span>{entry.name}</span>
               <span className="flex-1" />
               <span>{entry.score} points</span>

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import * as spot from "@/lib/spotify";
 import * as logic from "@/lib/logic";
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
 );
 
 export async function GET(request: Request) {
@@ -15,7 +15,10 @@ export async function GET(request: Request) {
     const type = searchParams.get("type");
 
     if (!id || !type) {
-      return NextResponse.json({ error: "Missing ID or type parameter" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing ID or type parameter" },
+        { status: 400 },
+      );
     }
 
     let responseData;
@@ -36,41 +39,98 @@ export async function GET(request: Request) {
         responseData = await spot.getArtistAlbums(id);
         break;
 
-      case 'artistartist':
+      case "artistartist":
         console.log("[API] Fetching artist-artist data...");
         const artistEndless = await logic.getValidArtistStartEnd(id);
         return NextResponse.json(artistEndless, { status: 200 });
 
-      case 'albumalbum':
+      case "albumalbum":
         console.log("[API] Fetching album-album data...");
         const albumEndless = await logic.getValidAlbumStartEnd(id);
         return NextResponse.json(albumEndless, { status: 200 });
 
       case "daily":
         console.log("[API] Fetching daily game session...");
-        const { data, error } = await supabase.from("daily_game_session").select("*").eq("date", id);
+        const { data, error } = await supabase
+          .from("daily_game_session")
+          .select("*")
+          .eq("date", id);
 
         if (error || !data?.length) {
           console.error("[API] Error fetching session data:", error);
-          return NextResponse.json({ error: "Failed to fetch session data" }, { status: 500 });
+          return NextResponse.json(
+            { error: "Failed to fetch session data" },
+            { status: 500 },
+          );
         }
 
         const [start, end] = await Promise.all([
           spot.getArtist(data[0].start_artist_id as string),
-          spot.getArtist(data[0].end_artist_id as string)
+          spot.getArtist(data[0].end_artist_id as string),
         ]);
 
         responseData = { start, end };
         break;
 
       default:
-        return NextResponse.json({ error: "Invalid type parameter" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid type parameter" },
+          { status: 400 },
+        );
     }
 
     return NextResponse.json(responseData, { status: 200 });
   } catch (error) {
     console.error("[API] Error in GET request:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  console.log("This is the post function being called");
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const user_score = searchParams.get("score");
+
+    if (!user_score) {
+      return NextResponse.json(
+        { error: "Missing user_score parameter" },
+        { status: 400 },
+      );
+    }
+
+    const {
+      data: { user },
+      error: err,
+    } = await supabase.auth.getUser();
+
+    if (err) {
+      return NextResponse.json({ error: err }, { status: 400 });
+    }
+
+    console.log("[API] updating user score in db");
+
+    const { data, error } = await supabase.from("games").upsert({});
+
+    if (error) {
+      console.error("[API] Error uploading score:", error);
+      return NextResponse.json(
+        { error: "Failed to upload score" },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    console.error("[API] Error in POST request:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -114,4 +174,3 @@ export async function ENDLESS_INIT(request: Request) {
   }
 }
  */
-
