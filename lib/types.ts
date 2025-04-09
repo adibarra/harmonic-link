@@ -26,5 +26,9 @@ interface User {
   isGuest: boolean
 }
 
+interface Genre {
+  name: string
+}
+
 type ChainItem = Artist | Album
 

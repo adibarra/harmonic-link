@@ -26,6 +26,11 @@ export async function GET(request: Request) {
         responseData = await spot.getArtist(id);
         break;
 
+      case "genre":
+        console.log("[API] Fetching genre data...");
+        responseData = await spot.getRandomGenre();
+        break;
+
       case "albumArtists":
         console.log("[API] Fetching album artists data...");
         responseData = await spot.getAlbumArtistsImage(id);
