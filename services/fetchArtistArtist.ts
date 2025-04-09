@@ -1,14 +1,14 @@
 import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
 
-const artistEndlessCache: { [genre: string]: StartEnd[] } = {};
+const artistEndlessCache: { [genre: string]: StartEnd } = {};
 
-export function cacheAlbumEndless(genre: string, albums: StartEnd[]) {
+export function cacheAlbumEndless(genre: string, albums: StartEnd) {
   artistEndlessCache[genre] = albums;
 }
 
 
 
-export async function fetchArtistArtist(genre: string): Promise<StartEnd[] | null> {
+export async function fetchArtistArtist(genre: string): Promise<StartEnd | null> {
   if (artistEndlessCache[genre]) {
     console.log("Fetching albums from cache");
     return artistEndlessCache[genre];

@@ -7,7 +7,6 @@ import ArtistCard from "@/components/game/artist-card";
 import { fetchDaily } from "@/services/fetchDaily";
 import { fetchAlbumAlbum } from "@/services/fetchAlbumAlbum";
 import { fetchArtistArtist } from "@/services/fetchArtistArtist";
-import { fetchArtist } from "@/services/fetchArtist";
 
 interface LoadingGameProps {
   onSuccess: (start: ChainItem, end: ChainItem) => void;
@@ -50,16 +49,11 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
         //   new Promise((resolve) => setTimeout(resolve, 2000)),
         // ]);
 
-        // testing endless
-        /*
-          const artistList = await fetchArtistArtist("alternative");
-          const id1 = artistList?.id1;
-          const id2 = artistList?.id2;
-          console.log(artistList);
-          const artist1 = await fetchArtist(id1);
-          const artist2 = await fetchArtist(id2);
-        */
         // Simulating a fetch with a delay
+        //const test = fetchAlbumAlbum("alternative");
+        //console.log(test);
+        //const test2 = fetchArtistArtist("alternative");
+        //console.log(test2);
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         const artists = [

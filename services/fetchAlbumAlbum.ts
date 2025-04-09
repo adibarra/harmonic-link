@@ -1,14 +1,14 @@
 import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
 
-const albumEndlessCache: { [genre: string]: StartEnd[] } = {};
+const albumEndlessCache: { [genre: string]: StartEnd } = {};
 
-export function cacheAlbumEndless(genre: string, albums: StartEnd[]) {
+export function cacheAlbumEndless(genre: string, albums: StartEnd) {
   albumEndlessCache[genre] = albums;
 }
 
 
 
-export async function fetchAlbumAlbum(genre: string): Promise<StartEnd[] | null> {
+export async function fetchAlbumAlbum(genre: string): Promise<StartEnd | null> {
   if (albumEndlessCache[genre]) {
     console.log("Fetching albums from cache");
     return albumEndlessCache[genre];
@@ -38,13 +38,13 @@ export async function fetchAlbumAlbum(genre: string): Promise<StartEnd[] | null>
     }
 
     const data = await response.json();
-    const artistAlbums: StartEnd[] = data.map((item: StartEnd) => ({
+    const artistAlbums: StartEnd = data.map((item: StartEnd) => ({
       id1: String(item.id1),
       id2: String(item.id2),
       par: String(item.par)
     })) || [];
 
-    if (artistAlbums.length) {
+    if (artistAlbums) {
       cacheAlbumEndless(genre, artistAlbums);
       return artistAlbums;
     }
