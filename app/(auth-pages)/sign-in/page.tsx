@@ -44,12 +44,10 @@ export default function LoginPage() {
 
         <Card className="shadow-xl border-none">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-semibold">Welcome</CardTitle>
             <CardDescription>
               Log in using your Spotify account to get started.
             </CardDescription>
           </CardHeader>
-
           <CardContent>
             <div className="flex justify-center">
               <Button
