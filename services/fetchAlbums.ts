@@ -15,9 +15,7 @@ export async function fetchAlbums(artistID: string): Promise<Album[] | null> {
     ]);
 
     if (!artist || !albumResponse.ok) {
-      throw new Error(
-        `API request failed with status ${albumResponse.status}`
-      );
+      throw new Error(`API request failed with status ${albumResponse.status}`);
     }
 
     const albumData = await albumResponse.json();

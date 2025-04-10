@@ -28,7 +28,6 @@ export async function fetchDaily(): Promise<Artist[] | null> {
     }
 
     const artists = await response.json();
-    console.log("Fetched daily artists:", artists);
     dailyCache[formattedDate] = artists;
 
     return artists;
