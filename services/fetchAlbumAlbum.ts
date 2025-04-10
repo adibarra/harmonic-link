@@ -23,7 +23,7 @@ export async function fetchAlbumAlbum(genre: string): Promise<StartEnd[] | null>
       sameSite: 'strict'
     });
 
-    const response = await fetch(`/api/game?type=albumalbum&ID=${genre}`, {
+    const response = await fetch(`/api/game?type=albumAlbum&id=${genre}`, {
       headers: {
         'X-Session-Token': token
 

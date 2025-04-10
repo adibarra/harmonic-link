@@ -23,7 +23,7 @@ export async function fetchArtistArtist(genre: string): Promise<StartEnd[] | nul
       sameSite: 'strict'
     });
 
-    const response = await fetch(`/api/game?type=artistartist&ID=${genre}`, {
+    const response = await fetch(`/api/game?type=artistArtist&id=${genre}`, {
       headers: {
         'X-Session-Token': token
 

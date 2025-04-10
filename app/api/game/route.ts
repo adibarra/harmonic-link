@@ -11,7 +11,7 @@ const supabase = createClient(
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get("ID");
+    const id = searchParams.get("id");
     const type = searchParams.get("type");
 
     if (!id || !type) {
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
         responseData = await spot.getArtistAlbums(id);
         break;
 
-      case 'artistartist':
+      case 'artistArtist':
         console.log("[API] Fetching artist-artist data...");
         const artistEndless = await logic.getValidArtistStartEnd(id);
         return NextResponse.json(artistEndless, { status: 200 });

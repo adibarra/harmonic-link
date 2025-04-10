@@ -20,7 +20,7 @@ export async function fetchDaily(): Promise<Artist[] | null> {
   }
 
   try {
-    const response = await fetch(`/api/game?type=daily&ID=${formattedDate}`);
+    const response = await fetch(`/api/game?type=daily&id=${formattedDate}`);
 
     //deleteCookie(token)
     if (!response.ok) {
