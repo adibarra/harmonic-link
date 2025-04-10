@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { DiscIcon, MicIcon } from "lucide-react";
 import Image from "next/image";
 import { MoonLoader } from "react-spinners";
+import { formatElapsedTime } from '@/utils/utils';
 
 interface GameMultiplayerProps {
   linkChain: ChainItem[];
@@ -32,10 +33,20 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
   const [finishedUser, setFinishedUser] = useState<User[]>([]);
   const [broadcastChannel, setBroadcastChannel] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   const [items, setItems] = useState<ChainItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const getItems = async () => {
@@ -163,6 +174,10 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
 
       <div className="relative w-full">
         <div className="absolute top-0 mt-6">
+          <h2 className="text-lg font-semibold">Timer:</h2>
+          <ul className="space-y-1 text-sm text-muted-foreground">
+            { formatElapsedTime(elapsedTime) }
+          </ul>
           <h2 className="text-lg font-semibold">Players:</h2>
           <ul className="space-y-1 text-sm text-muted-foreground">
             {users.map((user) => {
