@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import GameLoading from "@/components/game/game-loading";
+import GameLoading from "@/components/game/game-loading-challenge";
 import GamePage from "@/components/game/game";
 import GameOver from "@/components/game/game-over";
 import { motion, AnimatePresence } from "motion/react";
