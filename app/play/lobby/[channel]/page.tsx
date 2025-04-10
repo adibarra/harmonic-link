@@ -135,54 +135,56 @@ export default function Lobby() {
 
   return (
     <motion.div
-      className="p-6 flex flex-col items-center space-y-6 h-[90vh]"
+      className="flex flex-col items-center h-[90vh]"
       {...fadeInOut}
     >
-      <h1 className="text-3xl font-bold mb-6">Lobby: {channel}</h1>
+      <div className="w-full flex content-between space-x-4 mb-6">
+        <div className="grow flex place-items-start space-x-4">
+          <Button
+            variant="default"
+            className="text-sm"
+            onClick={(e) => {
+              const btn = e.currentTarget;
+              btn.innerText = "Copied!";
+              navigator.clipboard.writeText(channel as string);
 
-      <div className="flex items-center space-x-4 mb-6">
-        <Button
-          variant="default"
-          className="text-sm"
-          onClick={(e) => {
-            const btn = e.currentTarget;
-            btn.innerText = "Copied!";
-            navigator.clipboard.writeText(channel as string);
+              setTimeout(() => {
+                btn.innerText = "Copy Lobby Code";
+              }, 1500);
+            }}
+          >
+            Copy Lobby Code
+          </Button>
 
-            setTimeout(() => {
-              btn.innerText = "Copy Lobby Code";
-            }, 1500);
-          }}
-        >
-          Copy Lobby Code
-        </Button>
+          <Button
+            variant="default"
+            className="text-sm"
+            onClick={(e) => {
+              const btn = e.currentTarget;
+              btn.innerText = "Copied!";
+              navigator.clipboard.writeText(window.location.href);
 
-        <Button
-          variant="default"
-          className="text-sm"
-          onClick={(e) => {
-            const btn = e.currentTarget;
-            btn.innerText = "Copied!";
-            navigator.clipboard.writeText(window.location.href);
+              setTimeout(() => {
+                btn.innerText = "Copy Lobby Link";
+              }, 1500);
+            }}
+          >
+            Copy Lobby Link
+          </Button>
+        </div>
 
-            setTimeout(() => {
-              btn.innerText = "Copy Lobby Link";
-            }, 1500);
-          }}
-        >
-          Copy Lobby Link
-        </Button>
-
-        <Button
-          variant="destructive"
-          className="text-sm"
-          onClick={() => {
-            sessionStorage.removeItem(myUserID);
-            router.push("/");
-          }}
-        >
-          Leave Lobby
-        </Button>
+        <div className="flex place-items-end space-x-4">
+          <Button
+            variant="destructive"
+            className="text-sm"
+            onClick={() => {
+              sessionStorage.removeItem(myUserID);
+              router.push("/");
+            }}
+          >
+            Leave Lobby
+          </Button>
+        </div>
       </div>
 
       <div className="w-full max-w-2xl">
@@ -190,7 +192,7 @@ export default function Lobby() {
           Players in Lobby ({users.length})
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="flex flex-wrap justify-around gap-4 mb-6">
           {users.map((user) => (
             <PlayerCard key={user.id} user={user} you={user.id === myUserID} />
           ))}
@@ -218,6 +220,7 @@ export default function Lobby() {
             Waiting for more players... (Need at least 2)
           </p>
         )}
+        <div className="h-8" />
       </div>
     </motion.div>
   );
