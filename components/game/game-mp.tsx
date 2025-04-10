@@ -178,13 +178,13 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
           <ul className="space-y-1 text-sm text-muted-foreground">
             { formatElapsedTime(elapsedTime) }
           </ul>
-          <h2 className="text-lg font-semibold">Players:</h2>
+          <h2 className="text-lg font-semibold mt-2">Players:</h2>
           <ul className="space-y-1 text-sm text-muted-foreground">
             {users.map((user) => {
               const done = finishedUser.some((u) => u.id === user.id);
               return (
                 <li key={user.id}>
-                  <span className="font-semibold">{user.name}</span>:{" "}
+                  <span className="font-semibold">{user.id === myUser?.id ? 'You' : user.name}</span>:{" "}
                   {done ? "✅" : "⏳"}
                 </li>
               );
