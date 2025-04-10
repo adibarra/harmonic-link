@@ -140,6 +140,51 @@ export default function Lobby() {
     >
       <h1 className="text-3xl font-bold mb-6">Lobby: {channel}</h1>
 
+      <div className="flex items-center space-x-4 mb-6">
+        <Button
+          variant="default"
+          className="text-sm"
+          onClick={(e) => {
+            const btn = e.currentTarget;
+            btn.innerText = "Copied!";
+            navigator.clipboard.writeText(channel as string);
+
+            setTimeout(() => {
+              btn.innerText = "Copy Lobby Code";
+            }, 1500);
+          }}
+        >
+          Copy Lobby Code
+        </Button>
+
+        <Button
+          variant="default"
+          className="text-sm"
+          onClick={(e) => {
+            const btn = e.currentTarget;
+            btn.innerText = "Copied!";
+            navigator.clipboard.writeText(window.location.href);
+
+            setTimeout(() => {
+              btn.innerText = "Copy Lobby Link";
+            }, 1500);
+          }}
+        >
+          Copy Lobby Link
+        </Button>
+
+        <Button
+          variant="destructive"
+          className="text-sm"
+          onClick={() => {
+            sessionStorage.removeItem(myUserID);
+            router.push("/");
+          }}
+        >
+          Leave Lobby
+        </Button>
+      </div>
+
       <div className="w-full max-w-2xl">
         <h2 className="text-xl font-semibold mb-4">
           Players in Lobby ({users.length})
