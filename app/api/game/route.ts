@@ -89,51 +89,6 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
-  console.log("This is the post function being called");
-
-  try {
-    const { searchParams } = new URL(request.url);
-    const user_score = searchParams.get("score");
-
-    if (!user_score) {
-      return NextResponse.json(
-        { error: "Missing user_score parameter" },
-        { status: 400 },
-      );
-    }
-
-    const {
-      data: { user },
-      error: err,
-    } = await supabase.auth.getUser();
-
-    if (err) {
-      return NextResponse.json({ error: err }, { status: 400 });
-    }
-
-    console.log("[API] updating user score in db");
-
-    const { data, error } = await supabase.from("games").upsert({});
-
-    if (error) {
-      console.error("[API] Error uploading score:", error);
-      return NextResponse.json(
-        { error: "Failed to upload score" },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json(data, { status: 200 });
-  } catch (error) {
-    console.error("[API] Error in POST request:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
-  }
-}
-
 /*
 // this breaks the build, uncomment when ready to use
 export async function ENDLESS_INIT(request: Request) {
