@@ -56,7 +56,7 @@ const redirectBase = isLocalEnv
 : forwardedHost
 ? `http://${forwardedHost}`
 : new URL(request.url).origin
-console.log('🚀 Redirecting to:', `${redirectBase}${next}`)
+// console.log('🚀 Redirecting to:', `${redirectBase}${next}`)
 return NextResponse.redirect(`${redirectBase}${next}`)
 }
 }
