@@ -51,18 +51,22 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
         // ]);
 
         // testing endless
-        /*
+
           const artistList = await fetchArtistArtist("alternative");
-          const id1 = artistList?.id1;
-          const id2 = artistList?.id2;
-          console.log(artistList);
+          const id1 = await artistList?.id1;
+          const id2 = await artistList?.id2;
+          console.log(await id1 + " " + await id2);
+          console.log(await artistList);
           const artist1 = await fetchArtist(id1);
           const artist2 = await fetchArtist(id2);
-        */
+
         // Simulating a fetch with a delay
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         const artists = [
+          await artist1,
+          await artist2
+          /*
           {
             id: "4ZAk3yVJdtf1CFnTiG08U3",
             name: "Luna Li",
@@ -73,16 +77,17 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
             name: "Raveena",
             image: "https://i.scdn.co/image/ab6761610000e5eb5942a3bbc3b764b2a2934776",
           },
+          */
         ];
         // end of simulated fetch
 
-        if (artists && artists.length > 0) {
-          const startArtist = artists[0];
-          const endArtist = artists[1];
+        if (await artists && artists.length > 0) {
+          const startArtist = await artists[0];
+          const endArtist = await artists[1];
 
           clearInterval(messageInterval);
-          setStartArtist(startArtist);
-          setEndArtist(endArtist);
+          setStartArtist(await startArtist);
+          setEndArtist(await endArtist);
           setSuccess(true);
           setCurrentMessage("Found a path. Get ready!");
 
