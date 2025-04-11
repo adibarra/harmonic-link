@@ -55,23 +55,23 @@ export const signUpAction = async (formData: FormData) => {
 
 //   return redirect("/protected");
 // };
-export const signInAction = async() =>{
-  const supabase = await createClient();
-  const origin = (await headers()).get("origin");
+export const signInAction = async (provider: 'spotify' | 'google') => {
+    const supabase = await createClient();
+    const origin = (await headers()).get("origin");
 
-  const {error} = await supabase.auth.signInWithOAuth({
-    provider:"spotify",
-    options:{
-      redirectTo:"http://localhost:3000/",
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: "http://localhost:3000/",
+      },
+    });
 
-    },
-  });
-  if (error){
-    return encodedRedirect("error", "/sign-in",error.message);
-  }
-  return redirect("http://localhost:3000");
-};
+    if (error) {
+      return encodedRedirect("error", "/sign-in", error.message);
+    }
 
+    return redirect("http://localhost:3000");
+  };
 export const forgotPasswordAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
