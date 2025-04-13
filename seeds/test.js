@@ -59,7 +59,7 @@ const seedGames = async () => {
 const { error: linkError } = await supabase.from('game_links').delete().neq('link_id', 0)
 const seedLinks = async () => {
 
-  const {data: gamesID, error: gamesError} = await supabase.from('games').select()
+  const {data: gameID, error: gamesError} = await supabase.from('games').select()
   if (gamesError) {
     console.error("Error fetching game IDs:", gamesError);
     return;
