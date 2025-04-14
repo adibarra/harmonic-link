@@ -26,7 +26,7 @@ const handleGoogle = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: 'http://localhost:3000/api/auth/callback?next=/', // adjust for your framework/router if needed
+      redirectTo: `${location.origin}/api/auth/callback?next=/`,// adjust for your framework/router if needed
       scopes: 'email profile openid', // these are standard Google scopes; Spotify scopes won't apply here
       queryParams: {
         access_type: 'offline',
