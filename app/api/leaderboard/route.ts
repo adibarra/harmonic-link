@@ -61,18 +61,15 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      return NextResponse.json(
-        `error upserting data: ${JSON.stringify(error)}`,
-        {
-          status: 400,
-        },
-      );
+      return NextResponse.json(error, {
+        status: 500,
+      });
     }
 
     return NextResponse.json(`data successfully upserted`, {
       status: 201,
     });
   } catch (error) {
-    return NextResponse.json(`error: ${error}`, { status: 500 });
+    return NextResponse.json(error, { status: 500 });
   }
 }
