@@ -9,10 +9,11 @@ import { fetchArtist } from "@/services/fetchArtist";
 
 import ChainDisplay from "@/components/display/chain-display";
 import { Button } from "@/components/ui/button";
-import { DiscIcon, MicIcon } from "lucide-react";
+import { ClockIcon, DiscIcon, MicIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import { MoonLoader } from "react-spinners";
 import { formatElapsedTime } from '@/utils/utils';
+import fuzzysort from "fuzzysort";
 
 interface GameMultiplayerProps {
   linkChain: ChainItem[];
@@ -36,6 +37,8 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
   const [elapsedTime, setElapsedTime] = useState(0);
 
   const [items, setItems] = useState<ChainItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<ChainItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,7 +60,7 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
           const fetchedArtists = await fetchAlbumArtists(lastItem.id);
           setItems(fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         } else {
-          const fetchedAlbums = await fetchAlbums(lastItem.id)
+          const fetchedAlbums = await fetchAlbums(lastItem.id);
           setItems(fetchedAlbums?.sort((a, b) => a.name.localeCompare(b.name)) || []);
         }
       } catch (error) {
@@ -83,8 +86,8 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
         });
       }
       setLinkChain((prev: any) => {
-        return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev
-      })
+        return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev;
+      });
       onGameOver();
     }
   }, [linkChain]);
@@ -139,6 +142,14 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
     return () => sub.unsubscribe();
   }, [broadcastChannel, finishedUser]);
 
+    useEffect(() => {
+      if (searchQuery.trim() === "") {
+        setFilteredItems(items);
+      } else {
+        const results = fuzzysort.go(searchQuery, items, { key: "name" });
+        setFilteredItems(results.map((result) => result.obj));
+      }
+    }, [searchQuery, items]);
 
   return (
     <div className="flex flex-col items-center space-y-6">
@@ -148,21 +159,21 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
         <div className="flex space-x-4">
           <Button
             variant="destructive"
-            onClick={() =>
-              setLinkChain((prev: any) => [prev[0], prev[prev.length - 1]])
-            }
+            onClick={() => {
+              setLinkChain((prev: any) => {
+                return [prev[0], prev[prev.length - 1]];
+              });
+            }}
           >
             Clear Chain
           </Button>
           <Button
             variant="secondary"
-            onClick={() =>
-              setLinkChain((prev: any) =>
-                prev.length > 2
-                  ? [...prev.slice(0, -2), prev[prev.length - 1]]
-                  : prev
-              )
-            }
+            onClick={() => {
+              setLinkChain((prev: any) => {
+                return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev;
+              });
+            }}
           >
             Undo
           </Button>
@@ -173,12 +184,18 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
       {error && <p className="text-red-500">{error}</p>}
 
       <div className="relative w-full">
-        <div className="absolute top-0 mt-6">
-          <h2 className="text-lg font-semibold">Timer:</h2>
+        <div className="absolute top-0">
+          <h2 className="flex gap-2 items-center text-lg font-semibold">
+            <ClockIcon className="w-4 h-4" />
+            Timer
+          </h2>
           <ul className="space-y-1 text-sm text-muted-foreground">
-            { formatElapsedTime(elapsedTime) }
+            {formatElapsedTime(elapsedTime)}
           </ul>
-          <h2 className="text-lg font-semibold mt-2">Players:</h2>
+          <h2 className="flex gap-2 items-center text-lg font-semibold mt-4">
+            <UserIcon className="w-4 h-4" />
+            Players
+          </h2>
           <ul className="space-y-1 text-sm text-muted-foreground">
             {users.map((user) => {
               const done = finishedUser.some((u) => u.id === user.id);
@@ -192,21 +209,32 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
           </ul>
         </div>
 
+        <div className="w-full max-w-md mx-auto mb-4">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-500"
+          />
+        </div>
+
         {!loading && !error && (
           <div className="max-h-96 mx-auto w-full max-w-md overflow-x-auto border border-white rounded-lg">
             <table className="min-w-full">
               <tbody>
-                {items.map((item, i) => (
+                {filteredItems.map((item, i) => (
                   <tr
                     key={i}
                     className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-gray-300"
-                    onClick={() =>
+                    onClick={() => {
+                      setSearchQuery("");
                       setLinkChain((prev: any) => [
                         ...prev.slice(0, -1),
                         item,
                         prev[prev.length - 1],
                       ])
-                    }
+                    }}
                   >
                     <td className="py-2 px-4 flex items-center">
                       <Image
@@ -219,7 +247,7 @@ export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }:
                       <span className="truncate">{item.name}</span>
                       <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
                         {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
-                        { "artist" in item ? "Album" : "Artist" }
+                        {"artist" in item ? "Album" : "Artist"}
                       </span>
                     </td>
                   </tr>

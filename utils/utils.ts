@@ -22,10 +22,10 @@ export function formatElapsedTime(seconds: number): string {
   const secs = seconds % 60;
 
   const parts = [];
-  if (days) parts.push(`${days} day${days > 1 ? 's' : ''}`);
-  if (hours) parts.push(`${hours} hr${hours > 1 ? 's' : ''}`);
-  if (minutes) parts.push(`${minutes} min${minutes > 1 ? 's' : ''}`);
-  if (secs || parts.length === 0) parts.push(`${secs} sec${secs !== 1 ? 's' : ''}`);
+  if (days) parts.push(`${days}d`);
+  if (hours) parts.push(`${hours}h`);
+  if (minutes) parts.push(`${minutes}m`);
+  if (secs || parts.length === 0) parts.push(`${secs}s`);
 
   return parts.join(', ');
 }

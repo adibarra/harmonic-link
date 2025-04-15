@@ -27,6 +27,7 @@
     "cookies-next": "^5.1.0",
     "dotenv": "^16.4.7",
     "framer-motion": "^12.6.3",
+    "fuzzysort": "^3.1.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.487.0",
     "motion": "^12.6.3",
