@@ -5,8 +5,6 @@ import { motion } from "motion/react";
 import { MoonLoader } from "react-spinners";
 import ArtistCard from "@/components/game/artist-card";
 import { fetchDaily } from "@/services/fetchDaily";
-import { fetchAlbumAlbum } from "@/services/fetchAlbumAlbum";
-import { fetchArtistArtist } from "@/services/fetchArtistArtist";
 
 interface LoadingGameProps {
   onSuccess: (start: ChainItem, end: ChainItem) => void;
@@ -45,8 +43,8 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
     const fetchChallenge = async () => {
       try {
         const [artists] = await Promise.all([
-          await fetchDaily(),
-          new Promise((resolve) => setTimeout(resolve, 1000)),
+          fetchDaily(),
+          new Promise((resolve) => setTimeout(resolve, 2000)),
         ]);
 
         if (artists && artists.length > 0) {

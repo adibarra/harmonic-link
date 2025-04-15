@@ -43,27 +43,10 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
 
     const fetchChallenge = async () => {
       try {
-        // const [artists] = await Promise.all([
-        //   await fetchArtistArtist(),
-        //   new Promise((resolve) => setTimeout(resolve, 2000)),
-        // ]);
-
-        // Simulating a fetch with a delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        const artists = [
-          {
-            id: "4ZAk3yVJdtf1CFnTiG08U3",
-            name: "Luna Li",
-            image: "https://i.scdn.co/image/ab6761610000e5ebdaeee87c9a49ac7d03d3d883",
-          },
-          {
-            id: "2kQnsbKnIiMahOetwlfcaS",
-            name: "Raveena",
-            image: "https://i.scdn.co/image/ab6761610000e5eb5942a3bbc3b764b2a2934776",
-          },
-        ];
-        // end of simulated fetch
+        const [artists] = await Promise.all([
+          fetchArtistArtist('alternative'),
+          new Promise((resolve) => setTimeout(resolve, 2000)),
+        ]);
 
         if (artists && artists.length > 0) {
           const startArtist = artists[0];
