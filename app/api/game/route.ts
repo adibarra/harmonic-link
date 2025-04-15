@@ -60,7 +60,7 @@ export async function GET(request: Request) {
           spot.getArtist(data[0].end_artist_id as string)
         ]);
 
-        responseData = { start, end };
+        responseData = [ start, end ];
         break;
 
       default:
