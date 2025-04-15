@@ -1,6 +1,7 @@
 import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
+import { fetchAlbum } from "./fetchAlbum";
 
-export async function fetchAlbumAlbum(genre: string): Promise<StartEnd[] | null> {
+export async function fetchAlbumAlbum(genre: string): Promise<Album[] | null> {
   try {
     // Generate and set cookie
     let token = Math.random().toString(36).substring(2, 15);
@@ -22,16 +23,21 @@ export async function fetchAlbumAlbum(genre: string): Promise<StartEnd[] | null>
     }
 
     const data = await response.json();
-    const artistAlbums: StartEnd[] = data.map((item: StartEnd) => ({
-      id1: String(item.id1),
-      id2: String(item.id2),
-      par: String(item.par)
-    })) || [];
+    const albums = await Promise.all([
+      fetchAlbum(data.id1),
+      fetchAlbum(data.id2)
+    ]);
 
-    return artistAlbums;
+    albums.some((album) => {
+      if (album === null)
+        throw new Error(`Failed to fetch album data`);
+      return null;
+    });
+
+    return albums as Album[];
 
   } catch (error) {
-    console.error("Error fetching artist albums:", error);
+    console.error("Error fetching albums:", error);
     return null;
   }
 }
