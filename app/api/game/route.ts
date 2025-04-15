@@ -26,6 +26,11 @@ export async function GET(request: Request) {
         responseData = await spot.getArtist(id);
         break;
 
+      case "album":
+        console.log("[API] Fetching album data...");
+        responseData = await spot.getAlbum(id);
+        break;
+
       case "albumArtists":
         console.log("[API] Fetching album artists data...");
         responseData = await spot.getAlbumArtistsImage(id);
@@ -39,12 +44,14 @@ export async function GET(request: Request) {
       case 'artistArtist':
         console.log("[API] Fetching artist-artist data...");
         const artistEndless = await logic.getValidArtistStartEnd(id);
-        return NextResponse.json(artistEndless, { status: 200 });
+        responseData = artistEndless;
+        break;
 
-      case 'albumalbum':
+      case 'albumAlbum':
         console.log("[API] Fetching album-album data...");
         const albumEndless = await logic.getValidAlbumStartEnd(id);
-        return NextResponse.json(albumEndless, { status: 200 });
+        responseData = albumEndless;
+        break;
 
       case "daily":
         console.log("[API] Fetching daily game session...");
@@ -55,12 +62,10 @@ export async function GET(request: Request) {
           return NextResponse.json({ error: "Failed to fetch session data" }, { status: 500 });
         }
 
-        const [start, end] = await Promise.all([
+        responseData = await Promise.all([
           spot.getArtist(data[0].start_artist_id as string),
           spot.getArtist(data[0].end_artist_id as string)
         ]);
-
-        responseData = [ start, end ];
         break;
 
       default:
