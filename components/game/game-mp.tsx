@@ -7,7 +7,7 @@ import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import { fetchArtist } from "@/services/fetchArtist";
 
-import ChainDisplay from "@/components/game/chain-display";
+import ChainDisplay from "@/components/display/chain-display";
 import { Button } from "@/components/ui/button";
 import { DiscIcon, MicIcon } from "lucide-react";
 import Image from "next/image";

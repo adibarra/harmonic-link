@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useParams, useRouter } from "next/navigation";
-import PlayerCard from "@/components/game/player-card";
+import PlayerCard from "@/components/display/player-card";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { motion } from "motion/react";

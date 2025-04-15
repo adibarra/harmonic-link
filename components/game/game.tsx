@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { MoonLoader } from "react-spinners";
-import ChainDisplay from "@/components/game/chain-display";
+import ChainDisplay from "@/components/display/chain-display";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import Image from "next/image";

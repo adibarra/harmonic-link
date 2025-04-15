@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { MoonLoader } from "react-spinners";
-import ArtistCard from "@/components/game/artist-card";
+import ArtistCard from "@/components/display/artist-card";
 import { fetchDaily } from "@/services/fetchDaily";
 
 interface LoadingGameProps {
