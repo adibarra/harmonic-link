@@ -2,7 +2,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { DiscIcon } from "lucide-react";
-import Image from "next/image";
 
 interface AlbumCardProps {
   album: Album;
@@ -13,8 +12,7 @@ export default function AlbumCard({ album }: AlbumCardProps) {
     <Card className="relative w-[192px] h-[218px] p-4 pb-6">
       <CardContent className="flex flex-col items-center text-center text-sm p-0">
         <div className="w-[128px] h-[128px]">
-          <Image
-            priority
+          <img
             className="w-full h-full object-cover"
             src={album.image}
             alt={album.name}

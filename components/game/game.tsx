@@ -5,7 +5,6 @@ import { MoonLoader } from "react-spinners";
 import ChainDisplay from "@/components/display/chain-display";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ClockIcon, DiscIcon, MicIcon } from "lucide-react";
 import { formatElapsedTime } from "@/utils/utils";
@@ -150,12 +149,12 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
                     }}
                   >
                     <td className="py-2 px-4 flex items-center">
-                      <Image
+                      <img
+                        className="rounded-lg mr-4"
                         src={item.image}
                         alt={item.name}
                         width={48}
                         height={48}
-                        className="rounded-lg mr-4"
                       />
                       <span className="truncate">{item.name}</span>
                       <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
