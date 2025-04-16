@@ -1,3 +1,4 @@
+"use client";
 import {
   createContext,
   Dispatch,
@@ -7,7 +8,7 @@ import {
 } from "react";
 
 export type GameState = {
-  game_id?: number;
+  gameId?: number;
   startArtist?: Artist;
   endArtist?: Artist;
   startTime?: number;
@@ -39,7 +40,7 @@ function gameStateReducer(
 ): GameState {
   switch (action.type) {
     case "set_game_id":
-      return { ...state, game_id: action.id };
+      return { ...state, gameId: action.id };
     case "set_start_artist":
       return { ...state, startArtist: action.artist };
     case "set_end_artist":
