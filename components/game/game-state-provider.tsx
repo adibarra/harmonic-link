@@ -92,7 +92,7 @@ export default function gameStateProvider({
 export function useGameState(): GameState {
   const context = useContext(GameStateContext);
   if (context === undefined) {
-    throw Error("useTasks must be used within a gameStateProvider");
+    throw Error("useGameState must be used within a gameStateProvider");
   }
   return context;
 }
