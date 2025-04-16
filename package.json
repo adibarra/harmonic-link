@@ -2,7 +2,7 @@
   "name": "harmonic-link",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@10.7.1",
+  "packageManager": "pnpm@10.8.1",
   "description": "",
   "contributors": [
     "adibarra <github@adibarra.com> (https://adibarra.com)"
@@ -26,10 +26,16 @@
     "clsx": "^2.1.1",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     "lodash": "^4.17.21",
 >>>>>>> origin/static-pages=======
+=======
+    "cookies-next": "^5.1.0",
+>>>>>>> 392fcdf424e280e73368efb5a7fae82d9093f9a8
     "dotenv": "^16.4.7",
+    "framer-motion": "^12.6.3",
+    "fuzzysort": "^3.1.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.487.0",
     "motion": "^12.6.3",
@@ -40,7 +46,9 @@
     "prettier": "^3.5.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-spinners": "^0.15.0"
+    "react-spinners": "^0.15.0",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.16",

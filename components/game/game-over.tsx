@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import ChainDisplay from "@/components/game/chain-display";
+import ChainDisplay from "@/components/display/chain-display";
 import { Card } from "../ui/card";
 
 interface GameOverScreenProps {

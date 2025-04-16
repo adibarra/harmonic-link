@@ -7,7 +7,7 @@ export async function fetchAlbumArtists(albumID: string): Promise<Artist[] | nul
   }
 
   try {
-    const response = await fetch(`/api/game?type=albumArtists&ID=${albumID}`);
+    const response = await fetch(`/api/game?type=albumArtists&id=${albumID}`);
 
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);

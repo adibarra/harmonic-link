@@ -7,7 +7,7 @@ export async function fetchArtist(artistID: string): Promise<Artist | null> {
   }
 
   try {
-    const response = await fetch(`/api/game?type=artist&ID=${artistID}`);
+    const response = await fetch(`/api/game?type=artist&id=${artistID}`);
 
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);

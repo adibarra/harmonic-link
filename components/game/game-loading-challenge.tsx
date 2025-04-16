@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { MoonLoader } from "react-spinners";
-import ArtistCard from "@/components/game/artist-card";
+import ArtistCard from "@/components/display/artist-card";
 import { fetchDaily } from "@/services/fetchDaily";
 
 interface LoadingGameProps {
@@ -42,26 +42,10 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
 
     const fetchChallenge = async () => {
       try {
-        // const [artists] = await Promise.all([
-        //   await fetchDaily(),
-        //   new Promise((resolve) => setTimeout(resolve, 2000)),
-        // ]);
-
-        // Simulating a fetch with a delay
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        const artists = [
-          {
-            id: "4ZAk3yVJdtf1CFnTiG08U3",
-            name: "Luna Li",
-            image: "https://i.scdn.co/image/ab6761610000e5ebdaeee87c9a49ac7d03d3d883",
-          },
-          {
-            id: "2kQnsbKnIiMahOetwlfcaS",
-            name: "Raveena",
-            image: "https://i.scdn.co/image/ab6761610000e5eb5942a3bbc3b764b2a2934776",
-          },
-        ];
-        // end of simulated fetch
+        const [artists] = await Promise.all([
+          fetchDaily(),
+          new Promise((resolve) => setTimeout(resolve, 2000)),
+        ]);
 
         if (artists && artists.length > 0) {
           const startArtist = artists[0];
@@ -71,16 +55,16 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
           setStartArtist(startArtist);
           setEndArtist(endArtist);
           setSuccess(true);
-          setCurrentMessage("Found a path. Get ready!");
+          setCurrentMessage("Found today's challenge. Get ready!");
 
           setTimeout(() => {
             onSuccess(startArtist, endArtist);
-          }, 5000);
+          }, 6000);
         } else {
-          throw new Error("Failed to find a path. Try refreshing.");
+          throw new Error("Failed to find today's challenge. Try refreshing.");
         }
       } catch (err) {
-        setError("Failed to find a path. Try refreshing.");
+        setError("Failed to find today's challenge. Try refreshing.");
         console.error(err);
       } finally {
         setLoading(false);
@@ -96,8 +80,7 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
   return (
     <div className="p-6 flex flex-col items-center w-full">
       <h1 className="text-3xl font-bold mb-6">Harmonic Links</h1>
-      <p>Finding two artists to connect through their music.</p>
-      <p>This may take a few seconds.</p>
+      <p>Getting today's daily challenge ready...</p>
 
       {loading && (
         <div className="m-32">

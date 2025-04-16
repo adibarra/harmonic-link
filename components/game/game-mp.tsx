@@ -1,28 +1,44 @@
 "use client";
 
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from "react";
-import { MoonLoader } from "react-spinners";
-import ChainDisplay from "@/components/display/chain-display";
+import { createClient } from "@/utils/supabase/client";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
+
+import ChainDisplay from "@/components/display/chain-display";
 import { Button } from "@/components/ui/button";
-import { ClockIcon, DiscIcon, MicIcon } from "lucide-react";
-import { formatElapsedTime } from "@/utils/utils";
+import { ClockIcon, DiscIcon, MicIcon, UserIcon } from "lucide-react";
+import { MoonLoader } from "react-spinners";
+import { formatElapsedTime } from '@/utils/utils';
 import fuzzysort from "fuzzysort";
 
-interface GameProps {
+interface GameMultiplayerProps {
   linkChain: ChainItem[];
   setLinkChain: (chain: any) => any;
   onGameOver: () => void;
 }
 
-export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps) {
+const supabase = createClient();
+
+export default function GameMultiplayer({ linkChain, setLinkChain, onGameOver }: GameMultiplayerProps) {
+  const { channel } = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const userId = searchParams.get("userId");
+  const [myUser, setMyUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [finishedUser, setFinishedUser] = useState<User[]>([]);
+  const [broadcastChannel, setBroadcastChannel] = useState<any>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+
   const [items, setItems] = useState<ChainItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<ChainItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const startTime = Date.now();
@@ -60,6 +76,13 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
     const secondLastItem = linkChain[linkChain.length - 2];
 
     if (lastItem.id === secondLastItem.id) {
+      if (broadcastChannel) {
+        broadcastChannel.send({
+          type: "broadcast",
+          event: "player-finished",
+          payload: { user: myUser },
+        });
+      }
       setLinkChain((prev: any) => {
         return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev;
       });
@@ -68,23 +91,72 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
   }, [linkChain]);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredItems(items);
-    } else {
-      const results = fuzzysort.go(searchQuery, items, { key: "name" });
-      setFilteredItems(results.map((result) => result.obj));
-    }
-  }, [searchQuery, items]);
+    if (!channel || isConnected) return;
+
+    const initializeUser = async () => {
+      const data = sessionStorage.getItem(userId as string);
+      if (!data) return router.push("/");
+
+      const parsed = JSON.parse(data);
+      setMyUser(parsed);
+      return parsed;
+    };
+
+    const gameChannel = supabase.channel(`game-room:${channel}`, {
+      config: { presence: { key: userId! } },
+    });
+
+    gameChannel
+      .on("presence", { event: "sync" }, () => {
+        const state = gameChannel.presenceState();
+        const userList = Object.values(state).map((u: any) => u[0]);
+        setUsers(userList);
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          const user = await initializeUser();
+          await gameChannel.track(user);
+          setIsConnected(true);
+        }
+      });
+
+    setBroadcastChannel(gameChannel);
+
+    return () => {
+      gameChannel.unsubscribe();
+      setIsConnected(false);
+    };
+  }, [channel]);
+
+  useEffect(() => {
+    if (!broadcastChannel) return;
+
+    const sub = broadcastChannel.on("broadcast", { event: "player-finished" }, ({ payload }: { payload: { user: User } }) => {
+      if (!finishedUser.some(u => u.id === payload.user.id)) {
+        setFinishedUser((prev) => [...prev, payload.user]);
+      }
+    });
+
+    return () => sub.unsubscribe();
+  }, [broadcastChannel, finishedUser]);
+
+    useEffect(() => {
+      if (searchQuery.trim() === "") {
+        setFilteredItems(items);
+      } else {
+        const results = fuzzysort.go(searchQuery, items, { key: "name" });
+        setFilteredItems(results.map((result) => result.obj));
+      }
+    }, [searchQuery, items]);
 
   return (
     <div className="flex flex-col items-center space-y-6">
       <ChainDisplay chain={linkChain} />
 
       {linkChain.length > 1 && (
-        <div className="flex items-center space-x-6">
+        <div className="flex space-x-4">
           <Button
             variant="destructive"
-            className="py-2 transition duration-300"
             onClick={() => {
               setLinkChain((prev: any) => {
                 return [prev[0], prev[prev.length - 1]];
@@ -95,7 +167,6 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
           </Button>
           <Button
             variant="secondary"
-            className="py-2 transition duration-300"
             onClick={() => {
               setLinkChain((prev: any) => {
                 return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev;
@@ -108,7 +179,7 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
       )}
 
       {loading && <MoonLoader size={18} color="#fff" />}
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {error && <p className="text-red-500">{error}</p>}
 
       <div className="relative w-full">
         <div className="absolute top-0">
@@ -118,6 +189,21 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
           </h2>
           <ul className="space-y-1 text-sm text-muted-foreground">
             {formatElapsedTime(elapsedTime)}
+          </ul>
+          <h2 className="flex gap-2 items-center text-lg font-semibold mt-4">
+            <UserIcon className="w-4 h-4" />
+            Players
+          </h2>
+          <ul className="space-y-1 text-sm text-muted-foreground">
+            {users.map((user) => {
+              const done = finishedUser.some((u) => u.id === user.id);
+              return (
+                <li key={user.id}>
+                  <span className="font-semibold">{user.id === myUser?.id ? 'You' : user.name}</span>:{" "}
+                  {done ? "✅" : "⏳"}
+                </li>
+              );
+            })}
           </ul>
         </div>
 

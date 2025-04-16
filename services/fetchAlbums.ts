@@ -11,13 +11,11 @@ export async function fetchAlbums(artistID: string): Promise<Album[] | null> {
   try {
     const [artist, albumResponse] = await Promise.all([
       fetchArtist(artistID),
-      fetch(`/api/game?type=artistAlbums&ID=${artistID}`)
+      fetch(`/api/game?type=artistAlbums&id=${artistID}`)
     ]);
 
     if (!artist || !albumResponse.ok) {
-      throw new Error(
-        `API request failed with status ${albumResponse.status}`
-      );
+      throw new Error(`API request failed with status ${albumResponse.status}`);
     }
 
     const albumData = await albumResponse.json();
