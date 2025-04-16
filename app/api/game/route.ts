@@ -69,7 +69,7 @@ export async function GET(request: Request) {
         break;
 
       default:
-        return NextResponse.json({ error: "Invalid type parameter" }, { status: 400 });
+        return NextResponse.json({ error: "Bad Request: Check type parameter" }, { status: 400 });
     }
 
     return NextResponse.json(responseData, { status: 200 });
