@@ -146,21 +146,18 @@ export default function Game({
         </div>
       )}
 
-      {loading && <MoonLoader size={18} color="#fff" />}
-      {error && <p className="text-red-500 mt-2">{error}</p>}
-
-      <div className="relative w-full">
-        <div className="absolute top-0">
-          <h2 className="flex gap-2 items-center text-lg font-semibold">
-            <ClockIcon className="w-4 h-4" />
-            Timer
-          </h2>
-          <ul className="space-y-1 text-sm text-muted-foreground">
-            {formatElapsedTime(elapsedTime)}
-          </ul>
-        </div>
-
+      <div className="relative w-[50vw]">
         <div className="w-full max-w-md mx-auto mb-4">
+          <div className="absolute top-0 left-0">
+            <h2 className="flex gap-2 items-center text-lg font-semibold">
+              <ClockIcon className="w-4 h-4" />
+              Timer
+            </h2>
+            <ul className="space-y-1 text-sm text-muted-foreground">
+              {formatElapsedTime(elapsedTime)}
+            </ul>
+          </div>
+
           <input
             type="text"
             placeholder="Type to filter results"
@@ -169,6 +166,13 @@ export default function Game({
             className="w-full px-4 py-2 border border-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500 bg-transparent"
           />
         </div>
+
+        {(loading || error) && (
+          <div className="w-full flex justify-center items-center h-48">
+            {loading && <MoonLoader size={18} color="#fff" />}
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+          </div>
+        )}
 
         {!loading && !error && (
           <div className="max-h-96 mx-auto w-full max-w-md overflow-x-auto border border-white rounded-lg">
