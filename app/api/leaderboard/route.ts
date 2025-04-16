@@ -7,6 +7,34 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
 );
 
+export async function GET(request: NextRequest) {
+  try {
+    const searchParamsSchema = z.object({
+      game_id: z.coerce.number(),
+    });
+
+    const { searchParams } = new URL(request.url);
+
+    const { game_id } = searchParamsSchema.parse(
+      Object.fromEntries(searchParams.entries()),
+    );
+
+    console.log("game_id:", game_id);
+    const { data, error } = await supabase
+      .from("games")
+      .select()
+      .eq("game_id", game_id);
+
+    if (error) {
+      throw error;
+    }
+
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(error, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const searchParamSchema = z.object({

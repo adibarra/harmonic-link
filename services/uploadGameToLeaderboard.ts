@@ -2,13 +2,13 @@ type UploadResult = "success" | "fail";
 
 export async function uploadFinishedGameToLeaderBoard(
   gameId: number,
-  startArtistId: number,
-  endArtistId: number,
+  startArtistId: string,
+  endArtistId: string,
   startTime: number,
   endTime: number,
   score: number,
-  startAlbumId: number,
-  endAlbumId: number,
+  startAlbumId: string,
+  endAlbumId: string,
   numLinksMade: number,
   gameMode: string,
 ): Promise<UploadResult | null> {

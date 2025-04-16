@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ClockIcon, DiscIcon, MicIcon } from "lucide-react";
 import { formatElapsedTime } from "@/utils/utils";
 import fuzzysort from "fuzzysort";
+import { uploadFinishedGameToLeaderBoard } from "@/services/uploadGameToLeaderboard";
 
 interface GameProps {
   linkChain: ChainItem[];
@@ -16,7 +17,11 @@ interface GameProps {
   onGameOver: () => void;
 }
 
-export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps) {
+export default function Game({
+  linkChain,
+  setLinkChain,
+  onGameOver,
+}: GameProps) {
   const [items, setItems] = useState<ChainItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<ChainItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,10 +45,14 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
         const lastItem = linkChain[linkChain.length - 2];
         if ("artist" in lastItem) {
           const fetchedArtists = await fetchAlbumArtists(lastItem.id);
-          setItems(fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+          setItems(
+            fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || [],
+          );
         } else {
           const fetchedAlbums = await fetchAlbums(lastItem.id);
-          setItems(fetchedAlbums?.sort((a, b) => a.name.localeCompare(b.name)) || []);
+          setItems(
+            fetchedAlbums?.sort((a, b) => a.name.localeCompare(b.name)) || [],
+          );
         }
       } catch (error) {
         setError("Error fetching data");
@@ -61,8 +70,36 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
 
     if (lastItem.id === secondLastItem.id) {
       setLinkChain((prev: any) => {
-        return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev;
+        return prev.length > 2
+          ? [...prev.slice(0, -2), prev[prev.length - 1]]
+          : prev;
       });
+
+      // TODO update this to use context to upload stats to leaderboard
+      const gameId = 123;
+      const startArtistId = linkChain[0].id;
+      const endArtistId = linkChain[linkChain.length - 1].id;
+      const startTime = 0;
+      const endTime = 1;
+      const score = 42;
+      const startAlbumId = linkChain[1].id;
+      const endAlbumId = linkChain[linkChain.length - 2].id;
+      const numLinksMade = linkChain.length;
+      const gameMode = "daily";
+
+      uploadFinishedGameToLeaderBoard(
+        gameId,
+        startArtistId,
+        endArtistId,
+        startTime,
+        endTime,
+        score,
+        startAlbumId,
+        endAlbumId,
+        numLinksMade,
+        gameMode,
+      );
+
       onGameOver();
     }
   }, [linkChain]);
@@ -98,7 +135,9 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
             className="py-2 transition duration-300"
             onClick={() => {
               setLinkChain((prev: any) => {
-                return prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev;
+                return prev.length > 2
+                  ? [...prev.slice(0, -2), prev[prev.length - 1]]
+                  : prev;
               });
             }}
           >
@@ -145,7 +184,7 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
                         ...prev.slice(0, -1),
                         item,
                         prev[prev.length - 1],
-                      ])
+                      ]);
                     }}
                   >
                     <td className="py-2 px-4 flex items-center">
@@ -158,7 +197,11 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
                       />
                       <span className="truncate">{item.name}</span>
                       <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
-                        {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
+                        {"artist" in item ? (
+                          <DiscIcon className="w-4 h-4" />
+                        ) : (
+                          <MicIcon className="w-4 h-4" />
+                        )}
                         {"artist" in item ? "Album" : "Artist"}
                       </span>
                     </td>
