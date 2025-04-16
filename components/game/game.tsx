@@ -124,10 +124,10 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
         <div className="w-full max-w-md mx-auto mb-4">
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="Type to filter results"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500 bg-transparent"
           />
         </div>
 
@@ -138,7 +138,7 @@ export default function Game({ linkChain, setLinkChain, onGameOver }: GameProps)
                 {filteredItems.map((item, i) => (
                   <tr
                     key={i}
-                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-gray-300"
+                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-white"
                     onClick={() => {
                       setSearchQuery("");
                       setLinkChain((prev: any) => [
