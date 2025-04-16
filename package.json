@@ -2,7 +2,7 @@
   "name": "harmonic-link",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@10.7.1",
+  "packageManager": "pnpm@10.8.1",
   "description": "",
   "contributors": [
     "adibarra <github@adibarra.com> (https://adibarra.com)"
