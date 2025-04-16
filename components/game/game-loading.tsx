@@ -8,6 +8,7 @@ import { fetchDaily } from "@/services/fetchDaily";
 import { fetchAlbumAlbum } from "@/services/fetchAlbumAlbum";
 import { fetchArtistArtist } from "@/services/fetchArtistArtist";
 import { fetchArtist } from "@/services/fetchArtist";
+import { fetchGenre } from "@/services/fetchGenre";
 
 interface LoadingGameProps {
   onSuccess: (start: ChainItem, end: ChainItem) => void;
@@ -51,8 +52,8 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
         // ]);
 
         // testing endless
-
-          const artistList = await fetchArtistArtist("alternative");
+          const genre = await fetchGenre();
+          const artistList = await fetchArtistArtist(genre);
           const id1 = await artistList?.id1;
           const id2 = await artistList?.id2;
           console.log(await id1 + " " + await id2);
