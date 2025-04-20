@@ -43,13 +43,13 @@ export async function GET(request: Request) {
 
       case 'artistArtist':
         console.log("[API] Fetching artist-artist data...");
-        const artistEndless = await logic.getValidArtistStartEnd(id);
+        const artistEndless = await logic.getArtistArtist();
         responseData = artistEndless;
         break;
 
       case 'albumAlbum':
         console.log("[API] Fetching album-album data...");
-        const albumEndless = await logic.getValidAlbumStartEnd(id);
+        const albumEndless = await logic.getAlbumAlbum();
         responseData = albumEndless;
         break;
 
