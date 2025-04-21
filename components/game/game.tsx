@@ -1,27 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from 'next/navigation';
+import { createClient } from "@/utils/supabase/client";
 import { MoonLoader } from "react-spinners";
 import ChainDisplay from "@/components/display/chain-display";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import { Button } from "@/components/ui/button";
-import { ClockIcon, DiscIcon, MicIcon } from "lucide-react";
+import { ClockIcon, DiscIcon, MicIcon, UserIcon } from "lucide-react";
 import { formatElapsedTime } from "@/utils/utils";
 import fuzzysort from "fuzzysort";
 import { uploadFinishedGameToLeaderBoard } from "@/services/uploadGameToLeaderboard";
 
 interface GameProps {
   linkChain: ChainItem[];
-  setLinkChain: (chain: any) => any;
+  setLinkChain: (chain: any) => void;
   onGameOver: () => void;
+  channel?: string;
 }
 
-export default function Game({
-  linkChain,
-  setLinkChain,
-  onGameOver,
-}: GameProps) {
+const supabase = createClient();
+
+export default function Game({ linkChain, setLinkChain, onGameOver, channel }: GameProps) {
   const [items, setItems] = useState<ChainItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<ChainItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,89 +30,140 @@ export default function Game({
   const [loading, setLoading] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
 
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [myUser, setMyUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [finishedUsers, setFinishedUsers] = useState<User[]>([]);
+  const [broadcastChannel, setBroadcastChannel] = useState<any>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
   useEffect(() => {
     const startTime = Date.now();
     const interval = setInterval(() => {
       setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    const getItems = async () => {
+    const loadItems = async () => {
       setLoading(true);
       try {
         const lastItem = linkChain[linkChain.length - 2];
-        if ("artist" in lastItem) {
-          const fetchedArtists = await fetchAlbumArtists(lastItem.id);
-          setItems(
-            fetchedArtists?.sort((a, b) => a.name.localeCompare(b.name)) || [],
-          );
-        } else {
-          const fetchedAlbums = await fetchAlbums(lastItem.id);
-          setItems(
-            fetchedAlbums?.sort((a, b) => a.name.localeCompare(b.name)) || [],
-          );
-        }
+        const fetcher = "artist" in lastItem ? fetchAlbumArtists : fetchAlbums;
+        const data = await fetcher(lastItem.id);
+        setItems(data?.sort((a, b) => a.name.localeCompare(b.name)) || []);
       } catch (error) {
         setError("Error fetching data");
       } finally {
         setLoading(false);
       }
     };
-
-    getItems();
+    loadItems();
   }, [linkChain]);
 
   useEffect(() => {
     const lastItem = linkChain[linkChain.length - 1];
     const secondLastItem = linkChain[linkChain.length - 2];
 
-    if (lastItem.id === secondLastItem.id) {
-      setLinkChain((prev: any) => {
-        return prev.length > 2
-          ? [...prev.slice(0, -2), prev[prev.length - 1]]
-          : prev;
+    if (lastItem.id !== secondLastItem.id) return;
+
+    if (channel && broadcastChannel && myUser) {
+      broadcastChannel.send({
+        type: "broadcast",
+        event: "player-finished",
+        payload: { user: myUser },
       });
-
-      // TODO update this to use context to upload stats to leaderboard
-      const gameId = 123;
-      const startArtistId = linkChain[0].id;
-      const endArtistId = linkChain[linkChain.length - 1].id;
-      const startTime = 0;
-      const endTime = 1;
-      const score = 42;
-      const startAlbumId = linkChain[1].id;
-      const endAlbumId = linkChain[linkChain.length - 2].id;
-      const numLinksMade = linkChain.length;
-      const gameMode = "daily";
-
-      uploadFinishedGameToLeaderBoard(
-        gameId,
-        startArtistId,
-        endArtistId,
-        startTime,
-        endTime,
-        score,
-        startAlbumId,
-        endAlbumId,
-        numLinksMade,
-        gameMode,
-      );
-
-      onGameOver();
     }
-  }, [linkChain]);
+    else if (!channel) {
+      uploadFinishedGameToLeaderBoard(
+        123,
+        linkChain[0].id,
+        lastItem.id,
+        0,
+        elapsedTime,
+        calculateScore(linkChain.length, elapsedTime),
+        linkChain[1]?.id || "",
+        secondLastItem.id,
+        linkChain.length,
+        "daily"
+      );
+    }
+
+    setLinkChain((prev: ChainItem[]) => prev.length > 2
+      ? [...prev.slice(0, -2), prev[prev.length - 1]]
+      : prev
+    );
+    onGameOver();
+  }, [linkChain, channel, broadcastChannel, myUser, elapsedTime]);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredItems(items);
-    } else {
-      const results = fuzzysort.go(searchQuery, items, { key: "name" });
-      setFilteredItems(results.map((result) => result.obj));
-    }
+    if (!channel || isConnected) return;
+
+    const initializeMultiplayer = async () => {
+      const userId = searchParams.get("userId");
+      const userData = sessionStorage.getItem(userId!);
+      if (!userData) return router.push("/");
+
+      const user = JSON.parse(userData);
+      setMyUser(user);
+
+      const gameChannel = supabase.channel(`game-room:${channel}`, {
+        config: { presence: { key: userId! } },
+      });
+
+      gameChannel
+        .on("presence", { event: "sync" }, () => {
+          const state = gameChannel.presenceState();
+          setUsers(Object.values(state).map((u: any) => u[0]));
+        })
+        .subscribe(async (status) => {
+          if (status === "SUBSCRIBED") {
+            await gameChannel.track(user);
+            setIsConnected(true);
+          }
+        });
+
+      setBroadcastChannel(gameChannel);
+      return () => {
+        gameChannel.unsubscribe();
+        setIsConnected(false);
+      };
+    };
+
+    initializeMultiplayer();
+  }, [channel]);
+
+  useEffect(() => {
+    if (!channel || !broadcastChannel) return;
+
+    const subscription = broadcastChannel.on(
+      "broadcast",
+      { event: "player-finished" },
+      ({ payload }: { payload: { user: User } }) => {
+        setFinishedUsers(prev =>
+          prev.some(u => u.id === payload.user.id)
+            ? prev
+            : [...prev, payload.user]
+        );
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [channel, broadcastChannel]);
+
+  useEffect(() => {
+    setFilteredItems(
+      searchQuery.trim() === ""
+        ? items
+        : fuzzysort.go(searchQuery, items, { key: "name" }).map(r => r.obj)
+    );
   }, [searchQuery, items]);
+
+  const calculateScore = (links: number, time: number) => {
+    return Math.floor((links * 1000) / Math.max(1, time));
+  };
 
   return (
     <div className="flex flex-col items-center space-y-6">
@@ -121,25 +173,17 @@ export default function Game({
         <div className="flex items-center space-x-6">
           <Button
             variant="destructive"
-            className="py-2 transition duration-300"
-            onClick={() => {
-              setLinkChain((prev: any) => {
-                return [prev[0], prev[prev.length - 1]];
-              });
-            }}
+            onClick={() => setLinkChain([linkChain[0], linkChain[linkChain.length - 1]])}
           >
             Clear Chain
           </Button>
           <Button
             variant="secondary"
-            className="py-2 transition duration-300"
-            onClick={() => {
-              setLinkChain((prev: any) => {
-                return prev.length > 2
-                  ? [...prev.slice(0, -2), prev[prev.length - 1]]
-                  : prev;
-              });
-            }}
+            onClick={() => setLinkChain((prev: any) =>
+              prev.length > 2
+                ? [...prev.slice(0, -2), prev[prev.length - 1]]
+                : prev
+            )}
           >
             Undo
           </Button>
@@ -156,6 +200,24 @@ export default function Game({
             <ul className="space-y-1 text-sm text-muted-foreground">
               {formatElapsedTime(elapsedTime)}
             </ul>
+
+            {channel && (
+              <>
+                <h2 className="flex gap-2 items-center text-lg font-semibold mt-4">
+                  <UserIcon className="w-4 h-4" />
+                  Players
+                </h2>
+                <ul className="space-y-1 text-sm text-muted-foreground">
+                  {users.map(user => (
+                    <li key={user.id}>
+                      <span className="font-semibold">
+                        {user.id === myUser?.id ? 'You' : user.name}
+                      </span>: {finishedUsers.some(u => u.id === user.id) ? "✅" : "⏳"}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
 
           <input
@@ -184,11 +246,7 @@ export default function Game({
                     className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-white"
                     onClick={() => {
                       setSearchQuery("");
-                      setLinkChain((prev: any) => [
-                        ...prev.slice(0, -1),
-                        item,
-                        prev[prev.length - 1],
-                      ]);
+                      setLinkChain((prev: any) => [...prev.slice(0, -1), item, prev[prev.length - 1]]);
                     }}
                   >
                     <td className="py-2 px-4 flex items-center">
@@ -201,11 +259,7 @@ export default function Game({
                       />
                       <span className="truncate">{item.name}</span>
                       <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
-                        {"artist" in item ? (
-                          <DiscIcon className="w-4 h-4" />
-                        ) : (
-                          <MicIcon className="w-4 h-4" />
-                        )}
+                        {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
                         {"artist" in item ? "Album" : "Artist"}
                       </span>
                     </td>

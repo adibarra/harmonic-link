@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import GameLoading from "@/components/game/game-loading";
-import GamePage from "@/components/game/game-mp";
+import GamePage from "@/components/game/game";
 import GameOver from "@/components/game/game-over";
 import { motion, AnimatePresence } from "motion/react";
+import { useParams } from "next/navigation";
 
 export default function MultiplayerGame() {
   const [gameReady, setGameReady] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
+  const { channel } = useParams();
 
   const fadeInOut = {
     initial: { opacity: 0 },
@@ -54,6 +56,7 @@ export default function MultiplayerGame() {
           onGameOver={() => {
             setGameOver(true);
           }}
+          channel={channel as string | undefined}
         />
       </motion.div>
     </AnimatePresence>
