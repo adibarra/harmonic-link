@@ -17,7 +17,7 @@ export default function GameModeMenu() {
 
   return (
     <motion.div
-      className="flex flex-col items-center min-h-screen space-y-8 p-6"
+      className="flex flex-col items-center space-y-8 p-6"
       {...fadeInOut}
     >
       <h1 className="text-3xl font-bold text-center">Harmonic Links</h1>

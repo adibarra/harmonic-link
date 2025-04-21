@@ -31,7 +31,7 @@ export default function LobbyEntry() {
 
   return (
     <motion.div
-      className="flex flex-col items-center h-screen space-y-6 p-6"
+      className="flex flex-col items-center space-y-6 p-6"
       {...fadeInOut}
     >
       <h1 className="text-4xl font-bold">Multiplayer Game</h1>
