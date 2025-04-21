@@ -20,6 +20,7 @@ export default function Lobby() {
   const [confirmedParticipants, setConfirmedParticipants] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
+  const [isSigned, setIsSigned] = useState(false);
 
   const fadeInOut = {
     initial: { opacity: 0 },
@@ -32,17 +33,32 @@ export default function Lobby() {
     if (!channel || isConnected) return;
 
     const initializeUser = async () => {
-      const newUser: User = {
-        id: myUserID,
-        name: `Guest-${Math.floor(Math.random() * 10000)}`,
-        image: 'https://i.scdn.co/image/ab6775700000ee85b30fb73ddc12801c51b61f8e',
-        isGuest: true,
-      };
+      const { data: { user } } = await supabase.auth.getUser()
+      var newPlayer: User
+      if(user) {
+        const identityData = user!.identities![0].identity_data!
+        newPlayer = {
+          id: myUserID,
+          name: identityData.name,
+          image: identityData.avatar_url,
+          isGuest: false,
+        }
+        setIsSigned(true);
+      }
+      else {
+         newPlayer = {
+          id: myUserID,
+          name: `Guest-${Math.floor(Math.random() * 10000)}`,
+          image: 'https://developer.spotify.com/images/guidelines/design/icon3.svg',
+          isGuest: true,
+        };
+      }
 
-      sessionStorage.setItem(newUser.id, JSON.stringify(newUser));
-      setMyUser(newUser);
+
+      sessionStorage.setItem(newPlayer.id, JSON.stringify(newPlayer));
+      setMyUser(newPlayer);
       setLoading(false);
-      return newUser;
+      return newPlayer;
     };
 
     const channelInstance = supabase.channel(`game-room:${channel}`, {
