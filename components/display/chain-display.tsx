@@ -31,7 +31,6 @@ export default function ChainDisplay({ chain, fullChain = false }: ChainDisplayP
   };
 
   return useMemo(() => {
-    const isChainEmpty = chain.length === 2;
     const middleChain = chain.slice(1, -1);
 
     return (
