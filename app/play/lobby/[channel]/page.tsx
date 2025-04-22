@@ -54,7 +54,6 @@ export default function Lobby() {
         };
       }
 
-
       sessionStorage.setItem(newPlayer.id, JSON.stringify(newPlayer));
       setMyUser(newPlayer);
       setLoading(false);
@@ -130,7 +129,7 @@ export default function Lobby() {
         payload: { participants: users.map((u) => u.id), channel },
       });
 
-      router.push(`/play/lobby/${channel}/start?userId=${myUserID}`);
+      router.push(`/play/lobby/${channel}/start?userId=${myUserID}&isHost=true`);
     }
   };
 

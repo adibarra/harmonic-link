@@ -4,16 +4,14 @@ import { useEffect, useState, useCallback } from "react";
 import GameLoading from "@/components/game/game-loading";
 import GamePage from "@/components/game/game";
 import GameOver from "@/components/game/game-over";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { fetchDaily } from "@/services/fetchDaily";
 
 const MIN_LOADING_TIME = 2000;
 const SUCCESS_DISPLAY_TIME = 6000;
 
 export default function ChallengeGame() {
-  const [gameState, setGameState] = useState<
-    "loading" | "ready" | "game-over"
-  >("loading");
+  const [gameState, setGameState] = useState<"loading" | "ready" | "game-over">("loading");
   const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
   const [loadingError, setLoadingError] = useState<string | null>(null);
 
@@ -66,7 +64,7 @@ export default function ChallengeGame() {
   };
 
   return (
-    <AnimatePresence>
+    <>
       {gameState === "loading" && (
         <motion.div key="loading" {...fadeInOut}>
           <GameLoading
@@ -91,14 +89,16 @@ export default function ChallengeGame() {
       )}
 
       {gameState === "ready" && (
-        <motion.div key="game" {...fadeInOut}>
-          <GamePage
-            linkChain={linkChain}
-            setLinkChain={setLinkChain}
-            onGameOver={handleGameOver}
-          />
-        </motion.div>
+        <AnimatePresence>
+          <motion.div key="game" {...fadeInOut}>
+            <GamePage
+              linkChain={linkChain}
+              setLinkChain={setLinkChain}
+              onGameOver={handleGameOver}
+            />
+          </motion.div>
+        </AnimatePresence>
       )}
-    </AnimatePresence>
+    </>
   );
 }

@@ -4,9 +4,9 @@ import { useEffect, useState, useCallback } from "react";
 import GameLoading from "@/components/game/game-loading";
 import GamePage from "@/components/game/game";
 import GameOver from "@/components/game/game-over";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { fetchArtistArtist } from "@/services/fetchArtistArtist";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 const supabase = createClient();
 
@@ -18,9 +18,8 @@ export default function ChallengeGame() {
   const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const { channel } = useParams();
-  const [isHost, setIsHost] = useState(false);
   const [broadcastChannel, setBroadcastChannel] = useState<any>(null);
-
+  const isHost = useSearchParams().get("isHost") === "true";
 
   useEffect(() => {
     if (!channel) return;
@@ -28,18 +27,11 @@ export default function ChallengeGame() {
     const channelInstance = supabase.channel(`game-channel:${channel}`);
 
     channelInstance
-      .on('presence', { event: 'sync' }, () => {
-        const presenceState = channelInstance.presenceState();
-        const users = Object.values(presenceState).map((user: any) => user[0]);
-
-
-        if (users.length === 1) {
-          setIsHost(true);
-        }
-      })
       .on('broadcast', { event: 'challenge_loaded' }, ({ payload }) => {
         setLinkChain(payload.linkChain);
-        setGameState("ready");
+        setTimeout(() => {
+          setGameState("ready");
+        }, SUCCESS_DISPLAY_TIME);
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
@@ -69,14 +61,12 @@ export default function ChallengeGame() {
       }
 
       const [start, end] = data;
-      const newLinkChain = [start, end];
-      setLinkChain(newLinkChain);
-
+      setLinkChain([start, end]);
 
       broadcastChannel?.send({
         type: 'broadcast',
         event: 'challenge_loaded',
-        payload: { linkChain: newLinkChain },
+        payload: { linkChain: [start, end] },
       });
 
       await new Promise((resolve) => setTimeout(resolve, SUCCESS_DISPLAY_TIME));
@@ -93,21 +83,18 @@ export default function ChallengeGame() {
     setGameState("loading");
     setLinkChain([]);
     setLoadingError(null);
-
-    if (isHost) {
-      loadChallenge();
-    }
-  }, [isHost, loadChallenge]);
+    loadChallenge();
+  }, [loadChallenge]);
 
   const handleGameOver = useCallback(() => {
     setGameState("game-over");
   }, []);
 
   useEffect(() => {
-    if (gameState === "loading" && isHost) {
+    if (gameState === "loading") {
       loadChallenge();
     }
-  }, [gameState, isHost, loadChallenge]);
+  }, [gameState, loadChallenge]);
 
   const fadeInOut = {
     initial: { opacity: 0 },
@@ -117,7 +104,7 @@ export default function ChallengeGame() {
   };
 
   return (
-    <AnimatePresence>
+    <>
       {gameState === "loading" && (
         <motion.div key="loading" {...fadeInOut}>
           <GameLoading
@@ -142,15 +129,17 @@ export default function ChallengeGame() {
       )}
 
       {gameState === "ready" && (
-        <motion.div key="game" {...fadeInOut}>
-          <GamePage
-            linkChain={linkChain}
-            setLinkChain={setLinkChain}
-            onGameOver={handleGameOver}
-            channel={channel as string | undefined}
-          />
-        </motion.div>
+        <AnimatePresence>
+          <motion.div key="game" {...fadeInOut}>
+            <GamePage
+              linkChain={linkChain}
+              setLinkChain={setLinkChain}
+              onGameOver={handleGameOver}
+              channel={channel as string | undefined}
+            />
+          </motion.div>
+        </AnimatePresence>
       )}
-    </AnimatePresence>
+    </>
   );
 }
