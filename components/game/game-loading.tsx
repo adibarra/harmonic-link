@@ -4,14 +4,28 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { MoonLoader } from "react-spinners";
 import ArtistCard from "@/components/display/artist-card";
-import { fetchAlbumAlbum } from "@/services/fetchAlbumAlbum";
-import { fetchArtistArtist } from "@/services/fetchArtistArtist";
 
 interface LoadingGameProps {
-  onSuccess: (start: ChainItem, end: ChainItem) => void;
+  start?: ChainItem;
+  end?: ChainItem;
+  loadingMessage?: string;
+  successMessage?: string;
+  title?: string;
+  description?: string | React.ReactNode;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
-export default function LoadingGame({ onSuccess }: LoadingGameProps) {
+export default function LoadingGame({
+  start,
+  end,
+  loadingMessage = "Finding two artists to connect through their music...",
+  successMessage = "Found a path. Get ready!",
+  title = "Harmonic Links",
+  description = "This may take a few seconds.",
+  isLoading = true,
+  error = null,
+}: LoadingGameProps) {
   const messages = [
     "Tuning instruments...",
     "Syncing BPMs...",
@@ -26,11 +40,7 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
   ];
 
   const [currentMessage, setCurrentMessage] = useState(messages[0]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [startArtist, setStartArtist] = useState<Artist | null>(null);
-  const [endArtist, setEndArtist] = useState<Artist | null>(null);
+  const [showArtists, setShowArtists] = useState(false);
 
   useEffect(() => {
     const shuffledMessages = [...messages].sort(() => Math.random() - 0.5);
@@ -41,50 +51,24 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
       });
     }, 3000);
 
-    const fetchChallenge = async () => {
-      try {
-        const [artists] = await Promise.all([
-          fetchArtistArtist('alternative'),
-          new Promise((resolve) => setTimeout(resolve, 2000)),
-        ]);
-
-        if (artists && artists.length > 0) {
-          const startArtist = artists[0];
-          const endArtist = artists[1];
-
-          clearInterval(messageInterval);
-          setStartArtist(startArtist);
-          setEndArtist(endArtist);
-          setSuccess(true);
-          setCurrentMessage("Found a path. Get ready!");
-
-          setTimeout(() => {
-            onSuccess(startArtist, endArtist);
-          }, 6000);
-        } else {
-          throw new Error("Failed to find a path. Try refreshing.");
-        }
-      } catch (err) {
-        setError("Failed to find a path. Try refreshing.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-        clearInterval(messageInterval);
-      }
-    };
-
-    fetchChallenge();
+    if (!isLoading && !error) {
+      setCurrentMessage(successMessage);
+      setShowArtists(true);
+      clearInterval(messageInterval);
+    }
 
     return () => clearInterval(messageInterval);
-  }, [onSuccess]);
+  }, [isLoading, error, successMessage]);
+
+  const success = !isLoading && !error;
 
   return (
     <div className="p-6 flex flex-col items-center w-full">
-      <h1 className="text-3xl font-bold mb-6">Harmonic Links</h1>
-      <p>Finding two artists to connect through their music.</p>
-      <p>This may take a few seconds.</p>
+      <h1 className="text-3xl font-bold mb-6">{title}</h1>
+      <p>{loadingMessage}</p>
+      {description && <p>{description}</p>}
 
-      {loading && (
+      {isLoading && (
         <div className="m-32">
           <MoonLoader color="#fff" size={40} />
         </div>
@@ -94,17 +78,16 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
         <p className="text-red-500 mt-4">{error}</p>
       ) : (
         <>
-          {startArtist && endArtist && (
+          {showArtists && start && end && (
             <motion.div
               className="flex justify-between items-center w-full m-12"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
             >
-              <ArtistCard artist={startArtist} />
+              <ArtistCard artist={start} />
               <span className="text-4xl">→</span>
-              <ArtistCard artist={endArtist} />
+              <ArtistCard artist={end} />
             </motion.div>
           )}
 
@@ -113,8 +96,7 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
             key={currentMessage}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
+            transition={{ duration: 0.5 }}
           >
             {currentMessage}
           </motion.p>
@@ -123,4 +105,3 @@ export default function LoadingGame({ onSuccess }: LoadingGameProps) {
     </div>
   );
 }
-
