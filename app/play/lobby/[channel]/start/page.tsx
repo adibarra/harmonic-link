@@ -68,7 +68,7 @@ export default function ChallengeGame() {
   };
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       {gameState === "loading" && (
         <motion.div key="loading" {...fadeInOut}>
           <GameLoading
