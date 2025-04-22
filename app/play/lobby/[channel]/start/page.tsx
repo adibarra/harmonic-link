@@ -1,64 +1,107 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import GameLoading from "@/components/game/game-loading";
 import GamePage from "@/components/game/game";
 import GameOver from "@/components/game/game-over";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { fetchArtistArtist } from "@/services/fetchArtistArtist";
 import { useParams } from "next/navigation";
 
-export default function MultiplayerGame() {
-  const [gameReady, setGameReady] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
+const MIN_LOADING_TIME = 2000;
+const SUCCESS_DISPLAY_TIME = 6000;
+
+export default function ChallengeGame() {
+  const [gameState, setGameState] = useState<
+    "loading" | "ready" | "game-over"
+  >("loading");
   const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
   const { channel } = useParams();
+
+  const loadChallenge = useCallback(async () => {
+    try {
+      setLoadingError(null);
+      const [data] = await Promise.all([
+        fetchArtistArtist('alternative'),
+        new Promise((resolve) => setTimeout(resolve, MIN_LOADING_TIME)),
+      ]);
+
+      if (!data || data.length < 2) {
+        throw new Error("Invalid challenge data received");
+      }
+
+      const [start, end] = data;
+      setLinkChain([start, end]);
+
+      await new Promise((resolve) => setTimeout(resolve, SUCCESS_DISPLAY_TIME));
+      setGameState("ready");
+    } catch (err) {
+      console.error("Challenge load error:", err);
+      setLoadingError(
+        err instanceof Error ? err.message : "Failed to load new challenge"
+      );
+    }
+  }, []);
+
+  const handleRestart = useCallback(() => {
+    setGameState("loading");
+    setLinkChain([]);
+    setLoadingError(null);
+  }, []);
+
+  const handleGameOver = useCallback(() => {
+    setGameState("game-over");
+  }, []);
+
+  useEffect(() => {
+    if (gameState === "loading") {
+      loadChallenge();
+    }
+  }, [gameState, loadChallenge]);
 
   const fadeInOut = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     exit: { opacity: 0 },
-    transition: { duration: 0.5 },
+    transition: { duration: 0.5 }
   };
 
-  if (!gameReady) {
-    return (
-      <motion.div {...fadeInOut}>
-        <GameLoading
-          onSuccess={(start, end) => {
-            setLinkChain([start, end]);
-            setGameReady(true);
-          }}
-        />
-      </motion.div>
-    );
-  }
-
-  if (gameOver) {
-    return (
-      <motion.div {...fadeInOut}>
-        <GameOver
-          linkChain={linkChain}
-          onRestart={() => {
-            setGameOver(false);
-            setGameReady(false);
-          }}
-        />
-      </motion.div>
-    );
-  }
-
   return (
-    <AnimatePresence>
-      <motion.div key="multiplayer-game" {...fadeInOut}>
-        <GamePage
-          linkChain={linkChain}
-          setLinkChain={setLinkChain}
-          onGameOver={() => {
-            setGameOver(true);
-          }}
-          channel={channel as string | undefined}
-        />
-      </motion.div>
+    <AnimatePresence mode="wait">
+      {gameState === "loading" && (
+        <motion.div key="loading" {...fadeInOut}>
+          <GameLoading
+            start={linkChain[0]}
+            end={linkChain[1]}
+            isLoading={!loadingError && !linkChain.length}
+            error={loadingError}
+            description="This may take a few seconds."
+            loadingMessage="Generating a new random challenge..."
+            successMessage="Found a new path. Get ready!"
+          />
+        </motion.div>
+      )}
+
+      {gameState === "game-over" && (
+        <motion.div key="game-over" {...fadeInOut}>
+          <GameOver
+            linkChain={linkChain}
+            onRestart={handleRestart}
+          />
+        </motion.div>
+      )}
+
+      {gameState === "ready" && (
+        <motion.div key="game" {...fadeInOut}>
+          <GamePage
+            linkChain={linkChain}
+            setLinkChain={setLinkChain}
+            onGameOver={handleGameOver}
+            channel={channel as string | undefined}
+          />
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 }
