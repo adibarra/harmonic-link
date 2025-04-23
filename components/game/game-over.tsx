@@ -15,7 +15,7 @@ export default function GameOverScreen({
   linkChain,
   onRestart,
 }: GameOverScreenProps) {
-  const max = 1000;
+  const max = 200;
   const min = 100;
   const score = Math.floor(Math.random() * (max - min + 1)) + min;
   useEffect(() => {
