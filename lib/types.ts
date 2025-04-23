@@ -26,3 +26,4 @@ interface User {
 
 type ChainItem = Artist | Album
 
+type LeaderboardEntry = { name: string; score: number };

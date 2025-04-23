@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { MoonLoader } from "react-spinners";
 import ChainDisplay from "@/components/display/chain-display";
@@ -22,7 +22,12 @@ interface GameProps {
 
 const supabase = createClient();
 
-export default function Game({ linkChain, setLinkChain, onGameOver, channel }: GameProps) {
+export default function Game({
+  linkChain,
+  setLinkChain,
+  onGameOver,
+  channel,
+}: GameProps) {
   const [items, setItems] = useState<ChainItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<ChainItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,10 +80,15 @@ export default function Game({ linkChain, setLinkChain, onGameOver, channel }: G
         event: "player-finished",
         payload: { user: myUser },
       });
-    }
-    else if (!channel) {
+    } else if (!channel) {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth() is 0-based
+      const day = String(date.getDate()).padStart(2, "0");
+      const gameId = Number(`${year}${month}${day}`);
+
       uploadFinishedGameToLeaderBoard(
-        123,
+        gameId,
         linkChain[0].id,
         lastItem.id,
         0,
@@ -87,13 +97,12 @@ export default function Game({ linkChain, setLinkChain, onGameOver, channel }: G
         linkChain[1]?.id || "",
         secondLastItem.id,
         linkChain.length,
-        "daily"
+        "daily",
       );
     }
 
-    setLinkChain((prev: ChainItem[]) => prev.length > 2
-      ? [...prev.slice(0, -2), prev[prev.length - 1]]
-      : prev
+    setLinkChain((prev: ChainItem[]) =>
+      prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev,
     );
     onGameOver();
   }, [linkChain, channel, broadcastChannel, myUser, elapsedTime]);
@@ -142,12 +151,12 @@ export default function Game({ linkChain, setLinkChain, onGameOver, channel }: G
       "broadcast",
       { event: "player-finished" },
       ({ payload }: { payload: { user: User } }) => {
-        setFinishedUsers(prev =>
-          prev.some(u => u.id === payload.user.id)
+        setFinishedUsers((prev) =>
+          prev.some((u) => u.id === payload.user.id)
             ? prev
-            : [...prev, payload.user]
+            : [...prev, payload.user],
         );
-      }
+      },
     );
 
     return () => subscription.unsubscribe();
@@ -157,7 +166,7 @@ export default function Game({ linkChain, setLinkChain, onGameOver, channel }: G
     setFilteredItems(
       searchQuery.trim() === ""
         ? items
-        : fuzzysort.go(searchQuery, items, { key: "name" }).map(r => r.obj)
+        : fuzzysort.go(searchQuery, items, { key: "name" }).map((r) => r.obj),
     );
   }, [searchQuery, items]);
 
@@ -173,17 +182,21 @@ export default function Game({ linkChain, setLinkChain, onGameOver, channel }: G
         <div className="flex items-center space-x-6">
           <Button
             variant="destructive"
-            onClick={() => setLinkChain([linkChain[0], linkChain[linkChain.length - 1]])}
+            onClick={() =>
+              setLinkChain([linkChain[0], linkChain[linkChain.length - 1]])
+            }
           >
             Clear Chain
           </Button>
           <Button
             variant="secondary"
-            onClick={() => setLinkChain((prev: any) =>
-              prev.length > 2
-                ? [...prev.slice(0, -2), prev[prev.length - 1]]
-                : prev
-            )}
+            onClick={() =>
+              setLinkChain((prev: any) =>
+                prev.length > 2
+                  ? [...prev.slice(0, -2), prev[prev.length - 1]]
+                  : prev,
+              )
+            }
           >
             Undo
           </Button>
@@ -208,11 +221,15 @@ export default function Game({ linkChain, setLinkChain, onGameOver, channel }: G
                   Players
                 </h2>
                 <ul className="space-y-1 text-sm text-muted-foreground">
-                  {users.map(user => (
+                  {users.map((user) => (
                     <li key={user.id}>
                       <span className="font-semibold">
-                        {user.id === myUser?.id ? 'You' : user.name}
-                      </span>: {finishedUsers.some(u => u.id === user.id) ? "✅" : "⏳"}
+                        {user.id === myUser?.id ? "You" : user.name}
+                      </span>
+                      :{" "}
+                      {finishedUsers.some((u) => u.id === user.id)
+                        ? "✅"
+                        : "⏳"}
                     </li>
                   ))}
                 </ul>
@@ -246,7 +263,11 @@ export default function Game({ linkChain, setLinkChain, onGameOver, channel }: G
                     className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-white"
                     onClick={() => {
                       setSearchQuery("");
-                      setLinkChain((prev: any) => [...prev.slice(0, -1), item, prev[prev.length - 1]]);
+                      setLinkChain((prev: any) => [
+                        ...prev.slice(0, -1),
+                        item,
+                        prev[prev.length - 1],
+                      ]);
                     }}
                   >
                     <td className="py-2 px-4 flex items-center">
@@ -259,7 +280,11 @@ export default function Game({ linkChain, setLinkChain, onGameOver, channel }: G
                       />
                       <span className="truncate">{item.name}</span>
                       <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
-                        {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
+                        {"artist" in item ? (
+                          <DiscIcon className="w-4 h-4" />
+                        ) : (
+                          <MicIcon className="w-4 h-4" />
+                        )}
                         {"artist" in item ? "Album" : "Artist"}
                       </span>
                     </td>
