@@ -5,6 +5,7 @@ import ChainDisplay from "@/components/display/chain-display";
 import { Card } from "../ui/card";
 import { useEffect } from "react";
 import Leaderboard from "../display/leaderboard";
+import { useState } from "react";
 
 interface GameOverScreenProps {
   linkChain: ChainItem[];
@@ -21,7 +22,10 @@ export default function GameOverScreen({
   useEffect(() => {
     console.log("First linkChain item:", linkChain[0]);
   }, [linkChain]);
-
+  const [playlistUrl, setPlaylistUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  
   const handleGeneratePlaylist = async () => {
     try {
       const response = await fetch("/api/playlist/callback", {
@@ -35,14 +39,17 @@ export default function GameOverScreen({
 
       const data = await response.json();
 
-      if (!response.ok) {
-        console.error("Failed to create playlist:", data.error);
-        alert("Error creating playlist: " + data.error);
-        return;
+      if (response.ok) {
+        setPlaylistUrl(data.playlistUrl);
+   
+      } else {
+        setError(data.error || "Failed to create playlist");
       }
-    } catch (error: any) {
-      console.error("Error creating playlist:", error);
-      alert("Error creating playlist: " + error.message);
+    } catch (err) {
+      console.error("Game error: Unexpected error:", err);
+      setError("Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   };
   return (
