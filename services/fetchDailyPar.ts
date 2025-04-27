@@ -1,8 +1,8 @@
 import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
 
-const dailyCache: { [date: string]: Artist[] } = {};
+const dailyCache: { [date: string]: number } = {};
 
-export async function fetchDaily(): Promise<Artist[] | null> {
+export async function fetchDailyPar(): Promise<number | null> {
   const date = new Date();
   const format = date.toLocaleString("en-US", {
     timeZone: 'America/Chicago',
@@ -28,7 +28,7 @@ export async function fetchDaily(): Promise<Artist[] | null> {
     }
 
     const artists = await response.json();
-    dailyCache[formattedDate] = [artists[0], artists[1]];
+    dailyCache[formattedDate] = artists[2];
 
     return artists;
 

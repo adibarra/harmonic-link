@@ -6,6 +6,7 @@ import GamePage from "@/components/game/game";
 import GameOver from "@/components/game/game-over";
 import { motion, AnimatePresence } from "motion/react";
 import { fetchDaily } from "@/services/fetchDaily";
+import { fetchDailyPar } from "@/services/fetchDailyPar";
 
 const MIN_LOADING_TIME = 2000;
 const SUCCESS_DISPLAY_TIME = 6000;
@@ -14,6 +15,7 @@ export default function ChallengeGame() {
   const [gameState, setGameState] = useState<"loading" | "ready" | "game-over">("loading");
   const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
   const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [par, setPar] = useState<number>(0);
 
   const loadChallenge = useCallback(async () => {
     try {
@@ -26,9 +28,15 @@ export default function ChallengeGame() {
       if (!data || data.length < 2) {
         throw new Error("Invalid challenge data received");
       }
+      const [Lpar] = await Promise.all([
+        fetchDailyPar(),
+        new Promise((resolve) => setTimeout(resolve, MIN_LOADING_TIME)),
+      ]);
 
-      const [start, end] = data;
-      setLinkChain([start, end]);
+      if (!Lpar || Lpar < 1) {
+        throw new Error("Invalid challenge data received");
+      }
+      setPar(Lpar);
 
       await new Promise((resolve) => setTimeout(resolve, SUCCESS_DISPLAY_TIME));
       setGameState("ready");
@@ -70,6 +78,7 @@ export default function ChallengeGame() {
           <GameLoading
             start={linkChain[0]}
             end={linkChain[1]}
+            par={par}
             isLoading={!loadingError && !linkChain.length}
             error={loadingError}
             description=""
@@ -93,6 +102,7 @@ export default function ChallengeGame() {
           <motion.div key="game" {...fadeInOut}>
             <GamePage
               linkChain={linkChain}
+              par={par}
               setLinkChain={setLinkChain}
               onGameOver={handleGameOver}
             />

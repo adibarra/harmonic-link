@@ -64,7 +64,8 @@ export async function GET(request: Request) {
 
         responseData = await Promise.all([
           spot.getArtist(data[0].start_artist_id as string),
-          spot.getArtist(data[0].end_artist_id as string)
+          spot.getArtist(data[0].end_artist_id as string),
+          data[0].challenge_link_length
         ]);
         break;
 

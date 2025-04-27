@@ -14,12 +14,13 @@ export default function ChallengeGame() {
   const [gameState, setGameState] = useState<"loading" | "ready" | "game-over">("loading");
   const [linkChain, setLinkChain] = useState<ChainItem[]>([]);
   const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [par, setPar] = useState<number>(0);
 
   const loadChallenge = useCallback(async () => {
     try {
       setLoadingError(null);
       const [data] = await Promise.all([
-        fetchArtistArtist('alternative'),
+        fetchArtistArtist(),
         new Promise((resolve) => setTimeout(resolve, MIN_LOADING_TIME)),
       ]);
 
@@ -27,8 +28,9 @@ export default function ChallengeGame() {
         throw new Error("Invalid challenge data received");
       }
 
-      const [start, end] = data;
+      const [start, end] = [data[0], data[1]];
       setLinkChain([start, end]);
+      setPar(parseInt(data[2].id));
 
       await new Promise((resolve) => setTimeout(resolve, SUCCESS_DISPLAY_TIME));
       setGameState("ready");
@@ -70,6 +72,7 @@ export default function ChallengeGame() {
           <GameLoading
             start={linkChain[0]}
             end={linkChain[1]}
+            par={par}
             isLoading={!loadingError && !linkChain.length}
             error={loadingError}
             description="This may take a few seconds."
@@ -93,6 +96,7 @@ export default function ChallengeGame() {
           <motion.div key="game" {...fadeInOut}>
             <GamePage
               linkChain={linkChain}
+              par={par}
               setLinkChain={setLinkChain}
               onGameOver={handleGameOver}
             />

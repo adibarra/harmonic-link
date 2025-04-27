@@ -1,7 +1,7 @@
 import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
 import { fetchArtist } from "./fetchArtist";
 
-export async function fetchArtistArtist(genre: string): Promise<Artist[] | null> {
+export async function fetchArtistArtist(): Promise<Artist[] | null> {
   try {
     // Generate and set cookie
     let token = Math.random().toString(36).substring(2, 15);
@@ -11,7 +11,7 @@ export async function fetchArtistArtist(genre: string): Promise<Artist[] | null>
       sameSite: 'strict'
     });
 
-    const response = await fetch(`/api/game?type=artistArtist&id=${genre}`, {
+    const response = await fetch(`/api/game?type=artistArtist`, {
       headers: { 'X-Session-Token': token },
       credentials: 'include' // Required for cookies
     });
@@ -25,7 +25,8 @@ export async function fetchArtistArtist(genre: string): Promise<Artist[] | null>
     const data = await response.json();
     const artists = await Promise.all([
       fetchArtist(data.id1),
-      fetchArtist(data.id2)
+      fetchArtist(data.id2),
+      {id: data.par, name: "", image: ""}
     ]);
 
     artists.some((artist) => {
@@ -37,7 +38,7 @@ export async function fetchArtistArtist(genre: string): Promise<Artist[] | null>
     return artists as Artist[];
 
   } catch (error) {
-    console.error("Error fetching artist albums:", error);
+    console.error("Error fetching artist artist:", error);
     return null;
   }
 }

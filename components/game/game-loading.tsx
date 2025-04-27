@@ -8,6 +8,7 @@ import ArtistCard from "@/components/display/artist-card";
 interface LoadingGameProps {
   start?: ChainItem;
   end?: ChainItem;
+  par?: number;
   loadingMessage?: string;
   successMessage?: string;
   title?: string;
@@ -19,6 +20,7 @@ interface LoadingGameProps {
 export default function LoadingGame({
   start,
   end,
+  par,
   loadingMessage = "Finding two artists to connect through their music...",
   successMessage = "Found a path. Get ready!",
   title = "Harmonic Links",

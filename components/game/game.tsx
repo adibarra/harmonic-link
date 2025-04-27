@@ -15,6 +15,7 @@ import { uploadFinishedGameToLeaderBoard } from "@/services/uploadGameToLeaderbo
 
 interface GameProps {
   linkChain: ChainItem[];
+  par: number;
   setLinkChain: (chain: any) => void;
   onGameOver: () => void;
   channel?: string;
@@ -24,6 +25,7 @@ const supabase = createClient();
 
 export default function Game({
   linkChain,
+  par,
   setLinkChain,
   onGameOver,
   channel,
@@ -171,7 +173,15 @@ export default function Game({
   }, [searchQuery, items]);
 
   const calculateScore = (links: number, time: number) => {
-    return Math.floor((links * 1000) / Math.max(1, time));
+    var time_factor = 0;
+    if(time < 300)
+      time_factor = 1 - (time/300) + 0.1
+    else
+      time_factor = 0.1
+    var scored = Math.floor((10000 - 1000*(links - par)) * time_factor)
+    if(scored < 0)
+        scored = 0
+    return scored;
   };
 
   return (
