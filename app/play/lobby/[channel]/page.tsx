@@ -40,7 +40,8 @@ export default function Lobby() {
         newPlayer = {
           id: myUserID,
           name: identityData.name,
-          image: identityData.avatar_url,
+          image: (identityData.avatar_url as string).replace("s96-c", "s192-c")
+            ?? `https://ui-avatars.com/api/?background=0D8ABC&color=fff&format=svg&name=${encodeURIComponent(identityData.name)}`,
           isGuest: false,
         }
         setIsSigned(true);
