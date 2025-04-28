@@ -11,17 +11,25 @@ interface Album {
   image: string
 }
 
-interface StartEnd {
-  id1: string
-  id2: string
-  par: number
-}
-
 interface User {
   id: string
   name: string
   image: string
   isGuest: boolean
+}
+
+interface Challenge {
+  id: string,
+  start: ChainItem,
+  end: ChainItem,
+  par: number
+}
+
+interface GameState {
+  challenge: Challenge | null,
+  channel: string | null,
+  status: "waiting" | "loading" | "playing" | "finished",
+  linkChain: ChainItem[],
 }
 
 type ChainItem = Artist | Album
