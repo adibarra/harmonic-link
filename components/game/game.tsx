@@ -67,7 +67,6 @@ export default function Game({
     loadItems();
   }, [gameState.linkChain]);
 
-
   useEffect(() => {
     const lastItem = gameState.linkChain[gameState.linkChain.length - 1];
     const secondLastItem = gameState.linkChain[gameState.linkChain.length - 2];
@@ -151,7 +150,7 @@ export default function Game({
   useEffect(() => {
     if (!gameState.channel || !broadcastChannel) return;
 
-    const subscription = broadcastChannel.on(
+    broadcastChannel.on(
       "broadcast",
       { event: "player-finished" },
       ({ payload }: { payload: { user: User } }) => {
@@ -162,8 +161,6 @@ export default function Game({
         );
       },
     );
-
-    return () => subscription.unsubscribe();
   }, [gameState, broadcastChannel]);
 
   useEffect(() => {
@@ -291,11 +288,7 @@ export default function Game({
                         />
                         <span className="truncate">{item.name}</span>
                         <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
-                          {"artist" in item ? (
-                            <DiscIcon className="w-4 h-4" />
-                          ) : (
-                            <MicIcon className="w-4 h-4" />
-                          )}
+                          {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
                           {"artist" in item ? "Album" : "Artist"}
                         </span>
                       </td>
