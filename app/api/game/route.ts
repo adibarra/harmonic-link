@@ -50,6 +50,7 @@ export async function GET(request: Request) {
 
         responseData = {
           id: `${artistEndless!.id1}-${artistEndless!.id2}`,
+          type: "random",
           start: artistStart,
           end: artistEnd,
           par: artistEndless!.par,
@@ -66,6 +67,7 @@ export async function GET(request: Request) {
 
         responseData = {
           id: `${albumEndless!.id1}-${albumEndless!.id2}`,
+          type: "random",
           start: albumStart,
           end: albumEnd,
           par: albumEndless!.par,
@@ -88,6 +90,7 @@ export async function GET(request: Request) {
 
         responseData = {
           id: `${data[0].start_artist_id}-${data[0].end_artist_id}`,
+          type: "daily",
           start: dailyStart,
           end: dailyEnd,
           par: data[0].challenge_link_length,

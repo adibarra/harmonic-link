@@ -20,6 +20,7 @@ interface User {
 
 interface Challenge {
   id: string,
+  type: "daily" | "random",
   start: ChainItem,
   end: ChainItem,
   par: number
