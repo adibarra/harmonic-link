@@ -1,8 +1,8 @@
 import { setCookie, getCookie, deleteCookie } from "cookies-next/client"
 
-const dailyCache: { [date: string]: Artist[] } = {};
+const dailyCache: { [date: string]: Challenge } = {};
 
-export async function fetchDaily(): Promise<Artist[] | null> {
+export async function fetchDaily(): Promise<Challenge | null> {
   const date = new Date();
   const format = date.toLocaleString("en-US", {
     timeZone: 'America/Chicago',
@@ -22,18 +22,18 @@ export async function fetchDaily(): Promise<Artist[] | null> {
   try {
     const response = await fetch(`/api/game?type=daily&id=${formattedDate}`);
 
-    //deleteCookie(token)
+    //deleteCookie(token);
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
     }
 
-    const artists = await response.json();
-    dailyCache[formattedDate] = [artists[0], artists[1]];
+    const data = await response.json();
+    dailyCache[formattedDate] = data;
 
-    return artists;
+    return data;
 
   } catch (error) {
-    console.error("Error fetching daily artists:", error);
+    console.error("Error fetching daily challenge:", error);
     return null;
   }
 }

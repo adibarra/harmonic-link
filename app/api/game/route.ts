@@ -13,44 +13,63 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     const type = searchParams.get("type");
-
-    if (!id || !type) {
-      return NextResponse.json({ error: "Missing ID or type parameter" }, { status: 400 });
-    }
-
     let responseData;
 
     switch (type) {
       case "artist":
         console.log("[API] Fetching artist data...");
+        if (!id) return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
         responseData = await spot.getArtist(id);
         break;
 
       case "album":
         console.log("[API] Fetching album data...");
+        if (!id) return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
         responseData = await spot.getAlbum(id);
         break;
 
       case "albumArtists":
         console.log("[API] Fetching album artists data...");
+        if (!id) return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
         responseData = await spot.getAlbumArtistsImage(id);
         break;
 
       case "artistAlbums":
         console.log("[API] Fetching artist albums data...");
+        if (!id) return NextResponse.json({ error: "Missing ID parameter" }, { status: 400 });
         responseData = await spot.getArtistAlbums(id);
         break;
 
       case 'artistArtist':
         console.log("[API] Fetching artist-artist data...");
         const artistEndless = await logic.getArtistArtist();
-        responseData = artistEndless;
+        const [artistStart, artistEnd] = await Promise.all([
+          spot.getArtist(artistEndless!.id1),
+          spot.getArtist(artistEndless!.id2)
+        ]);
+
+        responseData = {
+          id: `${artistEndless!.id1}-${artistEndless!.id2}`,
+          start: artistStart,
+          end: artistEnd,
+          par: artistEndless!.par,
+        } as Challenge;
         break;
 
       case 'albumAlbum':
         console.log("[API] Fetching album-album data...");
         const albumEndless = await logic.getAlbumAlbum();
-        responseData = albumEndless;
+        const [albumStart, albumEnd] = await Promise.all([
+          spot.getAlbum(albumEndless!.id1),
+          spot.getAlbum(albumEndless!.id2)
+        ]);
+
+        responseData = {
+          id: `${albumEndless!.id1}-${albumEndless!.id2}`,
+          start: albumStart,
+          end: albumEnd,
+          par: albumEndless!.par,
+        } as Challenge;
         break;
 
       case "daily":
@@ -62,11 +81,17 @@ export async function GET(request: Request) {
           return NextResponse.json({ error: "Failed to fetch session data" }, { status: 500 });
         }
 
-        responseData = await Promise.all([
+        const [dailyStart, dailyEnd] = await Promise.all([
           spot.getArtist(data[0].start_artist_id as string),
-          spot.getArtist(data[0].end_artist_id as string),
-          data[0].challenge_link_length
-        ]);
+          spot.getArtist(data[0].end_artist_id as string)
+        ])
+
+        responseData = {
+          id: `${data[0].start_artist_id}-${data[0].end_artist_id}`,
+          start: dailyStart,
+          end: dailyEnd,
+          par: data[0].challenge_link_length,
+        } as Challenge;
         break;
 
       default:
@@ -79,45 +104,4 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
-
-/*
-// this breaks the build, uncomment when ready to use
-export async function ENDLESS_INIT(request: Request) {
-
-  try {
-    const { searchParams } = new URL(request.url);
-
-    const id = searchParams.get('ID'); // ID = genre
-    const type = searchParams.get('type');
-
-    switch (type) {
-
-      case 'artist-artist':
-        const artist = await logic.getValidArtistStartEnd(id);
-        return NextResponse.json(artist, { status: 200 });
-
-      case 'album-album':
-        const album = await logic.getValidAlbumStartEnd(id);
-        return NextResponse.json(album, { status: 200 });
-
-
-      default:
-        return NextResponse.json(
-          { error: 'Invalid type parameter' },
-          { status: 400 }
-        );
-
-    }
-
-
-
-  } catch (error) {
-    console.error('Error in get request:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
- */
 

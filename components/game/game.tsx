@@ -12,23 +12,20 @@ import { ClockIcon, DiscIcon, MicIcon, UserIcon } from "lucide-react";
 import { formatElapsedTime } from "@/utils/utils";
 import fuzzysort from "fuzzysort";
 import { uploadFinishedGameToLeaderBoard } from "@/services/uploadGameToLeaderboard";
+import { AnimatePresence } from "motion/react";
 
 interface GameProps {
-  linkChain: ChainItem[];
-  par: number;
-  setLinkChain: (chain: any) => void;
+  gameState: GameState;
+  setGameState: React.Dispatch<React.SetStateAction<GameState>>;
   onGameOver: () => void;
-  channel?: string;
 }
 
 const supabase = createClient();
 
 export default function Game({
-  linkChain,
-  par,
-  setLinkChain,
+  gameState,
+  setGameState,
   onGameOver,
-  channel,
 }: GameProps) {
   const [items, setItems] = useState<ChainItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<ChainItem[]>([]);
@@ -57,7 +54,7 @@ export default function Game({
     const loadItems = async () => {
       setLoading(true);
       try {
-        const lastItem = linkChain[linkChain.length - 2];
+        const lastItem = gameState.linkChain[gameState.linkChain.length - 2];
         const fetcher = "artist" in lastItem ? fetchAlbumArtists : fetchAlbums;
         const data = await fetcher(lastItem.id);
         setItems(data?.sort((a, b) => a.name.localeCompare(b.name)) || []);
@@ -68,21 +65,22 @@ export default function Game({
       }
     };
     loadItems();
-  }, [linkChain]);
+  }, [gameState.linkChain]);
+
 
   useEffect(() => {
-    const lastItem = linkChain[linkChain.length - 1];
-    const secondLastItem = linkChain[linkChain.length - 2];
+    const lastItem = gameState.linkChain[gameState.linkChain.length - 1];
+    const secondLastItem = gameState.linkChain[gameState.linkChain.length - 2];
 
     if (lastItem.id !== secondLastItem.id) return;
 
-    if (channel && broadcastChannel && myUser) {
+    if (gameState.channel && broadcastChannel && myUser) {
       broadcastChannel.send({
         type: "broadcast",
         event: "player-finished",
         payload: { user: myUser },
       });
-    } else if (!channel) {
+    } else if (!gameState.channel) {
       const date = new Date();
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth() is 0-based
@@ -91,26 +89,30 @@ export default function Game({
 
       uploadFinishedGameToLeaderBoard(
         gameId,
-        linkChain[0].id,
+        gameState.linkChain[0].id,
         lastItem.id,
         0,
         elapsedTime,
-        calculateScore(linkChain.length, elapsedTime),
-        linkChain[1]?.id || "",
+        calculateScore(gameState.linkChain.length, elapsedTime),
+        gameState.linkChain[1]?.id || "",
         secondLastItem.id,
-        linkChain.length,
+        gameState.linkChain.length,
         "daily",
       );
     }
 
-    setLinkChain((prev: ChainItem[]) =>
-      prev.length > 2 ? [...prev.slice(0, -2), prev[prev.length - 1]] : prev,
-    );
+    setGameState((prevState) => ({
+      ...prevState,
+      linkChain: prevState.linkChain.length > 2
+        ? [...prevState.linkChain.slice(0, -2), prevState.linkChain[prevState.linkChain.length - 1]]
+        : prevState.linkChain,
+    }));
+
     onGameOver();
-  }, [linkChain, channel, broadcastChannel, myUser, elapsedTime]);
+  }, [gameState, broadcastChannel, myUser, elapsedTime]);
 
   useEffect(() => {
-    if (!channel || isConnected) return;
+    if (!gameState.channel || isConnected) return;
 
     const initializeMultiplayer = async () => {
       const userId = searchParams.get("userId");
@@ -120,7 +122,7 @@ export default function Game({
       const user = JSON.parse(userData);
       setMyUser(user);
 
-      const gameChannel = supabase.channel(`game-room:${channel}`, {
+      const gameChannel = supabase.channel(`game-room:${gameState.channel}`, {
         config: { presence: { key: userId! } },
       });
 
@@ -144,10 +146,10 @@ export default function Game({
     };
 
     initializeMultiplayer();
-  }, [channel]);
+  }, [gameState.channel]);
 
   useEffect(() => {
-    if (!channel || !broadcastChannel) return;
+    if (!gameState.channel || !broadcastChannel) return;
 
     const subscription = broadcastChannel.on(
       "broadcast",
@@ -162,7 +164,7 @@ export default function Game({
     );
 
     return () => subscription.unsubscribe();
-  }, [channel, broadcastChannel]);
+  }, [gameState, broadcastChannel]);
 
   useEffect(() => {
     setFilteredItems(
@@ -173,138 +175,138 @@ export default function Game({
   }, [searchQuery, items]);
 
   const calculateScore = (links: number, time: number) => {
-    var time_factor = 0;
-    if(time < 300)
-      time_factor = 1 - (time/300) + 0.1
-    else
-      time_factor = 0.1
-    var scored = Math.floor((10000 - 1000*(links - par)) * time_factor)
-    if(scored < 0)
-        scored = 0
-    return scored;
+    const time_factor = time < 300 ? 1 - time / 300 + 0.1 : 0.1;
+    const par = gameState.challenge?.par ?? 0;
+    let scored = Math.floor((10000 - 1000 * (links - par)) * time_factor);
+    return scored < 0 ? 0 : scored;
   };
 
   return (
-    <div className="flex flex-col items-center space-y-6">
-      <ChainDisplay chain={linkChain} />
+    <AnimatePresence>
+      <div className="flex flex-col items-center space-y-6">
+        <ChainDisplay chain={gameState.linkChain} />
 
-      {linkChain.length > 1 && (
-        <div className="flex items-center space-x-6">
-          <Button
-            variant="destructive"
-            onClick={() =>
-              setLinkChain([linkChain[0], linkChain[linkChain.length - 1]])
-            }
-          >
-            Clear Chain
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() =>
-              setLinkChain((prev: any) =>
-                prev.length > 2
-                  ? [...prev.slice(0, -2), prev[prev.length - 1]]
-                  : prev,
-              )
-            }
-          >
-            Undo
-          </Button>
-        </div>
-      )}
+        {gameState.linkChain.length > 1 && (
+          <div className="flex items-center space-x-6">
+            <Button
+              variant="destructive"
+              onClick={() =>
+                setGameState((prevState) => ({
+                  ...prevState,
+                  linkChain: [prevState.linkChain[0], prevState.linkChain[prevState.linkChain.length - 1]],
+                }))
+              }
+            >
+              Clear Chain
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() =>
+                setGameState((prevState) => ({
+                  ...prevState,
+                  linkChain: prevState.linkChain.length > 2
+                    ? [...prevState.linkChain.slice(0, -2), prevState.linkChain[prevState.linkChain.length - 1]]
+                    : prevState.linkChain,
+                }))
+              }
+            >
+              Undo
+            </Button>
+          </div>
+        )}
 
-      <div className="relative w-[50vw]">
-        <div className="w-full max-w-md mx-auto mb-4">
-          <div className="absolute top-0 left-0">
-            <h2 className="flex gap-2 items-center text-lg font-semibold">
-              <ClockIcon className="w-4 h-4" />
-              Timer
-            </h2>
-            <ul className="space-y-1 text-sm text-muted-foreground">
-              {formatElapsedTime(elapsedTime)}
-            </ul>
+        <div className="relative w-[50vw]">
+          <div className="w-full max-w-md mx-auto mb-4">
+            <div className="absolute top-0 left-0">
+              <h2 className="flex gap-2 items-center text-lg font-semibold">
+                <ClockIcon className="w-4 h-4" />
+                Timer
+              </h2>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                {formatElapsedTime(elapsedTime)}
+              </ul>
 
-            {channel && (
-              <>
-                <h2 className="flex gap-2 items-center text-lg font-semibold mt-4">
-                  <UserIcon className="w-4 h-4" />
-                  Players
-                </h2>
-                <ul className="space-y-1 text-sm text-muted-foreground">
-                  {users.map((user) => (
-                    <li key={user.id}>
-                      <span className="font-semibold">
-                        {user.id === myUser?.id ? "You" : user.name}
-                      </span>
-                      :{" "}
-                      {finishedUsers.some((u) => u.id === user.id)
-                        ? "✅"
-                        : "⏳"}
-                    </li>
+              {gameState.channel && (
+                <>
+                  <h2 className="flex gap-2 items-center text-lg font-semibold mt-4">
+                    <UserIcon className="w-4 h-4" />
+                    Players
+                  </h2>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
+                    {users.map((user) => (
+                      <li key={user.id}>
+                        <span className="font-semibold">
+                          {user.id === myUser?.id ? "You" : user.name}
+                        </span>
+                        :{" "}
+                        {finishedUsers.some((u) => u.id === user.id)
+                          ? "✅"
+                          : "⏳"}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
+
+            <input
+              type="text"
+              placeholder="Type to filter results"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 border border-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500 bg-transparent"
+            />
+          </div>
+
+          {(loading || error) && (
+            <div className="w-full flex justify-center items-center h-48">
+              {loading && <MoonLoader size={18} color="#fff" />}
+              {error && <p className="text-red-500 mt-2">{error}</p>}
+            </div>
+          )}
+
+          {!loading && !error && (
+            <div className="max-h-96 mx-auto w-full max-w-md overflow-x-auto border border-white rounded-lg">
+              <table className="min-w-full">
+                <tbody>
+                  {filteredItems.map((item, i) => (
+                    <tr
+                      key={i}
+                      className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-white"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setGameState((prevState) => ({
+                          ...prevState,
+                          linkChain: [...prevState.linkChain.slice(0, -1), item, prevState.linkChain[prevState.linkChain.length - 1]],
+                        }));
+                      }}
+                    >
+                      <td className="py-2 px-4 flex items-center">
+                        <img
+                          className="rounded-lg mr-4"
+                          src={item.image}
+                          alt={item.name}
+                          width={48}
+                          height={48}
+                        />
+                        <span className="truncate">{item.name}</span>
+                        <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
+                          {"artist" in item ? (
+                            <DiscIcon className="w-4 h-4" />
+                          ) : (
+                            <MicIcon className="w-4 h-4" />
+                          )}
+                          {"artist" in item ? "Album" : "Artist"}
+                        </span>
+                      </td>
+                    </tr>
                   ))}
-                </ul>
-              </>
-            )}
-          </div>
-
-          <input
-            type="text"
-            placeholder="Type to filter results"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border border-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500 bg-transparent"
-          />
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
-
-        {(loading || error) && (
-          <div className="w-full flex justify-center items-center h-48">
-            {loading && <MoonLoader size={18} color="#fff" />}
-            {error && <p className="text-red-500 mt-2">{error}</p>}
-          </div>
-        )}
-
-        {!loading && !error && (
-          <div className="max-h-96 mx-auto w-full max-w-md overflow-x-auto border border-white rounded-lg">
-            <table className="min-w-full">
-              <tbody>
-                {filteredItems.map((item, i) => (
-                  <tr
-                    key={i}
-                    className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-white"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setLinkChain((prev: any) => [
-                        ...prev.slice(0, -1),
-                        item,
-                        prev[prev.length - 1],
-                      ]);
-                    }}
-                  >
-                    <td className="py-2 px-4 flex items-center">
-                      <img
-                        className="rounded-lg mr-4"
-                        src={item.image}
-                        alt={item.name}
-                        width={48}
-                        height={48}
-                      />
-                      <span className="truncate">{item.name}</span>
-                      <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
-                        {"artist" in item ? (
-                          <DiscIcon className="w-4 h-4" />
-                        ) : (
-                          <MicIcon className="w-4 h-4" />
-                        )}
-                        {"artist" in item ? "Album" : "Artist"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </div>
-    </div>
+    </AnimatePresence>
   );
 }

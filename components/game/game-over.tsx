@@ -2,37 +2,33 @@
 
 import { Button } from "@/components/ui/button";
 import ChainDisplay from "@/components/display/chain-display";
-import { Card } from "../ui/card";
-import { useEffect } from "react";
 import Leaderboard from "../display/leaderboard";
 import { useState } from "react";
 
 interface GameOverScreenProps {
-  linkChain: ChainItem[];
+  gameState: GameState;
   onRestart: () => void;
 }
 
 export default function GameOverScreen({
-  linkChain,
+  gameState,
   onRestart,
 }: GameOverScreenProps) {
   const max = 200;
   const min = 100;
   const score = Math.floor(Math.random() * (max - min + 1)) + min;
-  useEffect(() => {
-    console.log("First linkChain item:", linkChain[0]);
-  }, [linkChain]);
+
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const handleGeneratePlaylist = async () => {
     try {
       const response = await fetch("/api/playlist/callback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          linkChain,
+          linkChain: gameState.linkChain,
           useArtists: true, // or false if you'd prefer albums
         }),
       });
@@ -41,7 +37,7 @@ export default function GameOverScreen({
 
       if (response.ok) {
         setPlaylistUrl(data.playlistUrl);
-   
+
       } else {
         setError(data.error || "Failed to create playlist");
       }
@@ -57,7 +53,7 @@ export default function GameOverScreen({
       <h1 className="text-4xl font-bold">Game Over</h1>
       <p className="text-xl">Your final score: {score}</p>
       <div className="flex items-center space-x-6">
-        <ChainDisplay chain={linkChain} fullChain={true} />
+        <ChainDisplay chain={gameState.linkChain} fullChain={true} />
       </div>
       <Button onClick={onRestart} className="mt-4 px-6 py-3 rounded">
         Restart Game

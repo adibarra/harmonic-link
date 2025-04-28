@@ -3,29 +3,22 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { MoonLoader } from "react-spinners";
-import ArtistCard from "@/components/display/artist-card";
+import ItemCard from "@/components/display/item-card";
 
 interface LoadingGameProps {
-  start?: ChainItem;
-  end?: ChainItem;
-  par?: number;
+  challenge?: Challenge | null;
   loadingMessage?: string;
   successMessage?: string;
   title?: string;
   description?: string | React.ReactNode;
-  isLoading?: boolean;
   error?: string | null;
 }
 
 export default function LoadingGame({
-  start,
-  end,
-  par,
+  challenge = null,
   loadingMessage = "Finding two artists to connect through their music...",
   successMessage = "Found a path. Get ready!",
   title = "Harmonic Links",
-  description = "This may take a few seconds.",
-  isLoading = true,
   error = null,
 }: LoadingGameProps) {
   const messages = [
@@ -42,10 +35,12 @@ export default function LoadingGame({
   ];
 
   const [currentMessage, setCurrentMessage] = useState(messages[0]);
-  const [showArtists, setShowArtists] = useState(false);
+  const isLoading = challenge === null;
+  const success = !isLoading && !error;
 
   useEffect(() => {
     const shuffledMessages = [...messages].sort(() => Math.random() - 0.5);
+
     const messageInterval = setInterval(() => {
       setCurrentMessage((prev) => {
         const nextIndex = (shuffledMessages.indexOf(prev) + 1) % shuffledMessages.length;
@@ -53,22 +48,18 @@ export default function LoadingGame({
       });
     }, 3000);
 
-    if (!isLoading && !error) {
+    if (success) {
       setCurrentMessage(successMessage);
-      setShowArtists(true);
       clearInterval(messageInterval);
     }
 
     return () => clearInterval(messageInterval);
-  }, [isLoading, error, successMessage]);
-
-  const success = !isLoading && !error;
+  }, [isLoading, error, successMessage, success]);
 
   return (
     <div className="p-6 flex flex-col items-center w-full">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
       <p>{loadingMessage}</p>
-      {description && <p>{description}</p>}
 
       {isLoading && (
         <div className="m-32">
@@ -80,16 +71,16 @@ export default function LoadingGame({
         <p className="text-red-500 mt-4">{error}</p>
       ) : (
         <>
-          {showArtists && start && end && (
+          {!isLoading && !error && challenge && (
             <motion.div
               className="flex justify-between items-center w-full m-12"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1 }}
             >
-              <ArtistCard artist={start} />
+              <ItemCard item={challenge.start} />
               <span className="text-4xl">→</span>
-              <ArtistCard artist={end} />
+              <ItemCard item={challenge.end} />
             </motion.div>
           )}
 
