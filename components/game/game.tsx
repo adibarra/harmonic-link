@@ -262,42 +262,49 @@ export default function Game({
             </div>
           )}
 
-          {!loading && !error && (
-            <div className="max-h-96 mx-auto w-full max-w-md overflow-x-auto border border-white rounded-lg">
-              <table className="min-w-full">
-                <tbody>
-                  {filteredItems.map((item, i) => (
-                    <tr
-                      key={i}
-                      className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-white"
-                      onClick={() => {
-                        setSearchQuery("");
-                        setGameState((prevState) => ({
-                          ...prevState,
-                          linkChain: [...prevState.linkChain.slice(0, -1), item, prevState.linkChain[prevState.linkChain.length - 1]],
-                        }));
-                      }}
-                    >
-                      <td className="py-2 px-4 flex items-center">
-                        <img
-                          className="rounded-lg mr-4"
-                          src={item.image}
-                          alt={item.name}
-                          width={48}
-                          height={48}
-                        />
-                        <span className="truncate">{item.name}</span>
-                        <span className="ml-auto flex items-center gap-1 text-xs opacity-50">
-                          {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
-                          {"artist" in item ? "Album" : "Artist"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+{!loading && !error && (
+  <div className="max-h-96 mx-auto w-full max-w-md overflow-x-hidden border border-white rounded-lg">
+    <table className="w-full table-auto">
+      <tbody>
+        {filteredItems.length === 0 ? (
+          <tr>
+            <td colSpan={3} className="py-4 text-center text-sm text-gray-500">
+              NO RESULTS
+            </td>
+          </tr>
+        ) : (
+          filteredItems.map((item, i) => (
+            <tr
+              key={i}
+              className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-white"
+              onClick={() => {
+                setSearchQuery("");
+                setGameState((prevState) => ({
+                  ...prevState,
+                  linkChain: [...prevState.linkChain.slice(0, -1), item, prevState.linkChain[prevState.linkChain.length - 1]],
+                }));
+              }}
+            >
+              <td className="flex items-center border-r border-white">
+              <img
+                  className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
+                  src={item.image}
+                  alt={item.name}
+                />
+                <span className="">{item.name}</span>
+                <span className="ml-auto mr-4 flex items-center gap-1 text-xs opacity-50">
+                  {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
+                  {"artist" in item ? "Album" : "Artist"}
+                </span>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+)}
+
         </div>
       </div>
     </AnimatePresence>
