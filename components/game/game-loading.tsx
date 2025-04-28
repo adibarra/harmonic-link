@@ -73,14 +73,16 @@ export default function LoadingGame({
         <>
           {!isLoading && !error && challenge && (
             <motion.div
-              className="flex justify-between items-center w-full m-12"
+              className="flex flex-col items-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 1 }}
             >
-              <ItemCard item={challenge.start} />
-              <span className="text-4xl">→</span>
-              <ItemCard item={challenge.end} />
+              <div className="flex justify-between items-center w-full m-12">
+                <ItemCard item={challenge.start} />
+                <span className="text-4xl">→</span>
+                <ItemCard item={challenge.end} />
+              </div>
             </motion.div>
           )}
 
