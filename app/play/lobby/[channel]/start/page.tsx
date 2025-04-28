@@ -6,7 +6,7 @@ import GamePage from "@/components/game/game";
 import GameOver from "@/components/game/game-over";
 import { motion } from "motion/react";
 import { fetchArtistArtist } from "@/services/fetchArtistArtist";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 const supabase = createClient();
 
@@ -14,6 +14,7 @@ const MIN_LOADING_TIME = 2000;
 const SUCCESS_DISPLAY_TIME = 6000;
 
 export default function ChallengeGame() {
+  const router = useRouter();
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [broadcastChannel, setBroadcastChannel] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -110,6 +111,7 @@ export default function ChallengeGame() {
       linkChain: [],
       challenge: null,
     }));
+    router.push(`/play/lobby/${gameState.channel}`);
   }, []);
 
   const handleGameOver = useCallback(() => {

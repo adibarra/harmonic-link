@@ -56,7 +56,11 @@ export default function GameOverScreen({
         <ChainDisplay chain={gameState.linkChain} fullChain={true} />
       </div>
       <Button onClick={onRestart} className="mt-4 px-6 py-3 rounded">
-        Restart Game
+        {gameState.channel
+          ? "Back to Lobby"
+          : gameState.challenge!.type === "daily"
+            ? "Try Again"
+            : "New Game"}
       </Button>
       <Button
         variant="secondary"
