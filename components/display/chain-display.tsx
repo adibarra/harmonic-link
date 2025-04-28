@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useMemo } from "react";
 import { motion } from "motion/react";
-import AlbumCard from "./album-card";
-import ArtistCard from "./artist-card";
+import ItemCard from "./item-card";
 import UnknownCard from "./unknown-card";
 
 interface ChainDisplayProps {
@@ -20,9 +19,6 @@ export default function ChainDisplay({ chain, fullChain = false }: ChainDisplayP
     }
   }, [chain]);
 
-  const renderChainItem = (item: ChainItem) =>
-    item ? ("artist" in item ? <AlbumCard album={item} /> : <ArtistCard artist={item} />) : null;
-
   const fadeInOut = {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
@@ -35,7 +31,9 @@ export default function ChainDisplay({ chain, fullChain = false }: ChainDisplayP
 
     return (
       <motion.div className="flex items-center space-x-6 h-218px" {...fadeInOut}>
-        <motion.div {...fadeInOut}>{renderChainItem(chain[0])}</motion.div>
+        <motion.div {...fadeInOut}>
+          <ItemCard item={chain[0]} />
+        </motion.div>
         <span className="text-2xl">→</span>
 
         <motion.div
@@ -45,7 +43,7 @@ export default function ChainDisplay({ chain, fullChain = false }: ChainDisplayP
         >
           {middleChain.map((item, index) => (
             <motion.div key={index} className="flex items-center space-x-6" {...fadeInOut}>
-              {renderChainItem(item)}
+              <ItemCard item={item} />
             </motion.div>
           ))}
 
@@ -53,7 +51,9 @@ export default function ChainDisplay({ chain, fullChain = false }: ChainDisplayP
         </motion.div>
 
         <span className="text-2xl">→</span>
-        <motion.div {...fadeInOut}>{renderChainItem(chain[chain.length - 1])}</motion.div>
+        <motion.div {...fadeInOut}>
+          <ItemCard item={chain[chain.length - 1]} />
+        </motion.div>
       </motion.div>
     );
   }, [chain, fullChain]);
