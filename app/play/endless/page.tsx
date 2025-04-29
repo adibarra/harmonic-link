@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 import { fetchArtistArtist } from "@/services/fetchArtistArtist";
 
 const MIN_LOADING_TIME = 2000;
-const SUCCESS_DISPLAY_TIME = 4000;
+const SUCCESS_DISPLAY_TIME = 3500;
 
 export default function ChallengeGame() {
   const [gameState, setGameState] = useState<GameState>({
