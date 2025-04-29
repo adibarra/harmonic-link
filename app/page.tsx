@@ -41,7 +41,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col gap-4">
               <h3 className="text-xl font-semibold text-white mb-2">Step 2: Explore Connections</h3>
-              <p>Navigate through albums and collaborations to discover new links.</p>
+              <p>Navigate through albums and collaborations to discover new links between artists.</p>
             </div>
             <div className="flex flex-col gap-4">
               <h3 className="text-xl font-semibold text-white mb-2">Step 3: Build the Path</h3>
