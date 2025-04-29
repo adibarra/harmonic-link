@@ -8,7 +8,7 @@ import ChainDisplay from "@/components/display/chain-display";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import { Button } from "@/components/ui/button";
-import { ClockIcon, DiscIcon, MicIcon, SettingsIcon, UserIcon } from "lucide-react";
+import { ClockIcon, DiscIcon, LogOutIcon, MicIcon, RefreshCwIcon, Undo2Icon, UserIcon, XIcon } from "lucide-react";
 import { formatElapsedTime } from "@/utils/utils";
 import fuzzysort from "fuzzysort";
 import { uploadFinishedGameToLeaderBoard } from "@/services/uploadGameToLeaderboard";
@@ -186,17 +186,7 @@ export default function Game({
         {gameState.linkChain.length > 1 && (
           <div className="flex items-center space-x-6">
             <Button
-              variant="destructive"
-              onClick={() =>
-                setGameState((prevState) => ({
-                  ...prevState,
-                  linkChain: [prevState.linkChain[0], prevState.linkChain[prevState.linkChain.length - 1]],
-                }))
-              }
-            >
-              Clear Chain
-            </Button>
-            <Button
+              className="w-full flex-row gap-2 justify-center items-center"
               variant="secondary"
               onClick={() =>
                 setGameState((prevState) => ({
@@ -207,7 +197,21 @@ export default function Game({
                 }))
               }
             >
+              <Undo2Icon className="w-4 h-4" />
               Undo
+            </Button>
+            <Button
+              className="w-full flex-row gap-2 justify-center items-center"
+              variant="destructive"
+              onClick={() =>
+                setGameState((prevState) => ({
+                  ...prevState,
+                  linkChain: [prevState.linkChain[0], prevState.linkChain[prevState.linkChain.length - 1]],
+                }))
+              }
+            >
+              <XIcon className="w-4 h-4" />
+              Clear Chain
             </Button>
           </div>
         )}
@@ -245,58 +249,58 @@ export default function Game({
                 </>
               )}
 
-              <h2 className="flex gap-2 items-center text-lg font-semibold mt-4">
-                <SettingsIcon className="w-4 h-4" />
-                Options
-              </h2>
+              <div className="mt-6">
+                {!gameState.channel && gameState.challenge!.type === 'random' && (
+                  <ul className="space-y-1 text-sm text-muted-foreground mt-2">
+                    <Button
+                      className="w-full flex-row gap-2 justify-center items-center"
+                      variant="secondary"
+                      onClick={() => {
+                        setGameState((prevState) => ({
+                          ...prevState,
+                          status: "waiting",
+                          linkChain: [],
+                          challenge: null,
+                        }));
+                      }}
+                    >
+                      <RefreshCwIcon className="w-4 h-4" />
+                      New Challenge
+                    </Button>
+                  </ul>
+                )}
 
-              {gameState.channel && gameState.challenge!.type === 'random' && (
-                <ul className="space-y-1 text-sm text-muted-foreground mt-2">
-                  <Button
-                    className="w-full"
-                    variant="destructive"
-                    onClick={() => {
-                      broadcastChannel?.unsubscribe();
-                      router.push('/play')
-                    }}
-                  >
-                    Leave Game
-                  </Button>
-                </ul>
-              )}
+                {gameState.channel && gameState.challenge!.type === 'random' && (
+                  <ul className="space-y-1 text-sm text-muted-foreground mt-2">
+                    <Button
+                      className="w-full flex-row gap-2 justify-center items-center"
+                      variant="destructive"
+                      onClick={() => {
+                        broadcastChannel?.unsubscribe();
+                        router.push('/play')
+                      }}
+                    >
+                      <LogOutIcon className="w-4 h-4" />
+                      Leave Game
+                    </Button>
+                  </ul>
+                )}
 
-              {!gameState.channel && (
-                <ul className="space-y-1 text-sm text-muted-foreground mt-2">
-                  <Button
-                    className="w-full"
-                    variant="destructive"
-                    onClick={() => {
-                      router.push('/play')
-                    }}
-                  >
-                    End Challenge
-                  </Button>
-                </ul>
-              )}
-
-              {!gameState.channel && gameState.challenge!.type === 'random' && (
-                <ul className="space-y-1 text-sm text-muted-foreground mt-2">
-                  <Button
-                    className="w-full"
-                    variant="secondary"
-                    onClick={() => {
-                      setGameState((prevState) => ({
-                        ...prevState,
-                        status: "waiting",
-                        linkChain: [],
-                        challenge: null,
-                      }));
-                    }}
-                  >
-                    New Challenge
-                  </Button>
-                </ul>
-              )}
+                {!gameState.channel && (
+                  <ul className="space-y-1 text-sm text-muted-foreground mt-2">
+                    <Button
+                      className="w-full flex-row gap-2 justify-center items-center"
+                      variant="destructive"
+                      onClick={() => {
+                        router.push('/play')
+                      }}
+                    >
+                      <LogOutIcon className="w-4 h-4" />
+                      End Challenge
+                    </Button>
+                  </ul>
+                )}
+              </div>
             </div>
 
             <input
@@ -315,49 +319,48 @@ export default function Game({
             </div>
           )}
 
-{!loading && !error && (
-  <div className="max-h-96 mx-auto w-full max-w-md overflow-x-hidden border border-white rounded-lg">
-    <table className="w-full table-auto">
-      <tbody>
-        {filteredItems.length === 0 ? (
-          <tr>
-            <td colSpan={3} className="py-4 text-center text-sm text-gray-500">
-              NO RESULTS
-            </td>
-          </tr>
-        ) : (
-          filteredItems.map((item, i) => (
-            <tr
-              key={i}
-              className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-white"
-              onClick={() => {
-                setSearchQuery("");
-                setGameState((prevState) => ({
-                  ...prevState,
-                  linkChain: [...prevState.linkChain.slice(0, -1), item, prevState.linkChain[prevState.linkChain.length - 1]],
-                }));
-              }}
-            >
-              <td className="flex items-center border-r border-white">
-              <img
-                  className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
-                  src={item.image}
-                  alt={item.name}
-                />
-                <span className="">{item.name}</span>
-                <span className="ml-auto mr-4 flex items-center gap-1 text-xs opacity-50">
-                  {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
-                  {"artist" in item ? "Album" : "Artist"}
-                </span>
-              </td>
-            </tr>
-          ))
-        )}
-      </tbody>
-    </table>
-  </div>
-)}
-
+          {!loading && !error && (
+            <div className="max-h-96 mx-auto w-full max-w-md overflow-x-hidden border border-white rounded-lg">
+              <table className="w-full table-auto">
+                <tbody>
+                  {filteredItems.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="py-4 text-center text-sm text-gray-500">
+                        NO RESULTS
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredItems.map((item, i) => (
+                      <tr
+                        key={i}
+                        className="cursor-pointer hover:bg-white hover:bg-opacity-10 border-b border-white"
+                        onClick={() => {
+                          setSearchQuery("");
+                          setGameState((prevState) => ({
+                            ...prevState,
+                            linkChain: [...prevState.linkChain.slice(0, -1), item, prevState.linkChain[prevState.linkChain.length - 1]],
+                          }));
+                        }}
+                      >
+                        <td className="flex items-center border-r border-white">
+                        <img
+                            className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
+                            src={item.image}
+                            alt={item.name}
+                          />
+                          <span className="">{item.name}</span>
+                          <span className="ml-auto mr-4 flex items-center gap-1 text-xs opacity-50">
+                            {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
+                            {"artist" in item ? "Album" : "Artist"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </AnimatePresence>
