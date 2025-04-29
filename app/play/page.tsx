@@ -22,7 +22,7 @@ export default function GameModeMenu() {
     >
       <h1 className="text-3xl font-bold text-center">Harmonic Links</h1>
       <p className="text-center max-w-sm">
-        Connect artists and albums in as few moves as possible.
+        Reach the target artist as quickly and directly as possible, minimizing the number of connections.
       </p>
 
       <div className="w-full max-w-sm space-y-4">
