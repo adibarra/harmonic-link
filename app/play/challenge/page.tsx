@@ -6,11 +6,13 @@ import GamePage from "@/components/game/game";
 import GameOver from "@/components/game/game-over";
 import { motion } from "motion/react";
 import { fetchDaily } from "@/services/fetchDaily";
+import { useRouter } from "next/navigation";
 
 const MIN_LOADING_TIME = 2000;
 const SUCCESS_DISPLAY_TIME = 6000;
 
 export default function ChallengeGame() {
+  const router = useRouter();
   const [loadingError, setLoadingError] = useState<string | null>(null);
   const [gameState, setGameState] = useState<GameState>({
     challenge: null,
@@ -57,13 +59,7 @@ export default function ChallengeGame() {
   }, []);
 
   const handleRestart = useCallback(() => {
-    setLoadingError(null);
-    setGameState((prevState) => ({
-      ...prevState,
-      status: "waiting",
-      linkChain: [],
-      challenge: null,
-    }));
+    router.push('/play');
   }, []);
 
   const handleGameOver = useCallback(() => {

@@ -8,7 +8,7 @@ import ChainDisplay from "@/components/display/chain-display";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import { Button } from "@/components/ui/button";
-import { ClockIcon, DiscIcon, MicIcon, UserIcon } from "lucide-react";
+import { ClockIcon, DiscIcon, MicIcon, SettingsIcon, UserIcon } from "lucide-react";
 import { formatElapsedTime } from "@/utils/utils";
 import fuzzysort from "fuzzysort";
 import { uploadFinishedGameToLeaderBoard } from "@/services/uploadGameToLeaderboard";
@@ -243,6 +243,59 @@ export default function Game({
                     ))}
                   </ul>
                 </>
+              )}
+
+              <h2 className="flex gap-2 items-center text-lg font-semibold mt-4">
+                <SettingsIcon className="w-4 h-4" />
+                Options
+              </h2>
+
+              {gameState.channel && gameState.challenge!.type === 'random' && (
+                <ul className="space-y-1 text-sm text-muted-foreground mt-2">
+                  <Button
+                    className="w-full"
+                    variant="destructive"
+                    onClick={() => {
+                      broadcastChannel?.unsubscribe();
+                      router.push('/play')
+                    }}
+                  >
+                    Leave Game
+                  </Button>
+                </ul>
+              )}
+
+              {!gameState.channel && (
+                <ul className="space-y-1 text-sm text-muted-foreground mt-2">
+                  <Button
+                    className="w-full"
+                    variant="destructive"
+                    onClick={() => {
+                      router.push('/play')
+                    }}
+                  >
+                    End Challenge
+                  </Button>
+                </ul>
+              )}
+
+              {!gameState.channel && gameState.challenge!.type === 'random' && (
+                <ul className="space-y-1 text-sm text-muted-foreground mt-2">
+                  <Button
+                    className="w-full"
+                    variant="secondary"
+                    onClick={() => {
+                      setGameState((prevState) => ({
+                        ...prevState,
+                        status: "waiting",
+                        linkChain: [],
+                        challenge: null,
+                      }));
+                    }}
+                  >
+                    New Challenge
+                  </Button>
+                </ul>
               )}
             </div>
 

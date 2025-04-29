@@ -59,8 +59,8 @@ export default function GameOverScreen({
         {gameState.channel
           ? "Back to Lobby"
           : gameState.challenge!.type === "daily"
-            ? "Try Again"
-            : "New Game"}
+            ? "Swap Gamemode"
+            : "New Challenge"}
       </Button>
       <Button
         variant="secondary"
