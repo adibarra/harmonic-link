@@ -65,10 +65,22 @@ export default function GameOverScreen({
       <Button
         variant="secondary"
         onClick={handleGeneratePlaylist}
+       disabled={loading}
         className="mt-4 px-6 py-3 rounded"
       >
         Generate Playlist
+        {loading ?"Generating...": "GeneratePlaylist"}
       </Button>
+      {playlistUrl &&(
+        <a
+        href={playlistUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-400 underline"
+        >
+          Open Your Playlist on Spotify
+        </a>
+      )}
       <Leaderboard />
     </div>
   );
