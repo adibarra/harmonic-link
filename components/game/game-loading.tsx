@@ -11,12 +11,10 @@ const messages = [
   "Spinning vinyls...",
   "Reconstructing remixes...",
   "Diving into sample archives...",
-  "Cross-referencing liner notes...",
   "Tracing hidden collaborations...",
-  "Following producer fingerprints...",
   "Letting the algorithm jam...",
   "Rewinding cassette tapes...",
-].sort(() => Math.random() - 0.5);
+];
 
 interface LoadingGameProps {
   challenge?: Challenge | null;
@@ -46,16 +44,17 @@ export default function LoadingGame({
       return;
     }
 
+    const shuffledMessages = messages.sort(() => Math.random() - 0.5);
     const updateMessage = () => {
       setCurrentMessage(prev => {
-        const currentIndex = messages.indexOf(prev);
-        const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % messages.length;
-        return messages[nextIndex];
+        const currentIndex = shuffledMessages.indexOf(prev);
+        const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % shuffledMessages.length;
+        return shuffledMessages[nextIndex];
       });
     };
 
     updateMessage();
-    intervalRef.current = setInterval(updateMessage, 1000);
+    intervalRef.current = setInterval(updateMessage, 2500);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -84,7 +83,7 @@ export default function LoadingGame({
               animate={{ opacity: 1 }}
               transition={{ duration: 1 }}
             >
-              <div className="flex justify-between items-center w-full m-12">
+              <div className="flex justify-between items-center w-full m-12 mb-6">
                 <ItemCard item={challenge.start} />
                 <span className="text-4xl">→</span>
                 <ItemCard item={challenge.end} />
