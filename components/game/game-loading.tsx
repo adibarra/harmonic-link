@@ -1,9 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { MoonLoader } from "react-spinners";
 import ItemCard from "@/components/display/item-card";
+
+const messages = [
+  "Tuning instruments...",
+  "Syncing BPMs...",
+  "Spinning vinyls...",
+  "Reconstructing remixes...",
+  "Diving into sample archives...",
+  "Cross-referencing liner notes...",
+  "Tracing hidden collaborations...",
+  "Following producer fingerprints...",
+  "Letting the algorithm jam...",
+  "Rewinding cassette tapes...",
+].sort(() => Math.random() - 0.5);
 
 interface LoadingGameProps {
   challenge?: Challenge | null;
@@ -21,40 +34,33 @@ export default function LoadingGame({
   title = "Harmonic Links",
   error = null,
 }: LoadingGameProps) {
-  const messages = [
-    "Tuning instruments...",
-    "Syncing BPMs...",
-    "Spinning vinyls...",
-    "Reconstructing remixes...",
-    "Diving into sample archives...",
-    "Cross-referencing liner notes...",
-    "Tracing hidden collaborations...",
-    "Following producer fingerprints...",
-    "Letting the algorithm jam...",
-    "Rewinding cassette tapes...",
-  ];
-
-  const [currentMessage, setCurrentMessage] = useState(messages[0]);
+  const [currentMessage, setCurrentMessage] = useState('');
   const isLoading = challenge === null;
   const success = !isLoading && !error;
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const shuffledMessages = [...messages].sort(() => Math.random() - 0.5);
-
-    const messageInterval = setInterval(() => {
-      setCurrentMessage((prev) => {
-        const nextIndex = (shuffledMessages.indexOf(prev) + 1) % shuffledMessages.length;
-        return shuffledMessages[nextIndex];
-      });
-    }, 3000);
-
     if (success) {
       setCurrentMessage(successMessage);
-      clearInterval(messageInterval);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      return;
     }
 
-    return () => clearInterval(messageInterval);
-  }, [isLoading, error, successMessage, success]);
+    const updateMessage = () => {
+      setCurrentMessage(prev => {
+        const currentIndex = messages.indexOf(prev);
+        const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % messages.length;
+        return messages[nextIndex];
+      });
+    };
+
+    updateMessage();
+    intervalRef.current = setInterval(updateMessage, 1000);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [error, success, successMessage]);
 
   return (
     <div className="p-6 flex flex-col items-center w-full">
