@@ -26,30 +26,30 @@ export default function Home() {
 
         <motion.div {...fadeInOut}>
           <Link href="/play">
-            <Button variant="secondary" className="py-4 px-8 text-xl font-bold">
+            <Button variant="default" className="p-6 text-2xl font-bold">
               Start Playing
             </Button>
           </Link>
         </motion.div>
 
-        <motion.div {...fadeInOut} className="flex flex-col gap-8 items-center max-w-3xl mt-12">
-          <h2 className="text-4xl font-bold mb-6">How It Works</h2>
+        <motion.div {...fadeInOut} className="flex flex-col gap-6 items-center max-w-3xl mt-1">
+          <h2 className="text-4xl font-bold mb-1">How To Play</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-lg text-gray-400">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold text-white mb-2">Step 1: Start with an Artist</h3>
               <p>We'll pick a random artist for you to begin your journey.</p>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold text-white mb-2">Step 2: Explore Connections</h3>
               <p>Navigate through albums and collaborations to discover new links between artists.</p>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold text-white mb-2">Step 3: Build the Path</h3>
-              <p>Alternate between artists and albums to trace a path to the target artist.</p>
+              <p>Choose different artists and albums to trace a path to the target artist.</p>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold text-white mb-2">Step 4: Reach the Goal</h3>
-              <p>Find the shortest route and complete the challenge!</p>
+              <p>Find the shortest route and complete the challenge in the fastest time!</p>
             </div>
           </div>
         </motion.div>

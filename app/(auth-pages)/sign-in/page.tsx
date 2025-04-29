@@ -3,10 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/client";
+import { ArrowLeftToLineIcon } from "lucide-react";
 import { motion } from "motion/react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const supabase = createClient();
+  const router = useRouter();
 
   const handleSpotify = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -102,6 +105,19 @@ export default function LoginPage() {
                 <path fill="#ea4335" d="M272 107.7c39.4-.6 77 13.4 106 39.1l79.3-79.3C426.8 25 351.6-2.5 272 0 167.7 0 76.4 59 32.1 147.2l89.4 69.6c21.2-63.2 80.5-110.4 150.5-109.1z"/>
               </svg>
               Login with Google
+            </Button>
+
+            <div className="w-full h-2 flex items-center justify-center">
+              <div className="w-full border-t border-white" />
+            </div>
+
+            <Button
+              variant="destructive"
+              className="w-full flex justify-start items-center gap-3 text-base"
+              onClick={() => router.push("/")}
+            >
+              <ArrowLeftToLineIcon className="w-5 h-5" />
+              Back
             </Button>
           </div>
           </CardContent>

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, Gamepad2, Infinity } from "lucide-react";
+import { ArrowLeftToLineIcon, CalendarDays, Gamepad2, Infinity } from "lucide-react";
 
 export default function GameModeMenu() {
   const router = useRouter();
@@ -51,6 +51,19 @@ export default function GameModeMenu() {
         >
           <Gamepad2 className="w-5 h-5" />
           Multiplayer
+        </Button>
+
+        <div className="w-full h-8 flex items-center justify-center">
+          <div className="w-full border-t border-white" />
+        </div>
+
+        <Button
+          variant="destructive"
+          className="w-full flex justify-start items-center gap-3 text-lg"
+          onClick={() => router.push("/")}
+        >
+          <ArrowLeftToLineIcon className="w-5 h-5" />
+          Back
         </Button>
       </div>
     </motion.div>
