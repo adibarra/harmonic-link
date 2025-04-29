@@ -304,7 +304,7 @@ export default function Game({
                   <ul className="space-y-1 text-sm text-muted-foreground mt-2">
                     <li>
                       <Button
-                        className="w-fit flex-row gap-2 justify-center items-center"
+                        className="w-full flex-row gap-2 justify-center items-center"
                         variant="destructive"
                         onClick={() => {
                           broadcastChannel?.unsubscribe();
@@ -322,14 +322,14 @@ export default function Game({
                   <ul className="space-y-1 text-sm text-muted-foreground mt-2">
                     <li>
                       <Button
-                        className="w-fit flex-row gap-2 justify-center items-center"
+                        className="w-full flex-row gap-2 justify-center items-center"
                         variant="destructive"
                         onClick={() => {
                           router.push('/play');
                         }}
                       >
                         <LogOutIcon className="w-4 h-4" />
-                        End Game
+                        End Challenge
                       </Button>
                     </li>
                   </ul>
