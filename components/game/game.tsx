@@ -8,7 +8,7 @@ import ChainDisplay from "@/components/display/chain-display";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import { Button } from "@/components/ui/button";
-import { ClockIcon, DiscIcon, LogOutIcon, MicIcon, RefreshCwIcon, Undo2Icon, UserIcon, XIcon } from "lucide-react";
+import { ClockIcon, DiscIcon, LightbulbIcon, LogOutIcon, MicIcon, RefreshCwIcon, Undo2Icon, UserIcon, XIcon } from "lucide-react";
 import { formatElapsedTime } from "@/utils/utils";
 import fuzzysort from "fuzzysort";
 import { uploadFinishedGameToLeaderBoard } from "@/services/uploadGameToLeaderboard";
@@ -218,13 +218,41 @@ export default function Game({
 
         <div className="relative w-[50vw]">
           <div className="w-full max-w-md mx-auto mb-4">
-            <div className="absolute top-0 left-0">
+            <div className="w-[160px] absolute top-0 left-0">
               <h2 className="flex gap-2 items-center text-lg font-semibold">
                 <ClockIcon className="w-4 h-4" />
                 Timer
               </h2>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                {formatElapsedTime(elapsedTime)}
+                <li>
+                {formatElapsedTime(elapsedTime).split(" ").map((part, index) => {
+                  const cleaned = part.replace(/[^0-9a-zA-Z]/g, "");
+                  const match = cleaned.match(/^(\d+)([a-zA-Z]+)$/);
+                  if (!match) return <span key={index}>{part} </span>;
+                  const [, number, unit] = match;
+                  return (
+                    <span key={index}>
+                      <span className="font-medium text-white/80">{number}</span>
+                      {unit}
+                      {part.endsWith(",") && ","}{" "}
+                    </span>
+                  );
+                })}
+                </li>
+              </ul>
+
+              <h2 className="flex gap-2 items-center text-lg font-semibold mt-4">
+                <LightbulbIcon className="w-4 h-4" />
+                Hint
+              </h2>
+              <ul className="space-y-1 text-sm text-muted-foreground">
+                <li>
+                  This path can be completed in&nbsp;
+                  <span className="font-medium text-white/80">
+                    {gameState.challenge!.par}
+                  </span>
+                  &nbsp;link{gameState.challenge!.par > 1 ? 's' : ''}.
+                </li>
               </ul>
 
               {gameState.channel && (
@@ -252,52 +280,58 @@ export default function Game({
               <div className="mt-6">
                 {!gameState.channel && gameState.challenge!.type === 'random' && (
                   <ul className="space-y-1 text-sm text-muted-foreground mt-2">
-                    <Button
-                      className="w-full flex-row gap-2 justify-center items-center"
-                      variant="secondary"
-                      onClick={() => {
-                        setGameState((prevState) => ({
-                          ...prevState,
-                          status: "waiting",
-                          linkChain: [],
-                          challenge: null,
-                        }));
-                      }}
-                    >
-                      <RefreshCwIcon className="w-4 h-4" />
-                      New Challenge
-                    </Button>
+                    <li>
+                      <Button
+                        className="w-full flex-row gap-2 justify-center items-center"
+                        variant="secondary"
+                        onClick={() => {
+                          setGameState((prevState) => ({
+                            ...prevState,
+                            status: "waiting",
+                            linkChain: [],
+                            challenge: null,
+                          }));
+                        }}
+                      >
+                        <RefreshCwIcon className="w-4 h-4" />
+                        New Challenge
+                      </Button>
+                    </li>
                   </ul>
                 )}
 
                 {gameState.channel && gameState.challenge!.type === 'random' && (
                   <ul className="space-y-1 text-sm text-muted-foreground mt-2">
-                    <Button
-                      className="w-full flex-row gap-2 justify-center items-center"
-                      variant="destructive"
-                      onClick={() => {
-                        broadcastChannel?.unsubscribe();
-                        router.push('/play')
-                      }}
-                    >
-                      <LogOutIcon className="w-4 h-4" />
-                      Leave Game
-                    </Button>
+                    <li>
+                      <Button
+                        className="w-full flex-row gap-2 justify-center items-center"
+                        variant="destructive"
+                        onClick={() => {
+                          broadcastChannel?.unsubscribe();
+                          router.push('/play');
+                        }}
+                      >
+                        <LogOutIcon className="w-4 h-4" />
+                        Leave Game
+                      </Button>
+                    </li>
                   </ul>
                 )}
 
                 {!gameState.channel && (
                   <ul className="space-y-1 text-sm text-muted-foreground mt-2">
-                    <Button
-                      className="w-full flex-row gap-2 justify-center items-center"
-                      variant="destructive"
-                      onClick={() => {
-                        router.push('/play')
-                      }}
-                    >
-                      <LogOutIcon className="w-4 h-4" />
-                      End Challenge
-                    </Button>
+                    <li>
+                      <Button
+                        className="w-full flex-row gap-2 justify-center items-center"
+                        variant="destructive"
+                        onClick={() => {
+                          router.push('/play');
+                        }}
+                      >
+                        <LogOutIcon className="w-4 h-4" />
+                        End Challenge
+                      </Button>
+                    </li>
                   </ul>
                 )}
               </div>
