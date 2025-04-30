@@ -191,9 +191,9 @@ export default function Game({
   }, [searchQuery, items]);
 
   const calculateScore = (links: number, time: number) => {
-    const time_factor = time < 300 ? 1 - time / 300 + 0.1 : 0.1;
+    const time_factor = time < 300 ? ((1 - time) / 300) + 0.1 : 0.1;
     const par = gameState.challenge?.par ?? 0;
-    let scored = Math.floor((10000 - 1000 * (links - par)) * time_factor);
+    let scored = Math.floor((10000 - (1000 * (links - par))) * time_factor);
     return scored < 0 ? 0 : scored;
   };
 
@@ -207,7 +207,8 @@ export default function Game({
             <Button
               className="w-full flex-row gap-2 justify-center items-center"
               variant="secondary"
-              onClick={() =>
+              onClick={() => {
+                setSearchQuery("");
                 setGameState((prevState) => ({
                   ...prevState,
                   linkChain:
@@ -218,7 +219,7 @@ export default function Game({
                         ]
                       : prevState.linkChain,
                 }))
-              }
+              }}
             >
               <Undo2Icon className="w-4 h-4" />
               Undo
@@ -226,7 +227,8 @@ export default function Game({
             <Button
               className="w-full flex-row gap-2 justify-center items-center"
               variant="destructive"
-              onClick={() =>
+              onClick={() => {
+                setSearchQuery("");
                 setGameState((prevState) => ({
                   ...prevState,
                   linkChain: [
@@ -234,7 +236,7 @@ export default function Game({
                     prevState.linkChain[prevState.linkChain.length - 1],
                   ],
                 }))
-              }
+              }}
             >
               <XIcon className="w-4 h-4" />
               Clear Chain
@@ -369,8 +371,8 @@ export default function Game({
               </div>
             </div>
           </div>
-          <div>
-            <div className="w-full max-w-md mx-auto mb-4">
+          <div className="w-[50vw] max-w-md">
+            <div className="w-full mx-auto mb-4">
               <input
                 type="text"
                 placeholder="Type to filter results"
@@ -420,11 +422,17 @@ export default function Game({
                         }}
                       >
                         <td className="flex items-center border-r border-white">
-                          <img
-                            className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
-                            src={item.image}
-                            alt={item.name}
-                          />
+                          {item.image ? (
+                            <img
+                              className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
+                              src={item.image}
+                              alt=""
+                            />
+                          ) : (
+                            <div className="mx-4 my-2 w-[48px] h-[48px] rounded-lg bg-gray-800 flex items-center justify-center">
+                              <span className="text-3xl text-center text-gray-500">?</span>
+                            </div>
+                          )}
                           <span className="">{item.name}</span>
                           <span className="ml-auto mr-4 flex items-center gap-1 text-xs opacity-50">
                             {"artist" in item ? (
