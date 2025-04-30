@@ -1,38 +1,44 @@
 interface Artist {
-  id: string
-  name: string
-  image: string
+  id: string;
+  name: string;
+  image: string;
 }
 
 interface Album {
-  id: string
-  name: string
-  artist: string
-  image: string
+  id: string;
+  name: string;
+  artist: string;
+  image: string;
 }
 
 interface User {
-  id: string
-  name: string
-  image: string
-  isGuest: boolean
+  id: string;
+  name: string;
+  image: string;
+  isGuest: boolean;
 }
 
 interface Challenge {
-  id: string,
-  type: "daily" | "random",
-  start: ChainItem,
-  end: ChainItem,
-  par: number
+  id: string;
+  type: "daily" | "random";
+  start: ChainItem;
+  end: ChainItem;
+  par: number;
 }
 
 interface GameState {
-  challenge: Challenge | null,
-  channel: string | null,
-  status: "waiting" | "loading" | "playing" | "finished",
-  linkChain: ChainItem[],
+  challenge: Challenge | null;
+  channel: string | null;
+  status: "waiting" | "loading" | "playing" | "finished";
+  linkChain: ChainItem[];
+  score?: number;
+  gameId?: number;
 }
 
-type ChainItem = Artist | Album
+type ChainItem = Artist | Album;
 
-type LeaderboardEntry = { name: string; score: number };
+type LeaderboardEntry = {
+  score: number;
+  userId?: string;
+  gameMode: string;
+};

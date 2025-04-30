@@ -11,6 +11,12 @@ import { useRouter } from "next/navigation";
 const MIN_LOADING_TIME = 2000;
 const SUCCESS_DISPLAY_TIME = 3500;
 
+const date = new Date();
+const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth() is 0-based
+const day = String(date.getDate()).padStart(2, "0");
+const gameId = Number(`${year}${month}${day}`);
+
 export default function ChallengeGame() {
   const router = useRouter();
   const [loadingError, setLoadingError] = useState<string | null>(null);
@@ -19,6 +25,8 @@ export default function ChallengeGame() {
     channel: null,
     status: "waiting",
     linkChain: [],
+    score: -1,
+    gameId: gameId,
   });
 
   const loadChallenge = useCallback(async () => {
@@ -53,13 +61,13 @@ export default function ChallengeGame() {
     } catch (err) {
       console.error("Challenge load error:", err);
       setLoadingError(
-        err instanceof Error ? err.message : "Failed to load daily challenge"
+        err instanceof Error ? err.message : "Failed to load daily challenge",
       );
     }
   }, []);
 
   const handleRestart = useCallback(() => {
-    router.push('/play');
+    router.push("/play");
   }, []);
 
   const handleGameOver = useCallback(() => {
@@ -97,10 +105,7 @@ export default function ChallengeGame() {
 
       {gameState.status === "finished" && (
         <motion.div key="finished" {...fadeInOut}>
-          <GameOver
-            gameState={gameState}
-            onRestart={handleRestart}
-          />
+          <GameOver gameState={gameState} onRestart={handleRestart} />
         </motion.div>
       )}
 

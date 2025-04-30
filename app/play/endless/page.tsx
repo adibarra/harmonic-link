@@ -51,7 +51,7 @@ export default function ChallengeGame() {
     } catch (err) {
       console.error("Challenge load error:", err);
       setLoadingError(
-        err instanceof Error ? err.message : "Failed to load daily challenge"
+        err instanceof Error ? err.message : "Failed to load daily challenge",
       );
     }
   }, []);
@@ -101,10 +101,7 @@ export default function ChallengeGame() {
 
       {gameState.status === "finished" && (
         <motion.div key="finished" {...fadeInOut}>
-          <GameOver
-            gameState={gameState}
-            onRestart={handleRestart}
-          />
+          <GameOver gameState={gameState} onRestart={handleRestart} />
         </motion.div>
       )}
 

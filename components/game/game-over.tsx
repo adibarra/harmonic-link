@@ -4,7 +4,12 @@ import { Button } from "@/components/ui/button";
 import ChainDisplay from "@/components/display/chain-display";
 import Leaderboard from "../display/leaderboard";
 import { useState } from "react";
-import { ArrowLeftToLineIcon, ListPlusIcon, LogOutIcon, RefreshCwIcon } from "lucide-react";
+import {
+  ArrowLeftToLineIcon,
+  ListPlusIcon,
+  LogOutIcon,
+  RefreshCwIcon,
+} from "lucide-react";
 
 interface GameOverScreenProps {
   gameState: GameState;
@@ -15,10 +20,6 @@ export default function GameOverScreen({
   gameState,
   onRestart,
 }: GameOverScreenProps) {
-  const max = 200;
-  const min = 100;
-  const score = Math.floor(Math.random() * (max - min + 1)) + min;
-
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [playlistLoading, setPlaylistLoading] = useState(false);
   const [playlistError, setPlaylistError] = useState("");
@@ -38,7 +39,6 @@ export default function GameOverScreen({
 
       if (response.ok) {
         setPlaylistUrl(data.playlistUrl);
-
       } else {
         setPlaylistError(data.error || "Failed to create playlist");
       }
@@ -53,7 +53,7 @@ export default function GameOverScreen({
   return (
     <div className="flex flex-col items-center p-6 space-y-6 h-[90vh] text-white">
       <h1 className="text-4xl font-bold">Game Over</h1>
-      <p className="text-xl">Your final score: {score}</p>
+      <p className="text-xl">Your final score: {gameState.score}</p>
       <div className="flex items-center space-x-6">
         <ChainDisplay chain={gameState.linkChain} fullChain={true} />
       </div>
@@ -68,12 +68,12 @@ export default function GameOverScreen({
               <ArrowLeftToLineIcon className="w-5 h-5" />
               Back to Lobby
             </>
-            ) : gameState.challenge!.type === "daily" ? (
+          ) : gameState.challenge!.type === "daily" ? (
             <>
               <LogOutIcon className="w-5 h-5" />
               End Challenge
             </>
-            ) : (
+          ) : (
             <>
               <RefreshCwIcon className="w-5 h-5" />
               New Challenge
@@ -100,10 +100,13 @@ export default function GameOverScreen({
           Open Your Playlist on Spotify
         </a>
       )}
-      {playlistError && (
-        <p className="text-red-500">{playlistError}</p>
+      {playlistError && <p className="text-red-500">{playlistError}</p>}
+      {gameState.challenge && gameState.gameId && (
+        <Leaderboard
+          gameId={gameState.gameId}
+          gameMode={gameState.challenge?.type}
+        />
       )}
-      <Leaderboard />
     </div>
   );
 }

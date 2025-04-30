@@ -8,11 +8,21 @@ import ChainDisplay from "@/components/display/chain-display";
 import { fetchAlbums } from "@/services/fetchAlbums";
 import { fetchAlbumArtists } from "@/services/fetchAlbumArtists";
 import { Button } from "@/components/ui/button";
-import { ClockIcon, DiscIcon, LightbulbIcon, LogOutIcon, MicIcon, RefreshCwIcon, Undo2Icon, UserIcon, XIcon } from "lucide-react";
+import {
+  ClockIcon,
+  DiscIcon,
+  LightbulbIcon,
+  LogOutIcon,
+  MicIcon,
+  RefreshCwIcon,
+  Undo2Icon,
+  UserIcon,
+  XIcon,
+} from "lucide-react";
 import { formatElapsedTime } from "@/utils/utils";
 import fuzzysort from "fuzzysort";
-import { uploadFinishedGameToLeaderBoard } from "@/services/uploadGameToLeaderboard";
 import { AnimatePresence } from "motion/react";
+import { uploadGame } from "@/services/uploadGame";
 
 interface GameProps {
   gameState: GameState;
@@ -73,6 +83,8 @@ export default function Game({
 
     if (lastItem.id !== secondLastItem.id) return;
 
+    const finalScore = calculateScore(gameState.linkChain.length, elapsedTime);
+
     if (gameState.channel && broadcastChannel && myUser) {
       broadcastChannel.send({
         type: "broadcast",
@@ -80,31 +92,38 @@ export default function Game({
         payload: { user: myUser },
       });
     } else if (!gameState.channel) {
-      const date = new Date();
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0"); // getMonth() is 0-based
-      const day = String(date.getDate()).padStart(2, "0");
-      const gameId = Number(`${year}${month}${day}`);
+      const handleUploadGame = async () => {
+        if (!gameState.gameId) {
+          console.log("NO GAME ID SET. NOT UPLOADING SCORE");
+          return;
+        }
 
-      uploadFinishedGameToLeaderBoard(
-        gameId,
-        gameState.linkChain[0].id,
-        lastItem.id,
-        0,
-        elapsedTime,
-        calculateScore(gameState.linkChain.length, elapsedTime),
-        gameState.linkChain[1]?.id || "",
-        secondLastItem.id,
-        gameState.linkChain.length,
-        "daily",
-      );
+        const gameId = gameState.gameId;
+        const gameMode = "daily";
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          console.log("User is not signed in. Game will not be uploaded");
+          return;
+        }
+
+        await uploadGame(gameId, gameMode, finalScore, user.id);
+      };
+      handleUploadGame();
     }
 
     setGameState((prevState) => ({
       ...prevState,
-      linkChain: prevState.linkChain.length > 2
-        ? [...prevState.linkChain.slice(0, -2), prevState.linkChain[prevState.linkChain.length - 1]]
-        : prevState.linkChain,
+      score: finalScore,
+      linkChain:
+        prevState.linkChain.length > 2
+          ? [
+              ...prevState.linkChain.slice(0, -2),
+              prevState.linkChain[prevState.linkChain.length - 1],
+            ]
+          : prevState.linkChain,
     }));
 
     onGameOver();
@@ -191,9 +210,13 @@ export default function Game({
               onClick={() =>
                 setGameState((prevState) => ({
                   ...prevState,
-                  linkChain: prevState.linkChain.length > 2
-                    ? [...prevState.linkChain.slice(0, -2), prevState.linkChain[prevState.linkChain.length - 1]]
-                    : prevState.linkChain,
+                  linkChain:
+                    prevState.linkChain.length > 2
+                      ? [
+                          ...prevState.linkChain.slice(0, -2),
+                          prevState.linkChain[prevState.linkChain.length - 1],
+                        ]
+                      : prevState.linkChain,
                 }))
               }
             >
@@ -206,7 +229,10 @@ export default function Game({
               onClick={() =>
                 setGameState((prevState) => ({
                   ...prevState,
-                  linkChain: [prevState.linkChain[0], prevState.linkChain[prevState.linkChain.length - 1]],
+                  linkChain: [
+                    prevState.linkChain[0],
+                    prevState.linkChain[prevState.linkChain.length - 1],
+                  ],
                 }))
               }
             >
@@ -225,19 +251,23 @@ export default function Game({
               </h2>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 <li>
-                {formatElapsedTime(elapsedTime).split(" ").map((part, index) => {
-                  const cleaned = part.replace(/[^0-9a-zA-Z]/g, "");
-                  const match = cleaned.match(/^(\d+)([a-zA-Z]+)$/);
-                  if (!match) return <span key={index}>{part} </span>;
-                  const [, number, unit] = match;
-                  return (
-                    <span key={index}>
-                      <span className="font-medium text-white/80">{number}</span>
-                      {unit}
-                      {part.endsWith(",") && ","}{" "}
-                    </span>
-                  );
-                })}
+                  {formatElapsedTime(elapsedTime)
+                    .split(" ")
+                    .map((part, index) => {
+                      const cleaned = part.replace(/[^0-9a-zA-Z]/g, "");
+                      const match = cleaned.match(/^(\d+)([a-zA-Z]+)$/);
+                      if (!match) return <span key={index}>{part} </span>;
+                      const [, number, unit] = match;
+                      return (
+                        <span key={index}>
+                          <span className="font-medium text-white/80">
+                            {number}
+                          </span>
+                          {unit}
+                          {part.endsWith(",") && ","}{" "}
+                        </span>
+                      );
+                    })}
                 </li>
               </ul>
 
@@ -251,7 +281,7 @@ export default function Game({
                   <span className="font-medium text-white/80">
                     {gameState.challenge!.par}
                   </span>
-                  &nbsp;link{gameState.challenge!.par > 1 ? 's' : ''}.
+                  &nbsp;link{gameState.challenge!.par > 1 ? "s" : ""}.
                 </li>
               </ul>
 
@@ -278,45 +308,47 @@ export default function Game({
               )}
 
               <div className="mt-6">
-                {!gameState.channel && gameState.challenge!.type === 'random' && (
-                  <ul className="space-y-1 text-sm text-muted-foreground mt-2">
-                    <li>
-                      <Button
-                        className="w-full flex-row gap-2 justify-center items-center"
-                        variant="secondary"
-                        onClick={() => {
-                          setGameState((prevState) => ({
-                            ...prevState,
-                            status: "waiting",
-                            linkChain: [],
-                            challenge: null,
-                          }));
-                        }}
-                      >
-                        <RefreshCwIcon className="w-4 h-4" />
-                        New Challenge
-                      </Button>
-                    </li>
-                  </ul>
-                )}
+                {!gameState.channel &&
+                  gameState.challenge!.type === "random" && (
+                    <ul className="space-y-1 text-sm text-muted-foreground mt-2">
+                      <li>
+                        <Button
+                          className="w-full flex-row gap-2 justify-center items-center"
+                          variant="secondary"
+                          onClick={() => {
+                            setGameState((prevState) => ({
+                              ...prevState,
+                              status: "waiting",
+                              linkChain: [],
+                              challenge: null,
+                            }));
+                          }}
+                        >
+                          <RefreshCwIcon className="w-4 h-4" />
+                          New Challenge
+                        </Button>
+                      </li>
+                    </ul>
+                  )}
 
-                {gameState.channel && gameState.challenge!.type === 'random' && (
-                  <ul className="space-y-1 text-sm text-muted-foreground mt-2">
-                    <li>
-                      <Button
-                        className="w-full flex-row gap-2 justify-center items-center"
-                        variant="destructive"
-                        onClick={() => {
-                          broadcastChannel?.unsubscribe();
-                          router.push('/play');
-                        }}
-                      >
-                        <LogOutIcon className="w-4 h-4" />
-                        Leave Game
-                      </Button>
-                    </li>
-                  </ul>
-                )}
+                {gameState.channel &&
+                  gameState.challenge!.type === "random" && (
+                    <ul className="space-y-1 text-sm text-muted-foreground mt-2">
+                      <li>
+                        <Button
+                          className="w-full flex-row gap-2 justify-center items-center"
+                          variant="destructive"
+                          onClick={() => {
+                            broadcastChannel?.unsubscribe();
+                            router.push("/play");
+                          }}
+                        >
+                          <LogOutIcon className="w-4 h-4" />
+                          Leave Game
+                        </Button>
+                      </li>
+                    </ul>
+                  )}
 
                 {!gameState.channel && (
                   <ul className="space-y-1 text-sm text-muted-foreground mt-2">
@@ -325,7 +357,7 @@ export default function Game({
                         className="w-full flex-row gap-2 justify-center items-center"
                         variant="destructive"
                         onClick={() => {
-                          router.push('/play');
+                          router.push("/play");
                         }}
                       >
                         <LogOutIcon className="w-4 h-4" />
@@ -359,7 +391,10 @@ export default function Game({
                 <tbody>
                   {filteredItems.length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="py-4 text-center text-sm text-gray-500">
+                      <td
+                        colSpan={3}
+                        className="py-4 text-center text-sm text-gray-500"
+                      >
                         NO RESULTS
                       </td>
                     </tr>
@@ -372,19 +407,29 @@ export default function Game({
                           setSearchQuery("");
                           setGameState((prevState) => ({
                             ...prevState,
-                            linkChain: [...prevState.linkChain.slice(0, -1), item, prevState.linkChain[prevState.linkChain.length - 1]],
+                            linkChain: [
+                              ...prevState.linkChain.slice(0, -1),
+                              item,
+                              prevState.linkChain[
+                                prevState.linkChain.length - 1
+                              ],
+                            ],
                           }));
                         }}
                       >
                         <td className="flex items-center border-r border-white">
-                        <img
+                          <img
                             className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
                             src={item.image}
                             alt={item.name}
                           />
                           <span className="">{item.name}</span>
                           <span className="ml-auto mr-4 flex items-center gap-1 text-xs opacity-50">
-                            {"artist" in item ? <DiscIcon className="w-4 h-4" /> : <MicIcon className="w-4 h-4" />}
+                            {"artist" in item ? (
+                              <DiscIcon className="w-4 h-4" />
+                            ) : (
+                              <MicIcon className="w-4 h-4" />
+                            )}
                             {"artist" in item ? "Album" : "Artist"}
                           </span>
                         </td>
