@@ -369,8 +369,8 @@ export default function Game({
               </div>
             </div>
           </div>
-          <div>
-            <div className="w-full max-w-md mx-auto mb-4">
+          <div className="w-[50vw] max-w-md">
+            <div className="w-full mx-auto mb-4">
               <input
                 type="text"
                 placeholder="Type to filter results"
