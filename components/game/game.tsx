@@ -422,11 +422,17 @@ export default function Game({
                         }}
                       >
                         <td className="flex items-center border-r border-white">
-                          <img
-                            className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
-                            src={item.image}
-                            alt={item.name}
-                          />
+                          {item.image ? (
+                            <img
+                              className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
+                              src={item.image}
+                              alt=""
+                            />
+                          ) : (
+                            <div className="mx-4 my-2 w-[48px] h-[48px] rounded-lg bg-gray-800 flex items-center justify-center">
+                              <span className="text-3xl text-center text-gray-500">?</span>
+                            </div>
+                          )}
                           <span className="">{item.name}</span>
                           <span className="ml-auto mr-4 flex items-center gap-1 text-xs opacity-50">
                             {"artist" in item ? (
