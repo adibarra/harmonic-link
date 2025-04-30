@@ -191,9 +191,9 @@ export default function Game({
   }, [searchQuery, items]);
 
   const calculateScore = (links: number, time: number) => {
-    const time_factor = time < 300 ? 1 - time / 300 + 0.1 : 0.1;
+    const time_factor = time < 300 ? ((1 - time) / 300) + 0.1 : 0.1;
     const par = gameState.challenge?.par ?? 0;
-    let scored = Math.floor((10000 - 1000 * (links - par)) * time_factor);
+    let scored = Math.floor((10000 - (1000 * (links - par))) * time_factor);
     return scored < 0 ? 0 : scored;
   };
 
