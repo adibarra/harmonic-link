@@ -100,9 +100,7 @@ export default function Game({
 
         const gameId = gameState.gameId;
         const gameMode = "daily";
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        const { data: { user } } = await supabase.auth.getUser();
 
         if (!user) {
           console.log("User is not signed in. Game will not be uploaded");

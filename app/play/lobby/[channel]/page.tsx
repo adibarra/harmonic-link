@@ -39,7 +39,7 @@ export default function Lobby() {
         const identityData = user!.identities![0].identity_data!
         newPlayer = {
           id: myUserID,
-          name: identityData.name,
+          name: user?.identities?.[0]?.identity_data?.name?.split(" ")[0] || user?.email?.split("@")[0] || "User",
           image: (identityData.avatar_url as string).replace("s96-c", "s192-c")
             ?? `https://ui-avatars.com/api/?background=0D8ABC&color=fff&format=svg&name=${encodeURIComponent(identityData.name)}`,
           isGuest: false,
