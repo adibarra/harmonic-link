@@ -6,7 +6,7 @@ export async function fetchLeaderboard(
 ): Promise<LeaderboardEntry[] | null> {
   try {
     const supabase_url = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-    const supabase_service_key = process.env.SUPABASE_SERVICE_KEY as string;
+    const supabase_service_key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
 
     if (!supabase_url) {
       throw Error("no supabase url");
@@ -14,6 +14,25 @@ export async function fetchLeaderboard(
     if (!supabase_service_key) {
       throw Error("no supabase service key");
     }
+
+    const responseProf = await fetch(`${supabase_url}/rest/v1/profiles`, {
+      headers: {
+        apikey: supabase_service_key,
+        Authorization: `Bearer ${supabase_service_key}`,
+      },
+    });
+    const rawProfile = await responseProf.json();
+    const profileSchema = z.array(
+      z.object({
+        profile_id: z.coerce.number(),
+        id: z.string(),
+        email: z.string(),
+        display_name: z.string()
+      })
+    );
+    const prof = await profileSchema.parse(rawProfile);
+
+    const profile = new Map(prof.map((p) => [p.id, p.display_name]));
 
     const response = await fetch(`${supabase_url}/rest/v1/games`, {
       headers: {
@@ -35,31 +54,19 @@ export async function fetchLeaderboard(
         end_album_id: z.string().nullable(),
         num_links_made: z.coerce.number(),
         game_mode: z.string(),
-        user_id: z.string().nullable(),
+        user_id: z.string(),
       }),
     );
     const leaderboardData = leaderboardSchema.parse(rawLeaderBoardData);
 
     // only return the top 8 players
-    var topEntires = leaderboardData
+    const topEntires = leaderboardData
       .sort((a, b) => b.score - a.score)
       .slice(0, 8)
       .map((entry) => ({
-        name: entry.user_id || "guest",
+        name: profile.get(entry.user_id) || "guest",
         score: entry.score,
       }));
-
-    topEntires.forEach(async (entry) => {
-        const rawDisplay = (await fetch(`/api/profiles?id=${entry.name}`));
-        const displaySchema = z.object({
-            profile_id: z.coerce.number(),
-            id: z.string(),
-            email: z.string(),
-            display_name: z.string()
-          });
-        const display = displaySchema.parse(rawDisplay);
-        entry.name = await display.display_name;
-    });
 
     return await topEntires;
   } catch (error) {
