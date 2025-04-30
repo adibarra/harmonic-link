@@ -242,9 +242,9 @@ export default function Game({
           </div>
         )}
 
-        <div className="relative w-[50vw]">
-          <div className="w-full max-w-md mx-auto mb-4">
-            <div className="w-[160px] absolute top-0 left-0">
+        <div className="flex flex-rows w-[90vw]">
+          <div className="flex-1">
+            <div className="w-[160px] max-w-md mr-6 ml-auto">
               <h2 className="flex gap-2 items-center text-lg font-semibold">
                 <ClockIcon className="w-4 h-4" />
                 Timer
@@ -368,24 +368,26 @@ export default function Game({
                 )}
               </div>
             </div>
-
-            <input
-              type="text"
-              placeholder="Type to filter results"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 border border-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500 bg-transparent"
-            />
           </div>
+          <div>
+            <div className="w-full max-w-md mx-auto mb-4">
+              <input
+                type="text"
+                placeholder="Type to filter results"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 border border-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500 bg-transparent"
+              />
+            </div>
 
-          {(loading || error) && (
+            {(loading || error) && (
             <div className="w-full flex justify-center items-center h-48">
               {loading && <MoonLoader size={18} color="#fff" />}
               {error && <p className="text-red-500 mt-2">{error}</p>}
             </div>
-          )}
+            )}
 
-          {!loading && !error && (
+            {!loading && !error && (
             <div className="max-h-96 mx-auto w-full max-w-md overflow-x-hidden border border-white rounded-lg">
               <table className="w-full table-auto">
                 <tbody>
@@ -439,7 +441,9 @@ export default function Game({
                 </tbody>
               </table>
             </div>
-          )}
+            )}
+          </div>
+          <div className="flex-1" />
         </div>
       </div>
     </AnimatePresence>
