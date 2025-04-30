@@ -41,7 +41,7 @@ export async function fetchLeaderboard(
     const leaderboardData = leaderboardSchema.parse(rawLeaderBoardData);
 
     // only return the top 8 players
-    const topEntires = leaderboardData
+    var topEntires = leaderboardData
       .sort((a, b) => b.score - a.score)
       .slice(0, 8)
       .map((entry) => ({
@@ -49,7 +49,19 @@ export async function fetchLeaderboard(
         score: entry.score,
       }));
 
-    return topEntires;
+    topEntires.forEach(async (entry) => {
+        const rawDisplay = (await fetch(`/api/profiles?id=${entry.name}`));
+        const displaySchema = z.object({
+            profile_id: z.coerce.number(),
+            id: z.string(),
+            email: z.string(),
+            display_name: z.string()
+          });
+        const display = displaySchema.parse(rawDisplay);
+        entry.name = await display.display_name;
+    });
+
+    return await topEntires;
   } catch (error) {
     console.log(error);
     return null;
