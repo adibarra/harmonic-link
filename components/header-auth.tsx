@@ -9,10 +9,14 @@ export default async function AuthButton() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  var userName
+  if(user) {
+     userName = user.identities[0].identity_data.name
+  }
 
   return user ? (
     <div className="flex items-center gap-4">
-      Hey, {user.email}!
+      Hey, {userName}!
       <form action={signOutAction}>
         <Button type="submit" variant={"outline"}>
           Sign out
