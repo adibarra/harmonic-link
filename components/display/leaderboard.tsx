@@ -13,13 +13,7 @@ export default function Leaderboard({ gameId, gameMode }: LeaderboardProps) {
 
   useEffect(() => {
     const getLeaderboardFromGames = (games: LeaderboardEntry[]) => {
-      const topEntires = games
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 8)
-        .map((entry) => ({
-          userId: entry.userId || "guest",
-          ...entry,
-        }));
+      const topEntires = games.sort((a, b) => b.score - a.score).slice(0, 8);
       return topEntires;
     };
 
@@ -48,7 +42,7 @@ export default function Leaderboard({ gameId, gameMode }: LeaderboardProps) {
               key={index}
               className="flex border-b border-white border-opacity-10"
             >
-              <span>{entry.userId}</span>
+              <span>{entry.displayName}</span>
               <span className="flex-1" />
               <span>{entry.score} points</span>
             </li>

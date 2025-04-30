@@ -39,6 +39,6 @@ type ChainItem = Artist | Album;
 
 type LeaderboardEntry = {
   score: number;
-  userId?: string;
+  displayName: string;
   gameMode: string;
 };
