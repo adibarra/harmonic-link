@@ -30,30 +30,22 @@ export default function ChainDisplay({ chain, fullChain = false }: ChainDisplayP
     const middleChain = chain.slice(1, -1);
 
     return (
-      <motion.div className="flex items-center space-x-6 h-218px" {...fadeInOut}>
-        <motion.div {...fadeInOut}>
-          <ItemCard item={chain[0]} />
-        </motion.div>
+      <motion.div className="flex items-center justify-center space-x-6 w-[90svw] max-w-[1250px]" {...fadeInOut}>
+        <ItemCard item={chain[0]} />
         <span className="text-2xl">→</span>
 
-        <motion.div
+        <div
           ref={scrollContainerRef}
-          className="flex overflow-x-auto space-x-2 flex-nowrap max-w-[55vw] h-192px"
-          {...fadeInOut}
+          className="hidden lg:flex overflow-x-auto space-x-2 flex-nowrap items-center justify-center w-fit md:max-w-[80svw]"
         >
           {middleChain.map((item, index) => (
-            <motion.div key={index} className="flex items-center space-x-6" {...fadeInOut}>
-              <ItemCard item={item} />
-            </motion.div>
+            <ItemCard key={index} item={item} />
           ))}
-
           {!fullChain && <UnknownCard />}
-        </motion.div>
+        </div>
 
-        <span className="text-2xl">→</span>
-        <motion.div {...fadeInOut}>
-          <ItemCard item={chain[chain.length - 1]} />
-        </motion.div>
+        <span className="hidden lg:block text-2xl">→</span>
+        <ItemCard item={chain[chain.length - 1]} />
       </motion.div>
     );
   }, [chain, fullChain]);
