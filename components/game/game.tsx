@@ -207,7 +207,8 @@ export default function Game({
             <Button
               className="w-full flex-row gap-2 justify-center items-center"
               variant="secondary"
-              onClick={() =>
+              onClick={() => {
+                setSearchQuery("");
                 setGameState((prevState) => ({
                   ...prevState,
                   linkChain:
@@ -218,7 +219,7 @@ export default function Game({
                         ]
                       : prevState.linkChain,
                 }))
-              }
+              }}
             >
               <Undo2Icon className="w-4 h-4" />
               Undo
@@ -226,7 +227,8 @@ export default function Game({
             <Button
               className="w-full flex-row gap-2 justify-center items-center"
               variant="destructive"
-              onClick={() =>
+              onClick={() => {
+                setSearchQuery("");
                 setGameState((prevState) => ({
                   ...prevState,
                   linkChain: [
@@ -234,7 +236,7 @@ export default function Game({
                     prevState.linkChain[prevState.linkChain.length - 1],
                   ],
                 }))
-              }
+              }}
             >
               <XIcon className="w-4 h-4" />
               Clear Chain
@@ -242,9 +244,9 @@ export default function Game({
           </div>
         )}
 
-        <div className="relative w-[50vw]">
-          <div className="w-full max-w-md mx-auto mb-4">
-            <div className="w-[160px] absolute top-0 left-0">
+        <div className="flex flex-rows w-[90vw]">
+          <div className="flex-1">
+            <div className="w-[160px] max-w-md mr-6 ml-auto">
               <h2 className="flex gap-2 items-center text-lg font-semibold">
                 <ClockIcon className="w-4 h-4" />
                 Timer
@@ -368,24 +370,26 @@ export default function Game({
                 )}
               </div>
             </div>
-
-            <input
-              type="text"
-              placeholder="Type to filter results"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 border border-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500 bg-transparent"
-            />
           </div>
+          <div className="w-[50vw] max-w-md">
+            <div className="w-full mx-auto mb-4">
+              <input
+                type="text"
+                placeholder="Type to filter results"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 border border-white rounded-lg focus:outline-none focus:ring focus:ring-blue-500 bg-transparent"
+              />
+            </div>
 
-          {(loading || error) && (
+            {(loading || error) && (
             <div className="w-full flex justify-center items-center h-48">
               {loading && <MoonLoader size={18} color="#fff" />}
               {error && <p className="text-red-500 mt-2">{error}</p>}
             </div>
-          )}
+            )}
 
-          {!loading && !error && (
+            {!loading && !error && (
             <div className="max-h-96 mx-auto w-full max-w-md overflow-x-hidden border border-white rounded-lg">
               <table className="w-full table-auto">
                 <tbody>
@@ -418,11 +422,17 @@ export default function Game({
                         }}
                       >
                         <td className="flex items-center border-r border-white">
-                          <img
-                            className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
-                            src={item.image}
-                            alt={item.name}
-                          />
+                          {item.image ? (
+                            <img
+                              className="mx-4 my-2 w-[48px] h-[48px] rounded-lg object-cover"
+                              src={item.image}
+                              alt=""
+                            />
+                          ) : (
+                            <div className="mx-4 my-2 w-[48px] h-[48px] rounded-lg bg-gray-800 flex items-center justify-center">
+                              <span className="text-3xl text-center text-gray-500">?</span>
+                            </div>
+                          )}
                           <span className="">{item.name}</span>
                           <span className="ml-auto mr-4 flex items-center gap-1 text-xs opacity-50">
                             {"artist" in item ? (
@@ -439,7 +449,9 @@ export default function Game({
                 </tbody>
               </table>
             </div>
-          )}
+            )}
+          </div>
+          <div className="flex-1" />
         </div>
       </div>
     </AnimatePresence>

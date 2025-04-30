@@ -10,6 +10,7 @@ import {
   LogOutIcon,
   RefreshCwIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface GameOverScreenProps {
   gameState: GameState;
@@ -20,6 +21,7 @@ export default function GameOverScreen({
   gameState,
   onRestart,
 }: GameOverScreenProps) {
+  const router = useRouter();
   const [playlistUrl, setPlaylistUrl] = useState("");
   const [playlistLoading, setPlaylistLoading] = useState(false);
   const [playlistError, setPlaylistError] = useState("");
@@ -61,6 +63,15 @@ export default function GameOverScreen({
         <Button
           className="w-fit flex-row gap-2 justify-center items-center"
           variant="secondary"
+          onClick={handleGeneratePlaylist}
+          disabled={playlistLoading}
+        >
+          <ListPlusIcon className="w-5 h-5" />
+          {playlistLoading ? "Generating..." : "Generate Playlist"}
+        </Button>
+        <Button
+          className="w-fit flex-row gap-2 justify-center items-center"
+          variant="secondary"
           onClick={onRestart}
         >
           {gameState.channel ? (
@@ -80,15 +91,18 @@ export default function GameOverScreen({
             </>
           )}
         </Button>
-        <Button
-          className="w-fit flex-row gap-2 justify-center items-center"
-          variant="secondary"
-          onClick={handleGeneratePlaylist}
-          disabled={playlistLoading}
-        >
-          <ListPlusIcon className="w-5 h-5" />
-          {playlistLoading ? "Generating..." : "Generate Playlist"}
-        </Button>
+        {gameState.channel && (
+          <Button
+            className="w-fit flex-row gap-2 justify-center items-center"
+            variant="destructive"
+            onClick={() => {
+              router.push(`/play`);
+            }}
+          >
+            <LogOutIcon className="w-5 h-5" />
+            Leave Lobby
+          </Button>
+        )}
       </div>
       {playlistUrl && (
         <a
