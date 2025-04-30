@@ -16,6 +16,10 @@ export async function uploadGame(
 ): Promise<null> {
   try {
     console.log(log, "called");
+    console.log(log, "gameId", gameId);
+    console.log(log, "gameMode", gameMode);
+    console.log(log, "score", score);
+    console.log(log, "userId", userId);
 
     const { error } = await supabase.from("games").upsert([
       {

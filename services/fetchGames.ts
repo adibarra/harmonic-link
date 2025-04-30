@@ -10,7 +10,7 @@ const supabase = createClient(
 const leaderboardEntriesSchema = z.array(
   z.object({
     score: z.number(),
-    user_id: z.string(),
+    display_name: z.object({ display_name: z.string() }),
     game_mode: z.string(),
   }),
 );
@@ -28,7 +28,15 @@ export async function fetchGames(
 
     const { data, error } = await supabase
       .from("games")
-      .select(`game_id,score,user_id,game_mode`)
+      .select(
+        `
+        game_id,
+        score,
+        game_mode,
+        display_name:profiles!user_id(
+            display_name
+        )`,
+      )
       .eq("game_id", gameId)
       .eq("game_mode", gameMode);
 
@@ -42,7 +50,7 @@ export async function fetchGames(
     const leaderboardEntries = leaderboardEntriesSchema
       .parse(data)
       .map((entry) => ({
-        userId: entry.user_id,
+        displayName: entry.display_name.display_name,
         gameMode: entry.game_mode,
         score: entry.score,
       }));
