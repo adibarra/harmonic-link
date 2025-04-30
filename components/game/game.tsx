@@ -207,7 +207,8 @@ export default function Game({
             <Button
               className="w-full flex-row gap-2 justify-center items-center"
               variant="secondary"
-              onClick={() =>
+              onClick={() => {
+                setSearchQuery("");
                 setGameState((prevState) => ({
                   ...prevState,
                   linkChain:
@@ -218,7 +219,7 @@ export default function Game({
                         ]
                       : prevState.linkChain,
                 }))
-              }
+              }}
             >
               <Undo2Icon className="w-4 h-4" />
               Undo
@@ -226,7 +227,8 @@ export default function Game({
             <Button
               className="w-full flex-row gap-2 justify-center items-center"
               variant="destructive"
-              onClick={() =>
+              onClick={() => {
+                setSearchQuery("");
                 setGameState((prevState) => ({
                   ...prevState,
                   linkChain: [
@@ -234,7 +236,7 @@ export default function Game({
                     prevState.linkChain[prevState.linkChain.length - 1],
                   ],
                 }))
-              }
+              }}
             >
               <XIcon className="w-4 h-4" />
               Clear Chain
